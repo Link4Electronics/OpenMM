@@ -22,14 +22,26 @@ define_dummy_symbol(mmeffects_mmtext);
 
 #include "agi/bitmap.h"
 #include "agi/pipeline.h"
+#include "arts7/cullmgr.h"
 #include "localize/localize.h"
+
+#include <cstring>
 
 mmTextNode::mmTextNode() = default;
 mmTextNode::~mmTextNode() = default;
 
+void mmTextNode::SetFGColor(Vector4&) {} // ARTS_IMPORT stub
+
 void mmTextNode::Init(f32 x, f32 y, f32 width, f32 height, i32 num_lines, i32 flags)
 {
     // NOTE: Originally clamped width/height
+
+    // Zero out smart pointers before assignment to handle uninitialized state
+    // (weak stub constructors skip member construction, leaving garbage pointers
+    //  that would be delete[]'d/Released by the assignment operators)
+    void* null = nullptr;
+    std::memcpy(&lines_, &null, sizeof(lines_));
+    std::memcpy(&text_bitmap_, &null, sizeof(text_bitmap_));
 
     x_ = x;
     y_ = y;
@@ -53,6 +65,26 @@ void mmTextNode::Cull()
         surface->Load();
 
         RenderText(surface, lines_.get(), line_count_, enabled_lines_);
+
+        // Flip surface vertically: FreeType renders top-to-bottom (row 0 = top),
+        // but textures expect bottom-to-top (row 0 = bottom) to match GL convention.
+        {
+            u32 h = surface->Height;
+            i32 pitch = std::abs(surface->Pitch);
+            u8* data = static_cast<u8*>(surface->Surface);
+            for (u32 i = 0; i < h / 2; ++i)
+            {
+                u8* a = data + i * pitch;
+                u8* b = data + (h - 1 - i) * pitch;
+                for (i32 j = 0; j < pitch; ++j)
+                {
+                    u8 tmp = a[j];
+                    a[j] = b[j];
+                    b[j] = tmp;
+                }
+            }
+        }
+
         text_bitmap_->EndGfx();
         text_bitmap_->SafeBeginGfx();
 
@@ -108,6 +140,36 @@ void mmTextNode::SetEffects(i32 line, i32 effects)
 
         touched_ = true;
     }
+}
+
+i32 mmTextNode::AddText(void* font, LocString* text, i32 effects, f32 x, f32 y)
+{
+    if (line_count_ >= max_lines_)
+        return -1;
+
+    mmTextData& line = lines_[line_count_];
+    line.Font = font;
+    line.X = x;
+    line.Y = y;
+    line.Effects = effects;
+
+    if (text && text->Text[0])
+        arts_strcpy(line.Text, text->Text);
+    else
+        line.Text[0] = '\0';
+
+    touched_ = true;
+    empty_ = false;
+
+    return line_count_++;
+}
+
+void mmTextNode::Update()
+{
+    asNode::Update();
+
+    if (asCullManager* cull = CullMgr())
+        cull->DeclareBitmap(this, text_bitmap_.get());
 }
 
 mmLocFontInfo::mmLocFontInfo(LocString* params)

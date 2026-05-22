@@ -20,7 +20,22 @@ define_dummy_symbol(mmgame_interface);
 
 #include "interface.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_events.h>
+
+#include "eventq7/event.h"
+#include "pcwindis/dxinit.h"
 #include "agi/rsys.h"
+#include "mmui/driver.h"
+#include "mmui/main.h"
+#include "mmui/options.h"
+#include "mmui/placeholder_opts.h"
+#include "mmui/vehicle.h"
+#include "mmui/quitmenu.h"
+#include "mmwidget/navbar.h"
 #include "agisw/swrend.h"
 #include "agiworld/quality.h"
 #include "agiworld/texsheet.h"
@@ -37,12 +52,27 @@ define_dummy_symbol(mmgame_interface);
 #include "mmnetwork/network.h"
 #include "mmwidget/manager.h"
 #include "mmwidget/menu.h"
+#include "mmwidget/bm_button.h"
 
 // ?IsModemDialin@@YA_NXZ
 ARTS_IMPORT /*static*/ bool IsModemDialin();
 
 // ?ZoneWatcher@@YGKPAX@Z
 ARTS_IMPORT /*static*/ ulong ARTS_STDCALL ZoneWatcher(void* arg1);
+
+mmInterface::mmInterface()
+{
+    void* saved_vtable = *reinterpret_cast<void**>(this);
+    std::memset(this, 0, sizeof(*this));
+    *reinterpret_cast<void**>(this) = saved_vtable;
+
+    ActivateNode();
+
+    // Initialize ARTS_IMPORT globals to nullptr to avoid deleting sentinel values
+    // from the game binary on early-exit cleanup paths
+    CityListPtr = nullptr;
+    VehicleListPtr = nullptr;
+}
 
 mmInterface::~mmInterface()
 {
@@ -169,9 +199,15 @@ void mmInterface::SetStateDefaults()
 
 void mmInterface::SetNavigationOrders()
 {
+    // FIXME: Requires MenuManager::Instance to be set up with all menus constructed.
+    // Weak stubs skip initialization, so all pointers are null/garbage.
+    if (!MenuMgr())
+        return;
+
     // TODO: Do this during menu construction instead
     const auto fixup = [this](UIMenu* menu, std::initializer_list<const char*> labels) {
-        menu->SetNavigationOrder(labels.begin(), labels.size());
+        if (menu)
+            menu->SetNavigationOrder(labels.begin(), labels.size());
     };
 
     fixup((UIMenu*) MenuMgr()->GetNavBar(), {"mnav_prev", "mnav_opt", "mnav_help", "mnav_stow", "mnav_exit"});
@@ -189,4 +225,243 @@ void mmInterface::SetNavigationOrders()
 
     fixup((UIMenu*) DlgHallOfFame,
         {"compscroll", "drec_bltz", "drec_circ", "drec_chck", "hoff_amap", "hoff_prop", "hoff_pros", "dlg_done"});
+}
+
+void mmInterface::Reset()
+{
+    SetStateDefaults();
+
+    // Initialize vehicle list if not already done (original game.asm calls LoadAll during startup)
+    if (!VehicleListPtr)
+    {
+        VehicleListPtr = new mmVehList();
+        VehicleListPtr->LoadAll();
+    }
+}
+
+void mmInterface::ShowMain(i32 /*arg1*/)
+{
+    MenuMgr()->SetDefaultBackgroundImage("main_back");
+    MenuMgr()->Switch(IDM_MAIN);
+    MenuMgr()->SetFocus(MenuMain);
+    MenuMgr()->AddPointer();
+}
+
+void mmInterface::Update()
+{
+    if (MenuMgr())
+    {
+        MenuMgr()->CheckInput();
+
+        // Process pending menu actions (state_ == 4 means a widget was activated)
+        if (UIMenu* menu = MenuMgr()->GetCurrentMenu())
+        {
+            if (menu->GetState() == 4)
+            {
+                UIBMButton::PlayClickSound();
+                i32 widget_id = menu->GetWidgetID();
+                menu->ClearAction();
+
+                Displayf("Menu action: menu=%d widget=%d", menu->GetMenuID(), widget_id);
+
+                // Main menu button dispatch
+                if (menu->GetMenuID() == IDM_MAIN)
+                {
+                    switch (widget_id)
+                    {
+                        case IDC_MAIN_MENU_QUICK:
+                            MenuMgr()->Switch(IDM_VEHICLE);
+                            break;
+                        case IDC_MAIN_MENU_SINGLE:
+                            MenuMgr()->Switch(IDM_DRIVER);
+                            break;
+                        case IDC_MAIN_MENU_MULTI:
+                            MenuMgr()->Switch(IDM_NET_SELECT);
+                            break;
+                        case IDC_MAIN_MENU_RECORDS:
+                            // TODO: Show records dialog
+                            break;
+                        case IDC_MAIN_MENU_OPTIONS:
+                            MenuMgr()->Switch(IDM_OPTIONS);
+                            break;
+                        case IDC_MAIN_MENU_HELP:
+                            // TODO: Show help dialog
+                            break;
+                        case IDC_MAIN_MENU_MINIMIZE:
+                            if (g_MainWindow)
+                                SDL_MinimizeWindow(g_MainWindow);
+                            break;
+                        case IDC_MAIN_MENU_CLOSE:
+                            MenuMgr()->Switch(IDD_QUIT);
+                            break;
+                    }
+                }
+                // Options menu dispatch
+                else if (menu->GetMenuID() == IDM_OPTIONS)
+                {
+                    switch (widget_id)
+                    {
+                        case IDC_OPTIONS_MENU_AUDIO:
+                            MenuMgr()->Switch(IDM_AUDIO);
+                            break;
+                        case IDC_OPTIONS_MENU_CONTROLS:
+                            MenuMgr()->Switch(IDM_CONTROLS);
+                            break;
+                        case IDC_OPTIONS_MENU_GRAPHICS:
+                            MenuMgr()->Switch(IDM_GRAPHICS);
+                            break;
+                        case IDC_OPTIONS_MENU_CREDITS:
+                            MenuMgr()->Switch(IDM_ABOUT);
+                            break;
+                    }
+                }
+                // Driver menu dispatch
+                else if (menu->GetMenuID() == IDM_DRIVER)
+                {
+                    switch (widget_id)
+                    {
+                        case IDC_DRIVER_NEW:
+                        {
+                            auto* driver = static_cast<DriverMenu*>(menu);
+                            driver->NewPlayer();
+                            MenuMgr()->Switch(IDM_DRIVER);
+                            break;
+                        }
+                        case IDC_DRIVER_DELETE:
+                        {
+                            auto* driver = static_cast<DriverMenu*>(menu);
+                            driver->DeleteCB();
+                            break;
+                        }
+                        case IDC_DRIVER_STATS:
+                            // TODO: Open driver records dialog (IDD_DREC)
+                            break;
+                        case IDC_DRIVER_PREV:
+                        {
+                            auto* driver = static_cast<DriverMenu*>(menu);
+                            driver->DecPlayer();
+                            break;
+                        }
+                        case IDC_DRIVER_NEXT:
+                        {
+                            auto* driver = static_cast<DriverMenu*>(menu);
+                            driver->IncPlayer();
+                            break;
+                        }
+                        case IDC_DRIVER_SELECT:
+                            MenuMgr()->Switch(IDM_RACE);
+                            break;
+                    }
+                }
+                // Placeholder sub-option menus — Done button goes back to options
+                else if (menu->GetMenuID() == IDM_AUDIO || menu->GetMenuID() == IDM_GRAPHICS ||
+                         menu->GetMenuID() == IDM_CONTROLS || menu->GetMenuID() == IDM_ABOUT)
+                {
+                    if (widget_id == IDC_PLACEHOLDER_DONE)
+                    {
+                        // Preserve Options' previous menu ID (SwitchNow overwrites it)
+                        if (UIMenu* options = MenuMgr()->GetMenu(IDM_OPTIONS))
+                        {
+                            i32 saved_prev = options->GetPreviousMenuID();
+                            MenuMgr()->Switch(IDM_OPTIONS);
+                            options->SetPreviousMenuID(saved_prev);
+                        }
+                        else
+                        {
+                            MenuMgr()->Switch(IDM_OPTIONS);
+                        }
+                    }
+                }
+                // Vehicle menu
+                else if (menu->GetMenuID() == IDM_VEHICLE)
+                {
+                    switch (widget_id)
+                    {
+                        case IDC_VEHICLE_BACK:
+                            MenuMgr()->Switch(IDM_MAIN);
+                            break;
+                        case IDC_VEHICLE_DRIVE:
+                            // TODO: Start race
+                            break;
+                        case IDC_VEHICLE_SELECT:
+                            MenuMgr()->Switch(IDM_SHOWCASE);
+                            break;
+                        case IDC_VEHICLE_AUTO:
+                            // TODO: Toggle transmission
+                            break;
+                        case IDC_VEHICLE_PREV:
+                        {
+                            if (VehicleSelectBase* vs = static_cast<VehicleSelectBase*>(menu))
+                                vs->DecCar();
+                            break;
+                        }
+                        case IDC_VEHICLE_NEXT:
+                        {
+                            if (VehicleSelectBase* vs = static_cast<VehicleSelectBase*>(menu))
+                                vs->IncCar();
+                            break;
+                        }
+                    }
+                }
+                // Quit confirmation dialog
+                else if (menu->GetMenuID() == IDD_QUIT)
+                {
+                    if (widget_id == IDC_QUIT_YES)
+                    {
+                        if (CloseCallback)
+                            CloseCallback();
+                    }
+                    else if (widget_id == IDC_QUIT_NO)
+                    {
+                        if (i32 prev = MenuMgr()->GetPreviousMenu(); prev >= 0)
+                            MenuMgr()->Switch(prev);
+                        else
+                            MenuMgr()->Switch(IDM_MAIN);
+                    }
+                }
+                // VehShowcase — back/any key returns to vehicle selection
+                else if (menu->GetMenuID() == IDM_SHOWCASE)
+                {
+                    MenuMgr()->Switch(IDM_VEHICLE);
+                }
+            }
+        }
+
+        // Process nav bar action
+        if (uiNavBar* nav = static_cast<uiNavBar*>(MenuMgr()->GetNavBar()))
+        {
+            if (nav->GetState() == 4)
+            {
+                UIBMButton::PlayClickSound();
+                i32 widget_id = nav->GetWidgetID();
+                nav->ClearAction();
+
+                Displayf("Nav action: widget=%d", widget_id);
+
+                switch (widget_id)
+                {
+                    case IDC_NAV_OPT:
+                        MenuMgr()->Switch(IDM_OPTIONS);
+                        break;
+                    case IDC_NAV_HELP:
+                        break;
+                    case IDC_NAV_STOW:
+                        if (g_MainWindow)
+                            SDL_MinimizeWindow(g_MainWindow);
+                        break;
+                    case IDC_NAV_EXIT:
+                    {
+                        MenuMgr()->Switch(IDD_QUIT);
+                        break;
+                    }
+                    case IDC_NAV_PREV:
+                        if (i32 prev = MenuMgr()->GetPreviousMenu(); prev >= 0)
+                            MenuMgr()->Switch(prev);
+                        break;
+                }
+            }
+        }
+    }
+
+    asNode::Update();
 }

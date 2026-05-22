@@ -95,6 +95,10 @@ public:
     // ?CopyBitmap@agiPipeline@@UAEXHHPAVagiBitmap@@HHHH@Z
     virtual void CopyBitmap(i32 dst_x, i32 dst_y, agiBitmap* src, i32 src_x, i32 src_y, i32 width, i32 height);
 
+    // StretchCopyBitmap: Separate source and destination dimensions
+    virtual void StretchCopyBitmap(i32 dst_x, i32 dst_y, i32 dst_w, i32 dst_h, agiBitmap* src, i32 src_x, i32 src_y,
+        i32 src_w, i32 src_h);
+
     virtual void ClearAll(i32 color) = 0;
 
     // ?ClearRect@agiPipeline@@UAEXHHHHI@Z
@@ -471,6 +475,16 @@ extern i32 UI_YPos;
 
 extern i32 UI_Width;
 extern i32 UI_Height;
+
+// Window-space render viewport (actual blit coordinates)
+extern i32 g_ViewportX;
+extern i32 g_ViewportY;
+extern i32 g_ViewportWidth;
+extern i32 g_ViewportHeight;
+
+// Full window dimensions (for UI full-window viewport)
+extern i32 g_WindowWidth;
+extern i32 g_WindowHeight;
 
 extern f32 UI_StartX;
 extern f32 UI_StartY;

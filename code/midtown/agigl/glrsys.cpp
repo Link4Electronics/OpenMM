@@ -28,6 +28,8 @@
 #include "stream/stream.h"
 
 #include "glcontext.h"
+
+#include <SDL3/SDL_video.h>
 #include "glstream.h"
 #include "gltexdef.h"
 
@@ -253,22 +255,6 @@ i32 agiGLRasterizer::BeginGfx()
     // https://nlguillemot.wordpress.com/2016/12/07/reversed-z-in-opengl/
     reversed_z_ = false;
 
-#if 0
-    if (agiGL->HasExtension(/*450,*/ "GL_ARB_clip_control"))
-    {
-        // Broken on Intel
-        flip_winding_ = true;
-        zero_to_one_ = true;
-
-        glClipControl(
-            flip_winding_ ? GL_UPPER_LEFT : GL_LOWER_LEFT, zero_to_one_ ? GL_ZERO_TO_ONE : GL_NEGATIVE_ONE_TO_ONE);
-    }
-    else if (agiGL->HasExtension("GL_NV_depth_buffer_float"))
-    {
-        glDepthRangedNV(-1.0, 1.0);
-    }
-#endif
-
     if (!agiGL->IsLegacyCompat() || (agiGL->HasVersion(200) && !PARAM_ancientgl.get_or(false)))
     {
         InitModern();
@@ -286,9 +272,9 @@ i32 agiGLRasterizer::BeginGfx()
     proj_mul[0] = 2.0f / Pipe()->GetWidth();
     proj_add[0] = -1.0f;
 
-    // y = flip_winding_ ? (2y / height - 1) : (-2y / height + 1)
-    proj_mul[1] = (flip_winding_ ? 2.0f : -2.0f) / Pipe()->GetHeight();
-    proj_add[1] = (flip_winding_ ? -1.0f : 1.0f);
+    // y = -2y / height + 1 (Y=0 = screen top)
+    proj_mul[1] = -2.0f / Pipe()->GetHeight();
+    proj_add[1] = 1.0f;
 
     // z =  zero_to_one ? z : (2z - 1)
     proj_mul[2] = zero_to_one_ ? 1.0f : 2.0f;
@@ -507,7 +493,7 @@ void agiGLRasterizer::InitModern()
     glUniform1f(uniform_alpha_ref_, alpha_ref_);
 
     uniform_tex_env_ = glGetUniformLocation(shader_, "u_TexEnv");
-    tex_env_ = agiTexEnv::Disable;
+    tex_env_ = agiTexEnv::Replace;
     glUniform2i(uniform_tex_env_, tex_env_ != agiTexEnv::Replace, tex_env_ != agiTexEnv::Disable);
 
     uniform_fog_mode_ = glGetUniformLocation(shader_, "u_FogMode");
@@ -522,7 +508,7 @@ void agiGLRasterizer::InitModern()
     render_scale[0] = static_cast<f32>(Pipe()->GetRenderWidth()) / Pipe()->GetWidth();
     render_scale[1] = static_cast<f32>(Pipe()->GetRenderHeight()) / Pipe()->GetHeight();
     render_scale[2] = Pipe()->GetRenderWidth() / 2.0f;
-    render_scale[3] = Pipe()->GetRenderHeight() / (flip_winding_ ? 2.0f : -2.0f);
+    render_scale[3] = Pipe()->GetRenderHeight() / -2.0f;
 
     glUniform4fv(glGetUniformLocation(shader_, "u_RenderScale"), 1, render_scale);
 

@@ -28,8 +28,8 @@ public:
     // ??0Card2D@@QAE@XZ
     ARTS_IMPORT Card2D();
 
-    // ??1Card2D@@UAE@XZ | inline
-    ARTS_EXPORT ~Card2D() override = default;
+    // ??1Card2D@@UAE@XZ
+    ARTS_EXPORT ~Card2D() override;
 
     // ?Init@Card2D@@QAEXPAVasCamera@@MMMMM@Z
     ARTS_IMPORT void Init(asCamera* camera, f32 x, f32 y, f32 w, f32 h, f32 alpha);
@@ -58,7 +58,16 @@ private:
     // ?Cull@Card2D@@EAEXXZ
     ARTS_IMPORT void Cull() override;
 
+#ifdef ARTS_STANDALONE
+    asCamera* camera_ {};
+    f32 x_ {};
+    f32 y_ {};
+    f32 w_ {};
+    f32 h_ {};
+    f32 alpha_ {};
+#else
     u8 gap20[0x18];
+#endif
 };
 
 check_size(Card2D, 0x38);

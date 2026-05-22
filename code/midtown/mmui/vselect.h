@@ -20,82 +20,81 @@
 
 #include "mmwidget/menu.h"
 
+class asDofCS;
+class Card2D;
+class UIBMLabel;
+class UISlider;
+class UITextDropdown;
+class mmVehicleForm;
+
 class VehicleSelectBase : public UIMenu
 {
 public:
-    // ??0VehicleSelectBase@@QAE@H@Z
     ARTS_IMPORT VehicleSelectBase(i32 arg1);
-
-    // ??1VehicleSelectBase@@UAE@XZ
     ARTS_IMPORT ~VehicleSelectBase() override;
 
-    // ?AllSetCar@VehicleSelectBase@@QAEXPADH@Z
     ARTS_IMPORT void AllSetCar(char* arg1, i32 arg2);
-
-    // ?AssignVehicleStats@VehicleSelectBase@@QAEXHMMMM@Z
     ARTS_IMPORT void AssignVehicleStats(i32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5);
-
-    // ?CarMod@VehicleSelectBase@@QAEXAAH@Z
     ARTS_IMPORT void CarMod(i32& arg1);
-
-    // ?ColorCB@VehicleSelectBase@@QAEXXZ
     ARTS_IMPORT void ColorCB();
-
-    // ?CurrentVehicleIsLocked@VehicleSelectBase@@QAEHXZ
     ARTS_IMPORT i32 CurrentVehicleIsLocked();
-
-    // ?DecCar@VehicleSelectBase@@QAEXXZ | inline
     ARTS_IMPORT void DecCar();
-
-    // ?DecColor@VehicleSelectBase@@QAEXXZ
     ARTS_IMPORT void DecColor();
-
-    // ?FillStats@VehicleSelectBase@@QAEXXZ
     ARTS_IMPORT void FillStats();
-
-    // ?GetCarTitle@VehicleSelectBase@@QAEPADHPADFPAVstring@@@Z
     ARTS_IMPORT char* GetCarTitle(i32 arg1, char* arg2, i16 arg3, string* arg4);
-
-    // ?IncCar@VehicleSelectBase@@QAEXXZ | inline
     ARTS_IMPORT void IncCar();
-
-    // ?IncColor@VehicleSelectBase@@QAEXXZ
     ARTS_IMPORT void IncColor();
-
-    // ?InitCarSelection@VehicleSelectBase@@QAEXHMMMM@Z
     ARTS_IMPORT void InitCarSelection(i32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5);
-
-    // ?LoadStats@VehicleSelectBase@@QAEHPAD@Z
     ARTS_IMPORT i32 LoadStats(char* arg1);
-
-    // ?PostSetup@VehicleSelectBase@@UAEXXZ
     ARTS_IMPORT void PostSetup() override;
-
-    // ?PreSetup@VehicleSelectBase@@UAEXXZ
     ARTS_IMPORT void PreSetup() override;
-
-    // ?Reset@VehicleSelectBase@@UAEXXZ
     ARTS_EXPORT void Reset() override;
-
-    // ?SetLastUnlockedVehicle@VehicleSelectBase@@QAEXXZ
     ARTS_IMPORT void SetLastUnlockedVehicle();
-
-    // ?SetLockedLabel@VehicleSelectBase@@QAEXXZ
     ARTS_IMPORT void SetLockedLabel();
-
-    // ?SetPick@VehicleSelectBase@@QAEXHF@Z
     ARTS_IMPORT void SetPick(i32 arg1, i16 arg2);
-
-    // ?SetShowcaseFlag@VehicleSelectBase@@QAEXXZ | inline
     ARTS_IMPORT void SetShowcaseFlag();
-
-    // ?TDPickCB@VehicleSelectBase@@QAEXXZ
     ARTS_IMPORT void TDPickCB();
-
-    // ?Update@VehicleSelectBase@@UAEXXZ
     ARTS_IMPORT void Update() override;
 
+    i32 CurrentCar() const { return current_car_; }
+    i32 CurrentColor() const { return current_color_; }
+    i32 VehicleCount() const { return vehicle_count_; }
+
+    void SetCurrentCar(i32 v) { current_car_ = v; }
+    void SetCurrentColor(i32 v) { current_color_ = v; }
+
+    asDofCS* GetDofCSArray() const { return dofcs_array_; }
+    void SetDofCSArray(asDofCS* v) { dofcs_array_ = v; }
+
+    mmVehicleForm* GetVehicleFormArray() const { return forms_array_; }
+    void SetVehicleFormArray(mmVehicleForm* v) { forms_array_ = v; }
+
+    i32* GetTopSpeedArray() const { return top_speed_array_; }
+    void SetTopSpeedArray(i32* v) { top_speed_array_ = v; }
+
+    i32* GetExtraArray() const { return extra_array_; }
+    void SetExtraArray(i32* v) { extra_array_ = v; }
+
+    i32 GetUnlockLevel() const { return unlock_level_; }
+    void SetUnlockLevel(i32 v) { unlock_level_ = v; }
+
+protected:
+    // gap90 stores i32/f32 fields whose positions are tied to the original 32-bit layout.
+    // Pointer-size fields (dofCS, forms, topSpeed, extraArray) are stored as proper member
+    // variables below to avoid overlaps when 32-bit 4-byte pointer slots become 8 bytes on 64-bit.
     u8 gap90[0xD8];
+
+    i32 current_car_ {};
+    i32 current_color_ {};
+    i32 vehicle_count_ {};
+
+    asDofCS* dofcs_array_ {};
+    mmVehicleForm* forms_array_ {};
+    i32* top_speed_array_ {};
+    i32* extra_array_ {};
+    i32 unlock_level_ {};
 };
+
+check_size(VehicleSelectBase, 0x168);
 
 check_size(VehicleSelectBase, 0x168);

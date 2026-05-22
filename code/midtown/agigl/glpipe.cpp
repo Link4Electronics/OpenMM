@@ -70,6 +70,11 @@ i32 agiGLPipeline::BeginGfx()
 #endif
     );
 
+    SDL_WindowFlags win_flags = SDL_GetWindowFlags(window_);
+    Warningf("Window flags: 0x%x (OPENGL=%s, HIDDEN=%s)", win_flags,
+        (win_flags & SDL_WINDOW_OPENGL) ? "yes" : "no",
+        (win_flags & SDL_WINDOW_HIDDEN) ? "yes" : "no");
+
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -328,9 +333,12 @@ void agiGLPipeline::BeginScene()
     agiPipeline::BeginScene();
     agiLighter::BeginScene();
 
+    agiRenderer* raw = renderer_.get();
+
     in_scene_ = true;
 
-    renderer_->BeginGroup();
+    if (raw)
+        raw->BeginGroup();
 }
 
 void agiGLPipeline::EndScene()
@@ -443,16 +451,80 @@ void agiGLPipeline::CopyBitmap(i32 dst_x, i32 dst_y, agiBitmap* src, i32 src_x, 
     verts[3].x = verts[0].x = static_cast<f32>(dst_x);
     verts[1].y = verts[0].y = static_cast<f32>(dst_y);
     verts[3].tu = verts[0].tu = static_cast<f32>(src_x) / static_cast<f32>(src->GetWidth());
-    verts[1].tv = verts[0].tv = static_cast<f32>(src_y) / static_cast<f32>(src->GetHeight());
+    f32 tv_low = static_cast<f32>(src_y) / static_cast<f32>(src->GetHeight());
+    f32 tv_high = static_cast<f32>(src_y + height) / static_cast<f32>(src->GetHeight());
 
+    std::swap(tv_low, tv_high);
+
+    verts[1].tv = verts[0].tv = tv_low;
     verts[1].x = verts[2].x = static_cast<f32>(dst_x + width);
     verts[3].y = verts[2].y = static_cast<f32>(dst_y + height);
     verts[1].tu = verts[2].tu = static_cast<f32>(src_x + width) / static_cast<f32>(src->GetWidth());
-    verts[3].tv = verts[2].tv = static_cast<f32>(src_y + height) / static_cast<f32>(src->GetHeight());
+    verts[3].tv = verts[2].tv = tv_high;
 
     rasterizer_->Mesh(agiVtxType::Screen, (agiVtx*) verts, 4, indices, 6);
 
     // rasterizer_->EndGroup();
+
+    agiCurState.SetTexture(old_tex);
+    agiCurState.SetDrawMode(old_draw_mode);
+    agiCurState.SetZEnable(old_depth);
+    agiCurState.SetZWrite(old_zwrite);
+    agiCurState.SetAlphaEnable(old_alpha);
+    agiCurState.SetTexFilter(old_filter);
+    agiCurState.SetFogMode(old_fog_mode);
+    agiCurState.SetFogColor(old_fog_color);
+    agiCurState.SetBlendSet(old_blend_set);
+}
+
+void agiGLPipeline::StretchCopyBitmap(
+    i32 dst_x, i32 dst_y, i32 dst_w, i32 dst_h, agiBitmap* src, i32 src_x, i32 src_y, i32 src_w, i32 src_h)
+{
+    if (!IsAppActive())
+        return;
+
+    if (src_y + src_h > src->GetHeight())
+        return;
+
+    agiTexDef* texture = static_cast<agiGLBitmap*>(src)->GetHandle();
+
+    bool debug_draw = agiCurState.GetDrawMode() == agiDrawDepth;
+
+    auto old_tex = agiCurState.SetTexture(debug_draw ? nullptr : texture);
+    auto old_draw_mode = agiCurState.SetDrawMode(agiDrawTextured);
+    auto old_depth = agiCurState.SetZEnable(false);
+    auto old_zwrite = agiCurState.SetZWrite(false);
+    auto old_alpha = agiCurState.SetAlphaEnable(debug_draw ? true : false);
+    auto old_filter = agiCurState.SetTexFilter(agiTexFilter::Point);
+    auto old_fog_mode = agiCurState.SetFogMode(agiFogMode::None);
+    auto old_fog_color = agiCurState.SetFogColor(0x00000000);
+    auto old_blend_set = agiCurState.SetBlendSet(debug_draw ? agiBlendSet::One_One : agiBlendSet::SrcAlpha_InvSrcAlpha);
+
+    agiScreenVtx blank {0.0f, 0.0f, 0.0f, 1.0f, debug_draw ? 0xFF000044 : 0xFFFFFFFF, 0xFFFFFFFF, 0.0f, 0.0f};
+    agiScreenVtx verts[4] {blank, blank, blank, blank};
+    u16 indices[6] {0, 1, 3, 1, 2, 3};
+
+    f32 inv_tex_w = 1.0f / static_cast<f32>(src->GetWidth());
+    f32 inv_tex_h = 1.0f / static_cast<f32>(src->GetHeight());
+
+    verts[3].x = verts[0].x = static_cast<f32>(dst_x);
+    verts[1].y = verts[0].y = static_cast<f32>(dst_y);
+    verts[3].tu = verts[0].tu = static_cast<f32>(src_x) * inv_tex_w;
+
+    {
+        f32 tv_low = static_cast<f32>(src_y) * inv_tex_h;
+        f32 tv_high = static_cast<f32>(src_y + src_h) * inv_tex_h;
+
+        std::swap(tv_low, tv_high);
+
+        verts[1].tv = verts[0].tv = tv_low;
+        verts[1].x = verts[2].x = static_cast<f32>(dst_x + dst_w);
+        verts[3].y = verts[2].y = static_cast<f32>(dst_y + dst_h);
+        verts[1].tu = verts[2].tu = static_cast<f32>(src_x + src_w) * inv_tex_w;
+        verts[3].tv = verts[2].tv = tv_high;
+    }
+
+    rasterizer_->Mesh(agiVtxType::Screen, (agiVtx*) verts, 4, indices, 6);
 
     agiCurState.SetTexture(old_tex);
     agiCurState.SetDrawMode(old_draw_mode);

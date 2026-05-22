@@ -21,11 +21,17 @@ define_dummy_symbol(mmeffects_vehform);
 #include "vehform.h"
 
 #include "agi/texdef.h"
+#include "agiworld/getmesh.h"
+#include "agiworld/meshlight.h"
+#include "agiworld/meshset.h"
 #include "agiworld/quality.h"
 #include "agiworld/texsheet.h"
 #include "agiworld/texsort.h"
+#include "arts7/camera.h"
 #include "arts7/cullmgr.h"
+#include "arts7/sim.h"
 #include "mmcity/cullcity.h"
+#include "stream/fsystem.h"
 
 static mem::cmd_param PARAM_menu_refl {"menurefl"};
 
@@ -61,8 +67,69 @@ mmVehicleForm::~mmVehicleForm()
 
 void mmVehicleForm::Update()
 {
-    if (vehicle_mesh_ && shadow_mesh_)
+    if (vehicle_mesh_)
     {
         CullMgr()->DeclareCullable(this);
+    }
+}
+
+void (*mmVehicleForm::Lighter)(u8*, u32*, u32*, agiMeshSet*) = agiMeshLighterTriple;
+
+static void InitVehicleLighting()
+{
+    agiMeshLighterAmbient = Vector3(0.2f, 0.2f, 0.25f);
+
+    agiMeshLighterSun = ~Vector3(0.3f, 0.5f, -0.8f);
+    agiMeshLighterSunColor = Vector3(0.7f, 0.65f, 0.6f);
+
+    agiMeshLighterFill1 = ~Vector3(-0.6f, 0.4f, 0.7f);
+    agiMeshLighterFill1Color = Vector3(0.35f, 0.35f, 0.4f);
+
+    agiMeshLighterFill2 = ~Vector3(0.8f, 0.2f, 0.5f);
+    agiMeshLighterFill2Color = Vector3(0.15f, 0.15f, 0.2f);
+}
+
+void mmVehicleForm::SetShape(char* name, char* group, char* arg3, Vector3* offset)
+{
+    char tsh_path[64];
+    arts_sprintf(tsh_path, "mtl/%s.TSH", name);
+    TEXSHEET.Load(tsh_path);
+
+    vehicle_mesh_ = GetMeshSet(name, group, offset, 0x107);
+
+    if (arg3)
+        shadow_mesh_ = GetMeshSet(name, arg3, offset, 0x107);
+}
+
+void mmVehicleForm::Cull()
+{
+    static bool once = (InitVehicleLighting(), true);
+    (void)once;
+
+    if (vehicle_mesh_)
+    {
+        if (vehicle_mesh_->LockIfResident())
+        {
+            vehicle_mesh_->DrawLit(Lighter, MESH_DRAW_CLIP, nullptr);
+
+            vehicle_mesh_->Unlock();
+        }
+        else
+        {
+            vehicle_mesh_->PageIn();
+        }
+    }
+
+    if (shadow_mesh_)
+    {
+        if (shadow_mesh_->LockIfResident())
+        {
+            shadow_mesh_->DrawColor(0x55000000, MESH_DRAW_CLIP);
+            shadow_mesh_->Unlock();
+        }
+        else
+        {
+            shadow_mesh_->PageIn();
+        }
     }
 }

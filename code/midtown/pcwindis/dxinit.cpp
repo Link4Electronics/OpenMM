@@ -82,9 +82,10 @@ void dxiDirectInputCreate()
         }
     }
 
-#if DIRECTINPUT_VERSION != 0x0500
-#    error Unsupported
-#endif
+#ifdef _WIN32
+#    if DIRECTINPUT_VERSION != 0x0500
+#        error Unsupported
+#    endif
 
     HMODULE hdinput = LoadLibraryA("dinput.dll");
 
@@ -96,6 +97,10 @@ void dxiDirectInputCreate()
 
     if (err != 0)
         Quitf("DirectInputCreate failed, code %x", err);
+#else
+    if (!lpDI)
+        Displayf("No joystick support available (no SDL gamepad detected)");
+#endif
 }
 
 static mem::cmd_param PARAM_integrated {"integrated"};
@@ -178,29 +183,52 @@ void dxiWindowCreate(const char* title, dxiRendererType type)
 
     s_WindowType = type;
 
-    u32 window_flags = SDL_WINDOW_BORDERLESS;
+    SDL_WindowFlags window_flags = 0;
 
     if (type == dxiRendererType::OpenGL)
     {
+        Warningf("dxiWindowCreate: Setting OpenGL attributes for OpenGL type");
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
             PARAM_legacygl.get_or(false) ? SDL_GL_CONTEXT_PROFILE_COMPATIBILITY : SDL_GL_CONTEXT_PROFILE_CORE);
 
-        window_flags |= SDL_WINDOW_OPENGL /*| SDL_WINDOW_FULLSCREEN_DESKTOP*/;
+        window_flags |= SDL_WINDOW_OPENGL;
+        if (dxiIsFullScreen())
+            window_flags |= SDL_WINDOW_FULLSCREEN;
+        else
+            window_flags |= SDL_WINDOW_BORDERLESS;
+    }
+    else
+    {
+        Warningf("dxiWindowCreate: NOT OpenGL type, type=%d", (int)type);
     }
 
-    g_MainWindow = SDL_CreateWindow(title, 0, 0, window_flags);
+    Warningf("dxiWindowCreate: Creating window with flags 0x%x (OPENGL=%s)", window_flags,
+        (window_flags & SDL_WINDOW_OPENGL) ? "yes" : "no");
+
+    g_MainWindow = SDL_CreateWindow(title, 640, 480, window_flags);
 
     if (!g_MainWindow)
     {
         Quitf("Failed to create main window: %s", SDL_GetError());
     }
 
+    {
+        SDL_WindowFlags actual_flags = SDL_GetWindowFlags(g_MainWindow);
+        Warningf("dxiWindowCreate: Actual window flags: 0x%x (OPENGL=%s)", actual_flags,
+            (actual_flags & SDL_WINDOW_OPENGL) ? "yes" : "no");
+    }
+
+#ifdef _WIN32
     hwndMain =
         (HWND) SDL_GetPointerProperty(SDL_GetWindowProperties(g_MainWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
     ArAssert(hwndMain != NULL, "Failed to get native window handle");
+#else
+    hwndMain = NULL;
+#endif
 
+    SDL_ShowWindow(g_MainWindow);
     SDL_RaiseWindow(g_MainWindow);
 }
 

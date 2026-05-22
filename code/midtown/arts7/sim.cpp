@@ -23,6 +23,9 @@ define_dummy_symbol(arts7_sim);
 #include "agi/error.h"
 #include "agi/getdlp.h"
 #include "agi/light.h"
+
+#include <fcntl.h>
+#include <unistd.h>
 #include "agi/mtllib.h"
 #include "agi/physlib.h"
 #include "agi/pipeline.h"
@@ -48,7 +51,9 @@ define_dummy_symbol(arts7_sim);
 #include "stream/hfsystem.h"
 #include "stream/vfsystem.h"
 
-#include <crtdbg.h>
+#if defined(_MSC_VER)
+#    include <crtdbg.h>
+#endif
 #include <cstdlib>
 
 asSimulation* ARTSPTR = nullptr;
@@ -62,6 +67,7 @@ i32 InitPipeline(const char* title, i32 argc, char** argv)
         Quitf("Tried to InitPipeline twice.");
 
     auto pipe = CreatePipeline(argc, argv);
+
     agiPipeline::CurrentPipe = pipe.release();
 
     if (!agiPipeline::CurrentPipe)
@@ -218,7 +224,9 @@ void asSimulation::EarlyInit(aconst char* proj_path, i32 argc, char** argv)
         proj_path = proj_path_env.get();
 
     const char* vfs_path = nullptr;
+#if defined(_MSC_VER)
     [[maybe_unused]] i32 dbg_flags = _CRTDBG_ALLOC_MEM_DF;
+#endif
 
     GBArgs.ParseArgs(argc, const_cast<const char**>(argv));
 
@@ -274,6 +282,7 @@ void asSimulation::EarlyInit(aconst char* proj_path, i32 argc, char** argv)
         {
             DebugMemory |= ARTS_DEBUG_UPDATE;
         }
+#if defined(_MSC_VER)
         else if (ARG("-heapdbg"))
         {
             dbg_flags |= _CRTDBG_CHECK_ALWAYS_DF;
@@ -287,6 +296,11 @@ void asSimulation::EarlyInit(aconst char* proj_path, i32 argc, char** argv)
 #undef ARG
 
     _CrtSetDbgFlag(dbg_flags);
+#else
+    }
+
+#undef ARG
+#endif
 
     if (fsVerbose)
         Displayf("Using '%s' for project path.", proj_path);
@@ -454,8 +468,20 @@ void asSimulation::ResetClock()
     max_fps_delta_ = (max_fps > 0.0f) ? (1.0f / max_fps) : 0.0f;
 }
 
+static int simulate_count = 0;
+static int dbg_sim_fd = -1;
+static void dbg_sim_init() { if (dbg_sim_fd < 0) dbg_sim_fd = open("/tmp/opencode/sim_debug.log", O_WRONLY|O_CREAT|O_TRUNC, 0644); }
+#define DBG_SIM(msg) do { dbg_sim_init(); write(dbg_sim_fd, msg, sizeof(msg) - 1); } while(0)
+
 void asSimulation::Simulate()
 {
+    if (simulate_count == 0)
+    {
+        write(2, "DBG Simulate\n", 13);
+        DBG_SIM("DBG Simulate (file)\n");
+    }
+    ++simulate_count;
+
     if (eqReplay::Playback)
         eqReplay::DoPlayback();
 
@@ -908,6 +934,7 @@ static ARTS_NOINLINE bool IsValidPointer(void* address, usize size, bool access)
     if (addr == nullptr)
         return false;
 
+#if defined(_WIN32)
     __try
     {
         for (usize i = 0; i < size; ++i)
@@ -924,6 +951,21 @@ static ARTS_NOINLINE bool IsValidPointer(void* address, usize size, bool access)
     {
         return false;
     }
+#else
+    // Probe memory by touching pages (safer alternative without SEH)
+    for (usize i = 0; i < size; i += 4096)
+    {
+        volatile char v = addr[i];
+        if (access)
+            addr[i] = v;
+    }
+    if (size > 0)
+    {
+        volatile char v = addr[size - 1];
+        if (access)
+            addr[size - 1] = v;
+    }
+#endif
 
     return true;
 }

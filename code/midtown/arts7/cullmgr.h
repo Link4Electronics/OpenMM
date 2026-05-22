@@ -63,6 +63,11 @@ public:
     // ?Update@asCullManager@@UAEXXZ
     void Update() override;
 
+    asCamera* GetCurrentCamera() const
+    {
+        return current_camera_;
+    }
+
     void ToggleVersionString()
     {
         show_version_ ^= true;

@@ -28,14 +28,14 @@ OptionsMenu::OptionsMenu(i32 menu_id)
     : UIMenu(menu_id)
 {
     AssignName(LOC_TEXT("Main Options Menu"));
+    AssignBackground("omain_back");
 
     AddBMButton(IDC_OPTIONS_MENU_AUDIO, "onav_aud"_xconst, UI_LEFT_MARGIN, 0.2f, 4);
-    SetFocusWidget(-1);
     AddBMButton(IDC_OPTIONS_MENU_CONTROLS, "onav_cont"_xconst, UI_LEFT_MARGIN, 0.4f, 4);
     AddBMButton(IDC_OPTIONS_MENU_GRAPHICS, "onav_gra"_xconst, UI_LEFT_MARGIN, 0.6f, 4);
-    AddBMButton(IDC_OPTIONS_MENU_CREDITS, "onav_credit"_xconst, UI_LEFT_MARGIN, 0.8f, 4);
+    AddBMButton(IDC_OPTIONS_MENU_CREDITS, "onav_credit"_xconst, 0.584f, 0.762f, 4);
 
-    uiWidget* hotspot = AddHotSpot(-1, "Previous"_xconst, 0.9f, 0.9f, 0.9f, 0.0f);
+    uiWidget* hotspot = AddHotSpot(-1, "Previous"_xconst, 0.837f, 0.987f, 0.9f, 0.0f);
     previous_x_ = hotspot->X;
     previous_y_ = hotspot->Y;
 
@@ -45,6 +45,7 @@ OptionsMenu::OptionsMenu(i32 menu_id)
 void OptionsMenu::PostSetup()
 {
     MenuMgr()->GetNavBar()->SetPrevPos(0.0f, 0.0f);
+    MenuMgr()->GetNavBar()->OptionInActive();
 }
 
 void OptionsMenu::PreSetup()
@@ -53,4 +54,5 @@ void OptionsMenu::PreSetup()
         GraphicsPreviousMenu = static_cast<u8>(prev_menu_id_);
 
     MenuMgr()->GetNavBar()->SetPrevPos(previous_x_, previous_y_);
+    MenuMgr()->GetNavBar()->OptionActive();
 }

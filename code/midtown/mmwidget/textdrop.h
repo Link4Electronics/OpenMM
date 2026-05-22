@@ -18,66 +18,54 @@
 
 #pragma once
 
+#include "localize/localize.h"
 #include "widget.h"
 
+#include "core/refcount.h"
+
 class TextDropWidget;
+class mmTextNode;
+class mmDropDown;
+class UIIcon;
+class agiBitmap;
 
 class UITextDropdown final : public uiWidget
 {
 public:
-    // ??0UITextDropdown@@QAE@XZ
-    ARTS_IMPORT UITextDropdown();
+    UITextDropdown();
+    ~UITextDropdown() override;
 
-    // ??1UITextDropdown@@UAE@XZ
-    ARTS_IMPORT ~UITextDropdown() override;
-
-    // ?Action@UITextDropdown@@UAEXTeqEvent@@@Z
-    ARTS_IMPORT void Action(eqEvent arg1) override;
-
-    // ?AssignString@UITextDropdown@@QAEXVstring@@@Z
-    ARTS_EXPORT void AssignString(string options);
-
-    // ?CaptureAction@UITextDropdown@@UAEXTeqEvent@@@Z
-    ARTS_IMPORT void CaptureAction(eqEvent arg1) override;
-
-    // ?Cull@UITextDropdown@@UAEXXZ
-    ARTS_IMPORT void Cull() override;
-
-    // ?GetScreenHeight@UITextDropdown@@UAEMXZ
-    ARTS_IMPORT f32 GetScreenHeight() override;
-
-    // ?Init@UITextDropdown@@QAEXPAULocString@@PAHMMMMVstring@@HHHVCallback@@PAD@Z
-    ARTS_IMPORT void Init(LocString* arg1, i32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, string arg7, i32 arg8,
-        i32 arg9, i32 arg10, Callback arg11, char* arg12);
-
-    // ?SetData@UITextDropdown@@QAEXPAH@Z
-    ARTS_IMPORT void SetData(i32* arg1);
-
-    // ?SetDisabledMask@UITextDropdown@@QAEXJ@Z
-    ARTS_IMPORT void SetDisabledMask(ilong arg1);
-
-    // ?SetPos@UITextDropdown@@QAEXMM@Z | unused
+    void Action(eqEvent arg1) override;
+    void AssignString(string options);
+    void CaptureAction(eqEvent arg1) override;
+    void Cull() override;
+    f32 GetScreenHeight() override;
+    void Init(LocString* arg1, i32* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, string arg7, i32 arg8, i32 arg9,
+        i32 arg10, Callback arg11, char* arg12);
+    void SetData(i32* arg1);
+    void SetDisabledMask(ilong arg1);
     void SetPos(f32 arg1, f32 arg2);
-
-    // ?SetSliderFocus@UITextDropdown@@QAEXH@Z
-    ARTS_IMPORT void SetSliderFocus(i32 arg1);
-
-    // ?SetText@UITextDropdown@@QAEXPAULocString@@@Z | unused
+    void SetSliderFocus(i32 arg1);
     void SetText(LocString* arg1);
+    void UpdateValueText();
+    i32 SetValue(i32 arg1);
+    void Switch(b32 arg1) override;
+    void Update() override;
 
-    // ?SetValue@UITextDropdown@@QAEHH@Z
-    ARTS_IMPORT i32 SetValue(i32 arg1);
+    TextDropWidget* DropWidget {nullptr};
+    i32* ValuePtr {nullptr};
+    i32 StoredValue {0};
+    mmTextNode* TextNode {nullptr};
+    mmTextNode* ValueNode {nullptr};
+    UIIcon* ArrowIcon {nullptr};
+    i32 FontSize {16};
 
-    // ?Switch@UITextDropdown@@UAEXH@Z
-    ARTS_IMPORT void Switch(b32 arg1) override;
+    Rc<agiBitmap> bitmap_;
+    i32 dst_x_ {0};
+    i32 dst_y_ {0};
+    i32 bitmap_width_ {0};
+    i32 frame_height_ {0};
+    b32 expanded_ {false};
 
-    // ?Update@UITextDropdown@@UAEXXZ
-    ARTS_IMPORT void Update() override;
-
-    offset_field(0x9C, TextDropWidget*, DropWidget);
-    offset_field(0xB4, i32*, ValuePtr);
-
-    u8 gap74[0x90];
+    mmDropDown* drop_down_ {};
 };
-
-check_size(UITextDropdown, 0x104);

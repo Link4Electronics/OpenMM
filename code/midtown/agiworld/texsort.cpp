@@ -328,7 +328,17 @@ RcOwner<agiTexDef> GetPackedTexture(aconst char* name, i32 variation)
     }
 
     if (!prop)
-        Quitf("Trying to load texture not in texsheet: '%s' (mesh = %s)", name, MeshCurrentObject);
+    {
+        // Auto-register a default entry for textures not in any texture sheet.
+        // DDS files with matching names in tex16a/tex16o/tex16 will be found
+        // by the texture loader without texture sheet entries.
+        agiTexProp default_prop {};
+        default_prop.High = 0;
+        default_prop.Medium = 1;
+        default_prop.Low = 2;
+        default_prop.Flags = 0;
+        prop = &default_prop;
+    }
 
     agiTexParameters tex;
     arts_strcpy(tex.Name, full_name);
@@ -341,8 +351,6 @@ RcOwner<agiTexDef> GetPackedTexture(aconst char* name, i32 variation)
     lib_tex.Flags &= ~(agiTexParameters::Alpha | agiTexParameters::WrapU | agiTexParameters::WrapV);
     lib_tex.Flags |= tex.Flags;
     lib_tex.Props |= tex.Props;
-
-    // NOTE: Originally checked if prop is null, but that isn't possible
 
     i32 pack_shift = (agiRQ.TextureQuality >= AGI_QUALITY_HIGH) ? prop->High
         : (agiRQ.TextureQuality >= AGI_QUALITY_MEDIUM)          ? prop->Medium
@@ -358,4 +366,29 @@ RcOwner<agiTexDef> GetPackedTexture(aconst char* name, i32 variation)
     --mutex;
 
     return as_owner texture;
+}
+
+void FixTexFlags(agiTexParameters& tex)
+{
+    agiTexProp* prop = TEXSHEET.Lookup(tex.Name);
+
+    if (!prop)
+        return;
+
+    tex.Props = prop->Flags;
+
+    // Convert agiTexProp::Flags to agiTexParameters::Flags
+    if (prop->Flags & (agiTexProp::Transparent | agiTexProp::AlphaGlow))
+        tex.Flags |= agiTexParameters::Alpha;
+
+    if (prop->Flags & agiTexProp::Chromakey)
+        tex.Flags |= agiTexParameters::Chromakey;
+
+    tex.Flags |= agiTexParameters::WrapU | agiTexParameters::WrapV;
+
+    if (prop->Flags & (agiTexProp::ClampUOrBoth | agiTexProp::ClampUOrNeither))
+        tex.Flags &= ~agiTexParameters::WrapU;
+
+    if (prop->Flags & (agiTexProp::ClampVOrBoth | agiTexProp::ClampVOrNeither))
+        tex.Flags &= ~agiTexParameters::WrapV;
 }

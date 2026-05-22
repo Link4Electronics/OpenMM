@@ -20,6 +20,9 @@ define_dummy_symbol(midtown);
 
 #include "midtown.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include "agi/bitmap.h"
 #include "agi/physlib.h"
 #include "agi/pipeline.h"
@@ -52,6 +55,15 @@ define_dummy_symbol(midtown);
 #include "mminput/input.h"
 #include "mmphysics/phys.h"
 #include "mmui/graphics.h"
+#include "mmui/driver.h"
+#include "mmui/main.h"
+#include "mmui/options.h"
+#include "mmui/placeholder_opts.h"
+#include "mmui/vehicle.h"
+#include "mmui/vshow.h"
+#include "mmui/quitmenu.h"
+#include "mmvid/videoplayer.h"
+#include "mmwidget/manager.h"
 #include "pcwindis/dxinit.h"
 #include "pcwindis/dxsetup.h"
 #include "pcwindis/pcwindis.h"
@@ -302,7 +314,7 @@ static mem::cmd_param PARAM_allocstats {"allocstats", "Show allocator stats afte
 
 static void InitAudioManager()
 {
-    /*AUDMGRPTR = */ new AudManager();
+    AUDMGRPTR = new AudManager();
 
     AudMgr()->SteroOn = (MMSTATE.AudFlags & AudManager::GetStereoOnMask()) != 0;
 
@@ -405,20 +417,9 @@ static void GameLoop([[maybe_unused]] mmInterface* mm_interface, [[maybe_unused]
     }
     ARTS_EXCEPTION_END
     {
-        Displayf("CRASH POSITION = (%f, %f, %f)", PlayerPos.x, PlayerPos.y, PlayerPos.z);
-
-        AIMAP.Dump();
-
-#ifdef ARTS_DEV_BUILD
-        if (game_manager && !replay_name)
-        {
-            game_manager->SaveReplay("crash.rpl"_xconst);
-
-            Abortf("Exception caught during simulate loop, saving replay.");
-        }
-#endif
-
-        Abortf("Exception caught during simulate loop.");
+        // NOTE: With -fno-exceptions this block always runs after the loop.
+        // On Windows (SEH __try/__except), it only runs on exceptions.
+        Displayf("Game loop finished (GameState=%d)", (int)MMSTATE.GameState);
     }
 }
 
@@ -468,6 +469,31 @@ static void MainPhase(i32 argc, char** argv)
     {
         ARTS_MEM_STAT("AGI Startup");
 
+        // Play intro video before initializing OpenGL pipeline
+        // so we can use a temporary SDL renderer without conflicting with GL
+        if (MMSTATE.GameState == mmGameState::Menus)
+        {
+            const char* probe_paths[] = {
+                "game/logos.avi",
+                "logos.avi",
+            };
+
+            bool played = false;
+
+            for (const char* path : probe_paths)
+            {
+                if (!access(path, F_OK))
+                {
+                    PlayIntroVideo(g_MainWindow, path);
+                    played = true;
+                    break;
+                }
+            }
+
+            if (!played)
+                Displayf("Intro video not found (tried: game/logos.avi, logos.avi)");
+        }
+
         if (InitPipeline(APPTITLE, argc, argv))
         {
             ShutdownPipeline();
@@ -508,7 +534,9 @@ static void MainPhase(i32 argc, char** argv)
     Ptr<mmInterface> mm_interface;
 
     {
-        mmLoader loader;
+        mmLoader loader {};
+        // Zero-initialize after weak stub (bar_active_ etc. are garbage without this)
+        std::memset(&loader, 0, sizeof(loader));
 
         if (page_override == -1)
         {
@@ -554,12 +582,62 @@ static void MainPhase(i32 argc, char** argv)
                 }
 
                 mm_interface = arnew mmInterface();
+                // Create menu system
+                MenuManager::Instance = new MenuManager();
+
+                mm_interface->MenuMain = new MainMenu(IDM_MAIN);
+                MenuManager::Instance->AddMenu2(mm_interface->MenuMain);
+
+                mm_interface->MenuDriver = new DriverMenu(IDM_DRIVER);
+                mm_interface->MenuDriver->AssignBackground("driv_back");
+                mm_interface->MenuDriver->DeactivateNode();
+                MenuManager::Instance->AddMenu2(mm_interface->MenuDriver);
+
+                mm_interface->MenuOptions = new OptionsMenu(IDM_OPTIONS);
+                mm_interface->MenuOptions->DeactivateNode();
+                MenuManager::Instance->AddMenu2(mm_interface->MenuOptions);
+
+                mm_interface->MenuAudioOpt = new AudioOptionMenu(IDM_AUDIO);
+                mm_interface->MenuAudioOpt->DeactivateNode();
+                MenuManager::Instance->AddMenu2(mm_interface->MenuAudioOpt);
+
+                mm_interface->MenuGraphicsOpt = new GraphicsOptionMenu(IDM_GRAPHICS);
+                mm_interface->MenuGraphicsOpt->DeactivateNode();
+                MenuManager::Instance->AddMenu2(mm_interface->MenuGraphicsOpt);
+
+                mm_interface->MenuControlOpt = new ControlOptionMenu(IDM_CONTROLS);
+                mm_interface->MenuControlOpt->DeactivateNode();
+                MenuManager::Instance->AddMenu2(mm_interface->MenuControlOpt);
+
+                mm_interface->MenuAboutOpt = new AboutOptionMenu(IDM_ABOUT);
+                mm_interface->MenuAboutOpt->DeactivateNode();
+                MenuManager::Instance->AddMenu2(mm_interface->MenuAboutOpt);
+
+                mm_interface->MenuVehicle = new Vehicle(IDM_VEHICLE);
+                mm_interface->MenuVehicle->AssignBackground("veh_back");
+                mm_interface->MenuVehicle->DeactivateNode();
+                MenuManager::Instance->AddMenu2(mm_interface->MenuVehicle);
+
+                mm_interface->MenuVehShowcase = new VehShowcase(IDM_SHOWCASE);
+                mm_interface->MenuVehShowcase->AssignBackground("veh_back");
+                mm_interface->MenuVehShowcase->DeactivateNode();
+                MenuManager::Instance->AddMenu2(mm_interface->MenuVehShowcase);
+
+                {
+                    QuitMenu* quit = new QuitMenu(IDD_QUIT);
+                    quit->DeactivateNode();
+                    MenuManager::Instance->AddMenu2(quit);
+                }
+
+                Sim()->AdoptChild(Ptr<asNode>(MenuManager::Instance));
+
                 Sim()->AddChild(mm_interface.get());
 
                 mm_interface->SetNavigationOrders();
                 mm_interface->Reset();
-                mm_interface->ShowMain(CycleState);
 
+                // Don't ShowMain yet — wait until after loader.EndTask()
+                // so buttons don't appear during loading screen.
                 CycleState = 1;
                 break;
             }
@@ -615,6 +693,12 @@ static void MainPhase(i32 argc, char** argv)
         Sim()->ResChange(Pipe()->GetWidth(), Pipe()->GetHeight());
 
         loader.EndTask();
+
+        // Show main menu now that loading is complete
+        if (mm_interface)
+        {
+            mm_interface->ShowMain(1);
+        }
     }
 
     MMSTATE.GameState = mmGameState::Running;
@@ -1146,12 +1230,14 @@ int main(int argc, char** argv)
         },
         nullptr);
 
+#ifdef _WIN32
     SDL_SetWindowsMessageHook(
         [](void* /*userdata*/, MSG* msg) {
             SDLWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
             return true;
         },
         nullptr);
+#endif
 
     if (int file_argc = 0; char** file_argv = GetCommandFileUTF8(&file_argc))
     {

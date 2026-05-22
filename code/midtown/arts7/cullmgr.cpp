@@ -23,6 +23,8 @@ define_dummy_symbol(arts7_cullmgr);
 #include "camera.h"
 #include "midgets.h"
 #include "pgraph.h"
+
+#include <unistd.h>
 #include "sim.h"
 
 #include "agi/bitmap.h"
@@ -184,14 +186,18 @@ asCullManager::~asCullManager()
 
 void asCullManager::DeclareCamera(asCamera* camera)
 {
-    LockGuard lock(mutex_);
-
+    write(2, "DBG DeclareCamera: entering\n", 28);
     if (num_cameras_ < ARTS_SSIZE(cameras_))
     {
         cameras_[num_cameras_++] = camera;
+        write(2, "DBG DeclareCamera: num_cameras_ now ", 36);
+        char buf[16];
+        int len = snprintf(buf, sizeof(buf), "%d\n", num_cameras_);
+        write(2, buf, len);
     }
     else
     {
+        write(2, "DBG DeclareCamera: num_cameras_ >= MAX\n", 39);
         Errorf("Too many cameras declared, somthing's rotten in Denmark.");
     }
 }

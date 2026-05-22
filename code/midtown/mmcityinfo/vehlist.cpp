@@ -94,17 +94,85 @@ void mmVehList::LoadAll()
 {
     InitTexSheet();
 
+    Displayf("DBG mmVehList::LoadAll FSCount=%d", FileSystem::FSCount);
+
     for (i32 i = 0; i < FileSystem::FSCount; ++i)
     {
         FileSystem* fs = FileSystem::FS[i];
 
+        i32 tune_entries = 0;
         for (FileInfo* f = fs->FirstEntry("tune"); f; f = fs->NextEntry(f))
         {
+            ++tune_entries;
             if (const char* ext = std::strrchr(f->Path, '.'); ext && !arts_stricmp(ext, ".INFO"))
                 Load(f->Path);
         }
+        Displayf("DBG   FS[%d]: tune entries=%d", i, tune_entries);
     }
 
+    Displayf("DBG   after tune scan: NumVehicles=%d", NumVehicles);
+
+    // If no .INFO files found, generate default vehicle info by scanning BMS directory
+    if (NumVehicles == 0)
+    {
+        for (i32 i = 0; i < FileSystem::FSCount; ++i)
+        {
+            FileSystem* fs = FileSystem::FS[i];
+
+            i32 bms_dirs = 0;
+            i32 bms_matches = 0;
+            for (FileInfo* f = fs->FirstEntry("bms"); f; f = fs->NextEntry(f))
+            {
+                ++bms_dirs;
+                if (!f->IsDirectory)
+                    continue;
+
+                // Verify this is actually a vehicle by checking for H.BMS (matching game.asm SetShape group)
+                char test_path[256];
+                arts_sprintf(test_path, "bms/%s/H.bms", f->Path);
+
+                if (!fs->QueryOn(test_path))
+                {
+                    // fallback: also check BODY_H.BMS
+                    arts_sprintf(test_path, "bms/%s/BODY_H.bms", f->Path);
+                    if (!fs->QueryOn(test_path))
+                        continue;
+                }
+                ++bms_matches;
+
+                Ptr<mmVehInfo> info = arnew mmVehInfo();
+
+                // Store BaseName in lowercase for compatibility
+                char* dst = info->BaseName;
+                const char* src = f->Path;
+                for (i32 j = 0; j < 39 && *src; ++j, ++src, ++dst)
+                    *dst = (*src >= 'A' && *src <= 'Z') ? *src + ('a' - 'A') : *src;
+                *dst = '\0';
+
+                arts_sprintf(info->Description, sizeof(info->Description), "%s", f->Path);
+                arts_strcpy(info->Colors, sizeof(info->Colors), "RED,BLUE,YELLOW,GREY,WHITE,BLACK,GREEN,PURPLE");
+                info->Flags = 0;
+                info->Order = NumVehicles;
+                info->Valid = true;
+                info->Horsepower = 200;
+                info->TopSpeed = 140;
+                info->Durability = 5;
+                info->Mass = 1500;
+                info->ScoringBias = 1.0f;
+
+                Ptr<mmVehInfo*[]> vehicles = arnewa mmVehInfo*[NumVehicles + 1];
+                for (i32 j = 0; j < NumVehicles; ++j)
+                    vehicles[j] = Vehicles[j];
+                vehicles[NumVehicles] = info.release();
+                Vehicles.swap(vehicles);
+                ++NumVehicles;
+            }
+            Displayf("DBG   FS[%d]: bms dirs=%d matches=%d", i, bms_dirs, bms_matches);
+        }
+    }
+
+    Displayf("DBG   final NumVehicles=%d DefaultVehicle=%p", NumVehicles, (void*)DefaultVehicle);
+    Print();
     SetDefaultVehicle("vpbug");
 }
 

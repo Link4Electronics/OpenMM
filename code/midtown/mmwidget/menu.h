@@ -99,7 +99,7 @@ public:
     ARTS_IMPORT UIMenu(i32 menu_id);
 
     // ??1UIMenu@@UAE@XZ
-    ARTS_IMPORT ~UIMenu() override;
+    ~UIMenu() override = default;
 
     // ?PreSetup@UIMenu@@UAEXXZ
     ARTS_EXPORT virtual void PreSetup();
@@ -322,6 +322,11 @@ public:
         return prev_menu_id_;
     }
 
+    void SetPreviousMenuID(i32 id)
+    {
+        prev_menu_id_ = id;
+    }
+
     i32 GetWidgetCount() const
     {
         return widget_count_;
@@ -339,12 +344,18 @@ public:
         return widget_count_ ? widgets_[*p_b_state_] : nullptr;
     }
 
+    const char* GetBackgroundName() const
+    {
+        return background_name_.get();
+    }
+
 protected:
     enum
     {
         MENU_STATE_1 = 1,
         MENU_STATE_2 = 2,
         MENU_STATE_3 = 3,
+        MENU_STATE_ACTION = 4,
     };
 
     i32 action_source_;
@@ -370,7 +381,11 @@ protected:
     i32 b_state_;
     i32 field_74;
     i32 widget_id_;
+
+public:
     i32 prev_menu_id_;
+
+protected:
     i32 focus_widget_index_;
     f32 field_84;
     i32 field_88;

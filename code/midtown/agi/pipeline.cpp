@@ -84,6 +84,10 @@ void agiPipeline::CopyBitmap(
     i32 /*dst_x*/, i32 /*dst_y*/, agiBitmap* /*src*/, i32 /*src_x*/, i32 /*src_y*/, i32 /*width*/, i32 /*height*/)
 {}
 
+void agiPipeline::StretchCopyBitmap(i32 /*dst_x*/, i32 /*dst_y*/, i32 /*dst_w*/, i32 /*dst_h*/, agiBitmap* /*src*/,
+    i32 /*src_x*/, i32 /*src_y*/, i32 /*src_w*/, i32 /*src_h*/)
+{}
+
 void agiPipeline::ClearRect(i32 /*x*/, i32 /*y*/, i32 /*width*/, i32 /*height*/, u32 /*color*/)
 {}
 
@@ -108,6 +112,14 @@ i32 UI_YPos = 0;
 
 i32 UI_Width = 0;
 i32 UI_Height = 0;
+
+i32 g_ViewportX = 0;
+i32 g_ViewportY = 0;
+i32 g_ViewportWidth = 0;
+i32 g_ViewportHeight = 0;
+
+i32 g_WindowWidth = 0;
+i32 g_WindowHeight = 0;
 
 f32 UI_StartX = 0.0f;
 f32 UI_StartY = 0.0f;
@@ -352,7 +364,7 @@ RcOwner<agiTexDef> agiPipeline::GetTexture(i32 index, i32 pack_shift)
 SDL_Window* CreatePipelineAttachableWindow(
     const char* title, i32 /*x*/, i32 /*y*/, i32 /*width*/, i32 /*height*/, void* /*ptr*/)
 {
-    dxiWindowCreate(title, GetRendererInfo().Type);
+    dxiWindowCreate(title, dxiInfo[dxiRendererChoice].Type);
 
     return g_MainWindow;
 }
@@ -434,8 +446,10 @@ agiPipeline::agiPipeline()
     window_ = GetRootWindow();
 
     // Set 24-bit float precision (f32)
+#if defined(_WIN32)
     unsigned int current = 0;
     _controlfp_s(&current, _PC_24, _MCW_PC);
+#endif
 
     PROBER = 0;
 }

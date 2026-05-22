@@ -20,6 +20,13 @@ define_dummy_symbol(arts7_node);
 
 #include "node.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
+static int dbg_node_fd = -1;
+#define DBG_NODE_INIT() do { if (dbg_node_fd < 0) dbg_node_fd = open("/tmp/opencode/node_debug.log", O_WRONLY|O_CREAT|O_TRUNC, 0644); } while(0)
+#define DBG_NODE(msg) do { DBG_NODE_INIT(); write(dbg_node_fd, msg, sizeof(msg) - 1); } while(0)
+
 #include "data7/callback.h"
 #include "data7/metadefine.h"
 #include "data7/str.h"
@@ -66,7 +73,10 @@ void asNode::Update()
         for (asNode* n = child_node_; n; n = n->next_node_)
         {
             if (n->IsNodeActive())
+            {
+                DBG_NODE("DBG asNode::Update child\n");
                 n->Update();
+            }
         }
     }
 

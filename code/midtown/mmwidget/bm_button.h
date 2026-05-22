@@ -22,6 +22,7 @@
 
 class agiBitmap;
 class AudSound;
+struct SDL_AudioStream;
 
 class UIBMButton final : public uiWidget
 {
@@ -96,12 +97,14 @@ public:
     // ?DeclareFields@UIBMButton@@SAXXZ
     ARTS_IMPORT static void DeclareFields();
 
-private:
     // ?GetSize@UIBMButton@@AAEXXZ
     ARTS_IMPORT void GetSize();
 
     // ?PlaySound@UIBMButton@@AAEXXZ
     ARTS_IMPORT void PlaySound();
+
+    // ?PlayClickSound@UIBMButton@@CAXXZ
+    ARTS_IMPORT static void PlayClickSound();
 
     // ?AllocateSounds@UIBMButton@@CAXXZ
     ARTS_IMPORT static void AllocateSounds();
@@ -109,7 +112,13 @@ private:
     // ?s_pSound@UIBMButton@@0PAVAudSound@@A
     ARTS_IMPORT static AudSound* s_pSound;
 
-    u8 gap74[0x7C];
+    i32 div_type_ {0};
+    i32 state_ {0};
+    i32 anim_counter_ {0};
+    Rc<agiBitmap> bitmap_;
+    i32 bitmap_width_ {0};
+    i32 bitmap_height_ {0};
+    i32 frame_height_ {0};
 };
 
 check_size(UIBMButton, 0xF0);

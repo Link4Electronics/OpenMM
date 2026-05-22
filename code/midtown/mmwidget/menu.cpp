@@ -28,16 +28,60 @@ define_dummy_symbol(mmwidget_menu);
 
 #include "manager.h"
 #include "textfield.h"
+
+// Override weak default (game_stubs.cpp provides 0.0f)
+f32 UIMenu::UI_LEFT_MARGIN = 0.0f;
 #include "widget.h"
+
+#include "eventq7/event.h"
+
+#include "bm_button.h"
+#include "textdrop.h"
+#include "tdwidget.h"
 
 #include <algorithm>
 
 #include <SDL3/SDL_keyboard.h>
 
+#include <fcntl.h>
+#include <unistd.h>
+
+UIMenu::UIMenu(i32 menu_id)
+{
+    action_source_ = 0;
+    state_ = 0;
+    enabled_ = 0;
+    menu_id_ = menu_id;
+    field_30 = 0;
+    widget_count_ = 0;
+    field_38 = 0;
+    field_44 = nullptr;
+    field_48 = 0;
+    menu_x_ = 0.114f;
+    menu_y_ = 0.07f;
+    menu_width_ = 0.775f;
+    menu_height_ = 0.855f;
+    field_5C = 0.0f;
+    field_60 = 0.0f;
+    field_64 = 0.0f;
+    field_68 = 0;
+    p_b_state_ = &b_state_;
+    b_state_ = 0;
+    field_74 = 0;
+    widget_id_ = 0;
+    prev_menu_id_ = -1;
+    focus_widget_index_ = 0;
+    field_84 = 0.0f;
+    field_88 = 0;
+}
+
 void UIMenu::PreSetup()
 {
     if (!MenuMgr()->Is3D())
-        MenuMgr()->GetCamera()->SetViewport(0.0f, 0.0f, 1.0f, 1.0f, 1);
+    {
+        if (asCamera* camera = MenuMgr()->GetCamera())
+            camera->SetViewport(0.0f, 0.0f, 1.0f, 1.0f, 1);
+    }
 }
 
 void UIMenu::PostSetup()
@@ -64,7 +108,25 @@ void UIMenu::CheckInput()
         if (event.Type != eqEventType::Keyboard)
         {
             if (event.Type == eqEventType::Mouse)
+            {
                 MenuMgr()->ToggleWidgetSnapping(false);
+
+                eqMouseEvent& mev = event.Mouse;
+                if (mev.ChangedButtons & mev.NewButtons)
+                {
+                    // Use game-space mouse position from event handler
+                    f32 game_x = eqEventHandler::SuperQ->GetMouseX();
+                    f32 game_y = eqEventHandler::SuperQ->GetMouseY();
+
+                f32 x = game_x / (eqEventHandler::SuperQ->GetCenterX() * 2.0f);
+                f32 y = game_y / (eqEventHandler::SuperQ->GetCenterY() * 2.0f);
+
+                    x = (x - menu_x_) / menu_width_;
+                    y = (y - menu_y_) / menu_height_;
+
+                    MenuMgr()->MouseAction(mev.NewButtons, x, y);
+                }
+            }
 
             continue;
         }
@@ -97,6 +159,25 @@ void UIMenu::CheckInput()
             case EQ_VK_GAMEPAD_DPAD_DOWN: kev.Key = EQ_VK_DOWN; break;
         }
 
+        // Handle navigation keys (move focus between widgets, don't activate)
+        switch (kev.Key)
+        {
+            case EQ_VK_TAB:
+                if (kev.Modifiers & EQ_KMOD_SHIFT)
+                    Decrement();
+                else
+                    Increment();
+                continue;
+            case EQ_VK_UP:
+            case EQ_VK_LEFT:
+                Decrement();
+                continue;
+            case EQ_VK_DOWN:
+            case EQ_VK_RIGHT:
+                Increment();
+                continue;
+        }
+
         if (ScanInput(&event))
         {
             if (!kev.IsMouseButton())
@@ -108,6 +189,97 @@ void UIMenu::CheckInput()
                 ClearAction();
         }
     }
+}
+
+void UIMenu::SetAction(UIMenu::eSource source)
+{
+    state_ = MENU_STATE_ACTION;
+    action_source_ = static_cast<i32>(source);
+}
+
+void UIMenu::CheckMouseHits()
+{
+    if (!IsNodeActive())
+        return;
+
+    if (MenuMgr()->Is3D())
+        return;
+
+    // Use game-space mouse position from event handler
+    f32 game_x = eqEventHandler::SuperQ->GetMouseX();
+    f32 game_y = eqEventHandler::SuperQ->GetMouseY();
+
+    f32 center_x = eqEventHandler::SuperQ->GetCenterX();
+    f32 center_y = eqEventHandler::SuperQ->GetCenterY();
+
+    f32 x = game_x / (center_x * 2.0f);
+    f32 y = game_y / (center_y * 2.0f);
+
+    x = (x - menu_x_) / menu_width_;
+    y = (y - menu_y_) / menu_height_;
+
+    i32 hovered = -1;
+
+    // Only check widgets if mouse is within menu bounds
+    if (x >= 0.0f && x <= 1.0f && y >= 0.0f && y <= 1.0f)
+    {
+        for (i32 i = 0; i < widget_count_; ++i)
+        {
+            uiWidget* widget = widgets_[i];
+            if (!widget || !widget->Enabled)
+                continue;
+
+            if (x >= widget->MinX && x <= widget->MaxX && y >= widget->MinY && y <= widget->MaxY)
+            {
+                hovered = i;
+                break;
+            }
+        }
+    }
+
+    uiWidget* active = GetActiveWidget();
+    if (active && p_b_state_ && *p_b_state_ != hovered)
+    {
+        active->MouseHit = 0;
+        active->Switch(false);
+    }
+
+    if (hovered >= 0)
+    {
+        *p_b_state_ = hovered;
+        widgets_[hovered]->MouseHit = 1;
+        widgets_[hovered]->Switch(true);
+    }
+}
+
+uiWidget* UIMenu::MouseHitCheck(i32 button, f32 x, f32 y)
+{
+    if (!IsNodeActive())
+        return nullptr;
+
+    for (i32 i = 0; i < widget_count_; ++i)
+    {
+        uiWidget* widget = widgets_[i];
+
+        if (!widget || !widget->Enabled)
+            continue;
+
+        if (x >= widget->MinX && x <= widget->MaxX && y >= widget->MinY && y <= widget->MaxY)
+        {
+            *p_b_state_ = i;
+            widget->Active = true;
+            widget->MouseHit = 1;
+            widget->MouseButton = button;
+
+            widget_id_ = widget->WidgetID;
+
+            SetAction(eSource::Mouse);
+
+            return widget;
+        }
+    }
+
+    return nullptr;
 }
 
 void UIMenu::AddWidget(uiWidget* widget, aconst char* label, f32 x, f32 y, f32 w, f32 h, i32 id, aconst char* icon)
@@ -197,15 +369,21 @@ void UIMenu::KeyboardAction(eqEvent event)
 
     if (MenuMgr()->HasFocusedWidget())
     {
-        MenuMgr()->GetFocusedWidget()->CaptureAction(event);
-        MenuMgr()->GetActiveWidget()->MouseHit = false;
+        if (uiWidget* focused = MenuMgr()->GetFocusedWidget())
+            focused->CaptureAction(event);
+
+        if (uiWidget* active = MenuMgr()->GetActiveWidget())
+            active->MouseHit = false;
     }
     else
     {
-        GetActiveWidget()->Action(event);
+        if (uiWidget* active = GetActiveWidget())
+        {
+            active->Action(event);
 
-        if (event.Key.Key == EQ_VK_RETURN)
-            widget_id_ = GetActiveWidget()->WidgetID;
+            if (event.Key.Key == EQ_VK_RETURN)
+                widget_id_ = active->WidgetID;
+        }
     }
 }
 
@@ -217,8 +395,11 @@ void UIMenu::MouseAction(eqEvent event)
         MenuMgr()->SetActiveImeField(nullptr);
     }
 
-    GetActiveWidget()->Action(event);
-    GetActiveWidget()->ResetToolTip();
+    if (uiWidget* active = GetActiveWidget())
+    {
+        active->Action(event);
+        active->ResetToolTip();
+    }
 }
 
 void UIMenu::ClearToolTip()
@@ -344,6 +525,26 @@ void UIMenu::DisableIME()
     }
 }
 
+void UIMenu::SetFocusWidget(i32 arg1)
+{
+    focus_widget_index_ = arg1;
+
+    if (arg1 >= 0 && arg1 < widget_count_)
+    {
+        *p_b_state_ = arg1;
+        GetWidget(arg1)->Switch(true);
+    }
+}
+
+void UIMenu::SetSelected()
+{
+    if (uiWidget* widget = GetActiveWidget())
+    {
+        widget->Active = true;
+        widget->MouseHit = 1;
+    }
+}
+
 void UIMenu::Enable()
 {
     ActivateNode();
@@ -356,8 +557,9 @@ void UIMenu::Enable()
 
     if (widget_count_ && !MenuMgr()->Is3D())
     {
-        GetWidget(focus_widget_index_)->Update();
-        GetWidget(focus_widget_index_)->Switch(true);
+        i32 idx = std::max(0, focus_widget_index_);
+        GetWidget(idx)->Update();
+        GetWidget(idx)->Switch(true);
     }
 }
 
@@ -381,4 +583,58 @@ i32 UIMenu::FindThePrevFocusWidget()
 i32 UIMenu::FindTheLastFocusWidget()
 {
     return FindFocusWidget(widget_count_ - 1, -1);
+}
+
+void UIMenu::Update()
+{
+    asNode::Update();
+
+    for (i32 i = 0; i < widget_count_; ++i)
+        widgets_[i]->Update();
+}
+
+void UIMenu::SetBstate(i32 index)
+{
+    if (index >= 0 && index < widget_count_)
+    {
+        *p_b_state_ = index;
+        GetWidget(index)->Switch(true);
+    }
+}
+
+uiWidget* UIMenu::AddHotSpot(i32 arg1, aconst char* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, Callback arg7)
+{
+    ScaleWidget(arg3, arg4, arg5, arg6);
+
+    Ptr<uiWidget> widget = arnew uiWidget();
+    AddWidget(widget.get(), arg2, arg3, arg4, arg5, arg6, arg1, nullptr);
+    widget->Switch(true);
+    return widget.release();
+}
+
+UIBMButton* UIMenu::AddBMButton(i32 idc, aconst char* name, f32 x, f32 y, i32 type, Callback cb_1, i32* arg7,
+    i32 arg8, i32 arg9, Callback arg10)
+{
+    Ptr<UIBMButton> button = arnew UIBMButton();
+    button->Init(const_cast<char*>(name), x, y, type, 0, arg7, arg8, arg9, nullptr, cb_1, arg10);
+    // Scale down button to 80% of default size
+    button->Width *= 0.8f;
+    button->Height *= 0.8f;
+    AddWidget(button.get(), name, x, y, button->Width, button->Height, idc, nullptr);
+    return button.release();
+}
+
+UITextDropdown* UIMenu::AddTextDropdown(i32 arg1, LocString* arg2, i32* arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
+    string arg8, i32 arg9, i32 arg10, i32 arg11, Callback arg12, char* arg13)
+{
+    ScaleWidget(arg4, arg5, arg6, arg7);
+
+    Ptr<UITextDropdown> dropdown = arnew UITextDropdown();
+    dropdown->Init(arg2, arg3, arg4, arg5, arg6, arg7, std::move(arg8), arg9, arg10, arg11, std::move(arg12), arg13);
+
+    UITextDropdown* raw = dropdown.get();
+    AddWidget(raw, arg13, arg4, arg5, arg6, arg7, arg1, nullptr);
+    AdoptChild(Ptr<asNode>(std::move(dropdown)));
+
+    return raw;
 }
