@@ -186,18 +186,15 @@ asCullManager::~asCullManager()
 
 void asCullManager::DeclareCamera(asCamera* camera)
 {
-    write(2, "DBG DeclareCamera: entering\n", 28);
+    Displayf("DBG DeclareCamera: entering");
     if (num_cameras_ < ARTS_SSIZE(cameras_))
     {
         cameras_[num_cameras_++] = camera;
-        write(2, "DBG DeclareCamera: num_cameras_ now ", 36);
-        char buf[16];
-        int len = snprintf(buf, sizeof(buf), "%d\n", num_cameras_);
-        write(2, buf, len);
+        Displayf("DBG DeclareCamera: num_cameras_ now %d", num_cameras_);
     }
     else
     {
-        write(2, "DBG DeclareCamera: num_cameras_ >= MAX\n", 39);
+        Displayf("DBG DeclareCamera: num_cameras_ >= MAX");
         Errorf("Too many cameras declared, somthing's rotten in Denmark.");
     }
 }

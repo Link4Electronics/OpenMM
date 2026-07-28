@@ -20,7 +20,10 @@ define_dummy_symbol(mmeffects_vehform);
 
 #include "vehform.h"
 
+#include "agi/viewport.h"
+#include "agi/rsys.h"
 #include "agi/texdef.h"
+#include "agi/vertex.h"
 #include "agiworld/getmesh.h"
 #include "agiworld/meshlight.h"
 #include "agiworld/meshset.h"
@@ -32,6 +35,10 @@ define_dummy_symbol(mmeffects_vehform);
 #include "arts7/sim.h"
 #include "mmcity/cullcity.h"
 #include "stream/fsystem.h"
+
+#include "agigl/glcontext.h"
+
+#include <unistd.h>
 
 static mem::cmd_param PARAM_menu_refl {"menurefl"};
 
@@ -86,25 +93,31 @@ Vector3 agiMeshLighterFill2Color {};
 
 static void InitVehicleLighting()
 {
-    agiMeshLighterAmbient = Vector3(0.2f, 0.2f, 0.25f);
+    agiMeshLighterAmbient = Vector3(0.4f, 0.4f, 0.45f);
 
     agiMeshLighterSun = ~Vector3(0.3f, 0.5f, -0.8f);
-    agiMeshLighterSunColor = Vector3(0.7f, 0.65f, 0.6f);
+    agiMeshLighterSunColor = Vector3(1.0f, 0.9f, 0.8f);
 
     agiMeshLighterFill1 = ~Vector3(-0.6f, 0.4f, 0.7f);
-    agiMeshLighterFill1Color = Vector3(0.35f, 0.35f, 0.4f);
+    agiMeshLighterFill1Color = Vector3(0.5f, 0.5f, 0.55f);
 
     agiMeshLighterFill2 = ~Vector3(0.8f, 0.2f, 0.5f);
-    agiMeshLighterFill2Color = Vector3(0.15f, 0.15f, 0.2f);
+    agiMeshLighterFill2Color = Vector3(0.25f, 0.25f, 0.3f);
 }
 
 void mmVehicleForm::SetShape(char* name, char* group, char* arg3, Vector3* offset)
 {
+    Displayf("DBG SetShape: name=%s group=%s arg3=%s", name, group, arg3 ? arg3 : "(null)");
+
     char tsh_path[64];
     arts_sprintf(tsh_path, "mtl/%s.TSH", name);
     TEXSHEET.Load(tsh_path);
 
+    Displayf("DBG SetShape: calling GetMeshSet(\"%s\", \"%s\", %p, 0x107)", name, group, (void*)offset);
+
     vehicle_mesh_ = GetMeshSet(name, group, offset, 0x107);
+
+    Displayf("DBG SetShape: vehicle_mesh_=%p offset=%p", (void*)vehicle_mesh_, (void*)offset);
 
     if (arg3)
         shadow_mesh_ = GetMeshSet(name, arg3, offset, 0x107);
@@ -112,21 +125,27 @@ void mmVehicleForm::SetShape(char* name, char* group, char* arg3, Vector3* offse
 
 void mmVehicleForm::Cull()
 {
+    Displayf("DBG mmVehicleForm::Cull entered");
+
     static bool once = (InitVehicleLighting(), true);
     (void)once;
 
-    if (vehicle_mesh_)
+    if (vehicle_mesh_ && vehicle_mesh_->LockIfResident())
     {
-        if (vehicle_mesh_->LockIfResident())
-        {
-            vehicle_mesh_->DrawLit(Lighter, MESH_DRAW_CLIP, nullptr);
+        // Disable backface culling — BMS meshes were designed for the
+        // software renderer which never culls, so polygon winding is inconsistent.
+        auto old_cull = agiCurState.SetCullMode(agiCullMode::None);
 
-            vehicle_mesh_->Unlock();
-        }
-        else
-        {
-            vehicle_mesh_->PageIn();
-        }
+        vehicle_mesh_->Geometry(MESH_DRAW_CLIP, vehicle_mesh_->Vertices, vehicle_mesh_->Planes);
+        vehicle_mesh_->DrawLit(Lighter, MESH_DRAW_CLIP, nullptr);
+
+        agiCurState.SetCullMode(old_cull);
+
+        vehicle_mesh_->Unlock();
+    }
+    else if (vehicle_mesh_)
+    {
+        vehicle_mesh_->PageIn();
     }
 
     if (shadow_mesh_)

@@ -483,6 +483,7 @@ void MenuManager::ToggleFocus(i32 direction)
 
 void MenuManager::Update()
 {
+    Displayf("DBG MenuManager::Update entered");
     ForceCurrentFocus();
 
     last_drawn_ = nullptr;
@@ -490,7 +491,14 @@ void MenuManager::Update()
     asNode::Update();
 
     if (menu_camera_)
+    {
+        Displayf("DBG MenuManager: declaring camera");
         CullMgr()->DeclareCamera(menu_camera_.get());
+    }
+    else
+    {
+        Displayf("DBG MenuManager: no camera");
+    }
 
     for (i32 i = 0; i < num_menus_; ++i)
     {

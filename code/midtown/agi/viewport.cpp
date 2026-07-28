@@ -40,7 +40,7 @@ agiViewParameters::agiViewParameters()
 void agiViewParameters::SetWorld(const Matrix34& world)
 {
     World = world;
-    ModelView.Dot(World, View);
+    ModelView.Dot(View, World);
     ++MtxSerial;
 }
 

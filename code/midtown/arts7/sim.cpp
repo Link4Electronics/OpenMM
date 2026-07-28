@@ -477,7 +477,7 @@ void asSimulation::Simulate()
 {
     if (simulate_count == 0)
     {
-        write(2, "DBG Simulate\n", 13);
+        Displayf("DBG Simulate");
         DBG_SIM("DBG Simulate (file)\n");
     }
     ++simulate_count;

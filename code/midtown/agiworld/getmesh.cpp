@@ -25,6 +25,8 @@ define_dummy_symbol(agiworld_getmesh);
 #include "stream/fsystem.h"
 #include "stream/stream.h"
 
+#include <unistd.h>
+
 // ?MeshCurrentObject@@3PADA
 char* MeshCurrentObject {};
 
@@ -64,6 +66,8 @@ agiMeshSet* GetMeshSet(aconst char* name, aconst char* group, Vector3* offset, i
             arts_sprintf(bms_path, "bms/%s/%s%s.bms", name, group, suffix);
         else
             arts_sprintf(bms_path, "bms/%s%s.bms", name, suffix);
+
+        Displayf("DBG GetMeshSet trying: %s", bms_path);
 
         stream = FileSystem::OpenAny(bms_path, true, nullptr, 0);
 

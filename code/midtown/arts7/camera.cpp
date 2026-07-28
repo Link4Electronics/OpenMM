@@ -91,7 +91,7 @@ void asCamera::Regen()
 
 void asCamera::DrawBegin()
 {
-    write(2, "DBG Camera::DrawBegin\n", 22);
+    Displayf("DBG Camera::DrawBegin");
 
     Regen();
 
@@ -120,32 +120,32 @@ void asCamera::DrawBegin()
 
     if (underlay_bitmap_)
     {
-        write(2, "DBG Camera: has underlay\n", 25);
+        Displayf("DBG Camera: has underlay");
 
         if (underlay_callback_)
         {
-            write(2, "DBG Camera: has callback\n", 25);
+            Displayf("DBG Camera: has callback");
             underlay_callback_->Call();
         }
         else
         {
-            write(2, "DBG Camera: about to CopyBitmap\n", 32);
+            Displayf("DBG Camera: about to CopyBitmap");
             Pipe()->CopyBitmap(
                 UI_XPos, UI_YPos, underlay_bitmap_, 0, 0, underlay_bitmap_->GetWidth(), underlay_bitmap_->GetHeight());
-            write(2, "DBG Camera: after CopyBitmap\n", 29);
+            Displayf("DBG Camera: after CopyBitmap");
         }
 
-        write(2, "DBG Camera: before Is3D check\n", 30);
+        Displayf("DBG Camera: before Is3D check");
         if (!underlay_bitmap_->Is3D())
         {
-            write(2, "DBG Camera: calling BeginScene\n", 31);
+            Displayf("DBG Camera: calling BeginScene");
             Pipe()->BeginScene();
         }
-        write(2, "DBG Camera: underlay done\n", 26);
+        Displayf("DBG Camera: underlay done");
     }
     else
     {
-        write(2, "DBG Camera: no underlay\n", 24);
+        Displayf("DBG Camera: no underlay");
     }
 
     i32 clear_flags = clear_flags_;

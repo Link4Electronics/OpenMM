@@ -20,8 +20,6 @@ define_dummy_symbol(agirend_surfrender);
 
 #include "surfrender.h"
 
-#include <unistd.h>
-
 #include "agi/lmodel.h"
 #include "agi/rsys.h"
 #include "agiworld/meshset.h"
@@ -42,25 +40,22 @@ void agiSurfRenderer::BeginDraw(i32 flags)
 
 void agiSurfRenderer::BeginGroup()
 {
-    write(2, "DBG SurfRenderer::BeginGroup start\n", 35);
+    Displayf("DBG SurfRenderer::BeginGroup start");
     agiSurfRenderer::VertexCount = 1;
     agiSurfRenderer::SurfaceCount = 0;
-    write(2, "DBG SurfRenderer::BeginGroup after counts\n", 42);
+    Displayf("DBG SurfRenderer::BeginGroup after counts");
 
-    write(2, "DBG SurfRenderer: LMODEL=", 25);
-    char buf[32];
-    int len = snprintf(buf, sizeof(buf), "%p\n", static_cast<void*>(agiLighter::LMODEL));
-    write(2, buf, len);
+    Displayf("DBG SurfRenderer: LMODEL=%p", static_cast<void*>(agiLighter::LMODEL));
 
     if (agiLighter::LMODEL)
     {
-        write(2, "DBG SurfRenderer: setting lighter_\n", 35);
+        Displayf("DBG SurfRenderer: setting lighter_");
         if (agiLighter::LMODEL->Params.Monochromatic)
             lighter_ = &MONOLIGHTER;
         else
             lighter_ = &RGBLIGHTER;
     }
-    write(2, "DBG SurfRenderer::BeginGroup end\n", 33);
+    Displayf("DBG SurfRenderer::BeginGroup end");
 }
 
 void UpdateZTrick()
