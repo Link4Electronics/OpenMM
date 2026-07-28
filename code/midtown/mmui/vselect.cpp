@@ -68,7 +68,7 @@ static void LoadCarMesh(VehicleSelectBase* base, i32 car)
     if (!info || !info->IsValid())
         return;
 
-    forms[car].SetShape(info->BaseName, const_cast<char*>("H"), const_cast<char*>("SHADOW_H"), nullptr);
+    forms[car].SetShape(info->BaseName, const_cast<char*>("BODY"), const_cast<char*>("SHADOW"), nullptr);
 }
 
 void VehicleSelectBase::PreSetup()
@@ -133,86 +133,40 @@ void VehicleSelectBase::Update()
     if (!forms[car].HasMesh())
         return;
 
-    // Update DofCS to compute World matrix from animation + position
     dofcs[car].Update();
-
-    // Position the car in front of the camera
     dofcs[car].World.m3 = Vector3(0.0f, 40.0f, -250.0f);
 
-    // Push DofCS transform so form Update captures the car's position
     Sim()->PushFrame(&dofcs[car]);
     forms[car].Update();
     Sim()->PopFrame();
 
-    // ---- Vehicle Preview Rendering ----
-
-    agiViewport* vp = Viewport();
-    if (!vp)
+    // Set up camera matrices on the menu camera's viewport
+    if (asCamera* camera = MenuMgr()->GetCamera())
     {
-        return;
+        agiViewParameters& params = camera->GetViewport()->GetParams();
+
+        Vector3 eye(0.0f, 45.0f, -230.0f);
+        Vector3 target(0.0f, 40.0f, -250.0f);
+        Vector3 fwd = ~(target - eye);
+
+        Vector3 cam_right = ~(fwd % Vector3(0.0f, 1.0f, 0.0f));
+        Vector3 up = cam_right % fwd;
+
+        params.Camera.m0 = cam_right;
+        params.Camera.m1 = up;
+        params.Camera.m2 = -fwd;
+        params.Camera.m3 = eye;
+
+        params.View.m0 = Vector3(cam_right.x, up.x, -fwd.x);
+        params.View.m1 = Vector3(cam_right.y, up.y, -fwd.y);
+        params.View.m2 = Vector3(cam_right.z, up.z, -fwd.z);
+        params.View.m3 = Vector3(-(cam_right ^ eye), -(up ^ eye), fwd ^ eye);
+
+        params.SetWorld(dofcs[car].World);
     }
 
-    agiViewParameters& params = vp->GetParams();
-
-    // Set up perspective projection
-    f32 fov = 45.0f * (3.14159265f / 180.0f);
-    f32 pipe_w = static_cast<f32>(Pipe() ? Pipe()->GetWidth() : 640);
-    f32 pipe_h = static_cast<f32>(Pipe() ? Pipe()->GetHeight() : 480);
-    f32 vp_w = params.Width * pipe_w;
-    f32 vp_h = params.Height * pipe_h;
-    f32 aspect = (vp_w > 0.0f && vp_h > 0.0f) ? vp_w / vp_h : 1.0f;
-    f32 near_ = 10.0f;
-    f32 far_ = 2000.0f;
-    f32 cot_half_fov = 1.0f / tanf(fov * 0.5f);
-
-    params.ProjX = cot_half_fov;
-    params.ProjY = cot_half_fov / aspect;
-    params.ProjZZ = far_ / (far_ - near_);
-    params.ProjZW = -near_ * far_ / (far_ - near_);
-    params.ProjXZ = 0.0f;
-    params.ProjYZ = 0.0f;
-
-    // Camera look-at: camera at (0, 45, -230) looking at car at (0, 40, -250)
-    Vector3 eye(0.0f, 45.0f, -230.0f);
-    Vector3 target(0.0f, 40.0f, -250.0f);
-    Vector3 fwd = target - eye;
-    f32 inv_mag = fwd.InvMag();
-    fwd.x *= inv_mag;
-    fwd.y *= inv_mag;
-    fwd.z *= inv_mag;
-
-    Vector3 cam_right;
-    cam_right.Cross(Vector3(0.0f, 1.0f, 0.0f), fwd);
-    f32 right_inv = cam_right.InvMag();
-    cam_right.x *= right_inv;
-    cam_right.y *= right_inv;
-    cam_right.z *= right_inv;
-
-    Vector3 up;
-    up.Cross(fwd, cam_right);
-
-    f32 right_dot_eye = cam_right.x * eye.x + cam_right.y * eye.y + cam_right.z * eye.z;
-    f32 up_dot_eye = up.x * eye.x + up.y * eye.y + up.z * eye.z;
-    f32 fwd_dot_eye = fwd.x * eye.x + fwd.y * eye.y + fwd.z * eye.z;
-
-    // Camera matrix (world-space position + orientation)
-    params.Camera.m0 = cam_right;
-    params.Camera.m1 = up;
-    params.Camera.m2 = fwd;
-    params.Camera.m3 = eye;
-
-    // View matrix = Camera.Inverse() (world → view)
-    params.View.m0 = Vector3(cam_right.x, up.x, fwd.x);
-    params.View.m1 = Vector3(cam_right.y, up.y, fwd.y);
-    params.View.m2 = Vector3(cam_right.z, up.z, fwd.z);
-    params.View.m3 = Vector3(-right_dot_eye, -up_dot_eye, -fwd_dot_eye);
-
-    // Set World and compute ModelView = View * World
-    params.SetWorld(dofcs[car].World);
-
-    // Set color for the CullMgr render pass (called from forms[car].Update() above)
     forms[car].SetColor(0xFFFFFFFF);
-    }
+}
 
 void VehicleSelectBase::InitCarSelection(i32 mode, f32 x, f32 y, f32 w, f32 h)
 {
@@ -223,16 +177,16 @@ void VehicleSelectBase::InitCarSelection(i32 mode, f32 x, f32 y, f32 w, f32 h)
     }
 
     i32 count = VehicleListPtr ? VehicleListPtr->NumVehicles : 0;
-    f32 view_right = x + w;
-    *reinterpret_cast<f32*>(&gap90[0x74]) = x;              // ViewX at 0x104
-    *reinterpret_cast<f32*>(&gap90[0x78]) = view_right;      // ViewRight at 0x108
-    *reinterpret_cast<f32*>(&gap90[0x7C]) = y;               // ViewY at 0x10C
-    *reinterpret_cast<f32*>(&gap90[0x80]) = w;               // ViewWidth at 0x110
-    *reinterpret_cast<f32*>(&gap90[0x84]) = 0.95f - view_right; // ViewBottomMargin at 0x114
-    *reinterpret_cast<f32*>(&gap90[0x88]) = h;               // ViewHeight at 0x118
-    *reinterpret_cast<f32*>(&gap90[0x8C]) = x;               // ViewX dup at 0x11C
-    *reinterpret_cast<f32*>(&gap90[0x94]) = 0.05f;           // StepSize at 0x124
-    *reinterpret_cast<f32*>(&gap90[0x90]) = 1.0f - (y + h);  // RightOffset at 0x120
+    f32 view_right = (x + w) + 0.05f;                                  // original: (x+w) - (-0.05)
+    *reinterpret_cast<f32*>(&gap90[0x74]) = x;                         // ViewX at 0x104
+    *reinterpret_cast<f32*>(&gap90[0x78]) = view_right;                 // ViewRight at 0x108
+    *reinterpret_cast<f32*>(&gap90[0x7C]) = y;                         // ViewY at 0x10C
+    *reinterpret_cast<f32*>(&gap90[0x80]) = w;                         // ViewWidth at 0x110
+    *reinterpret_cast<f32*>(&gap90[0x84]) = 0.95f - view_right;        // ViewBottomMargin at 0x114
+    *reinterpret_cast<f32*>(&gap90[0x88]) = h;                         // ViewHeight at 0x118
+    *reinterpret_cast<f32*>(&gap90[0x8C]) = x;                         // ViewX dup at 0x11C
+    *reinterpret_cast<f32*>(&gap90[0x94]) = 0.05f;                     // StepSize at 0x124
+    *reinterpret_cast<f32*>(&gap90[0x90]) = 1.0f - (y + h);            // RightOffset at 0x120
 
     // Reset state
     SetCurrentCar(0);
@@ -341,7 +295,7 @@ void VehicleSelectBase::SetPick(i32 arg1, i16 arg2)
 
     if (forms && info && info->IsValid())
     {
-        forms[car].SetShape(info->BaseName, const_cast<char*>("H"), const_cast<char*>("SHADOW_H"), nullptr);
+        forms[car].SetShape(info->BaseName, const_cast<char*>("BODY"), const_cast<char*>("SHADOW"), nullptr);
     }
 
     asDofCS* dofcs = GetDofCSArray();

@@ -683,7 +683,7 @@ static void MainPhase(i32 argc, char** argv)
 
                 Sim()->AdoptChild(arnew PreGameUpdate());
 
-                game_manager = /*mmGameManager::Instance = */ arnew mmGameManager();
+                game_manager = arnew mmGameManager();
                 Sim()->AddChild(game_manager.get());
 
                 game_manager->Reset();

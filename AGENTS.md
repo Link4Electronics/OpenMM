@@ -161,6 +161,10 @@ ttf fonts
 - Textures: `mtl/<name>.tsh` and `mtl/global.tsh` loaded via TEXSHEET
 - BMS file format: `u32 magic(0x4D534833 "MSH3")` + `Vector3 bounds` + BinaryLoad data
 
+### Vehicle preview camera setup (vselect.cpp)
+- **Camera/View matrix**: The original code used left-handed `up_world × fwd` for `cam_right` and set `Camera.m2 = +fwd`. The engine's software transform + clip pipeline expects OpenGL convention (camera looks along `-Z`, right-handed). Fixed by using right-handed `fwd × up_world` for `cam_right`, `Camera.m2 = -fwd`, and `View` third column = `-fwd` (with corresponding translation `fwd ^ eye` instead of `-(fwd ^ eye)`).
+- **Mesh group name**: `LoadCarMesh` passed `"H"` as the mesh group name, but BMS files use part names like `BODY_H.BMS`. `GetMeshSet` applies LOD suffixes (`_H`, `_M`, etc.) to the group name, so `"H"` looks for `H_H.BMS` which doesn't exist. Fixed to `"BODY"` (finds `BODY_H.BMS` via `_H` suffix). Same fix in `SetPick`.
+
 ## Previously Fixed
 - `mmInterface::SetNavigationOrders()` — added to interface.cpp for widget tab ordering
 - `mmInterface::ShowMain()`, `Reset()`, `Update()` — real implementations

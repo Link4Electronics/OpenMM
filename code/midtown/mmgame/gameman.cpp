@@ -21,9 +21,48 @@ define_dummy_symbol(mmgame_gameman);
 #include "gameman.h"
 
 #include "game.h"
+#include "gamesingle.h"
 #include "player.h"
 
 static i32 g_GameInitDone = 0;
+
+mmGameManager* mmGameManager::Instance = nullptr;
+
+__attribute__((weak)) mmGameManager::mmGameManager()
+{
+    Instance = this;
+
+    Current = nullptr;
+    GameSingle = nullptr;
+    SingleCircuit = nullptr;
+    SingleBlitz = nullptr;
+    MultiRace = nullptr;
+    MultiCR = nullptr;
+    MultiCircuit = nullptr;
+    MultiBlitz = nullptr;
+    GameEdit = nullptr;
+    InReplay = false;
+    Frame = 0;
+    PendingFrames = 0;
+    NeedsReset = false;
+    ReplayBitmap = nullptr;
+    field_58 = 0;
+}
+
+__attribute__((weak)) mmGameManager::~mmGameManager() {}
+
+__attribute__((weak)) void mmGameManager::LoadReplay(aconst char*) {}
+__attribute__((weak)) void mmGameManager::SaveReplay(aconst char*) {}
+__attribute__((weak)) void mmGameManager::StartReplay() {}
+__attribute__((weak)) f32 mmGameManager::GetBrakes() { return 0.0f; }
+__attribute__((weak)) f32 mmGameManager::GetSteering() { return 0.0f; }
+__attribute__((weak)) f32 mmGameManager::GetThrottle() { return 0.0f; }
+__attribute__((weak)) MetaClass* mmGameManager::GetClass() { return nullptr; }
+__attribute__((weak)) void mmGameManager::DeclareFields() {}
+#ifdef ARTS_DEV_BUILD
+class Bank;
+__attribute__((weak)) void mmGameManager::AddWidgets(Bank*) {}
+#endif
 
 #include "agi/bitmap.h"
 #include "agi/pipeline.h"

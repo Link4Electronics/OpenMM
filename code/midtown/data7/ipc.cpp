@@ -191,7 +191,9 @@ i32 ipcMessageQueue::MessageLoop()
     }
     ARTS_EXCEPTION_END
     {
+#ifdef __EXCEPTIONS
         Abortf("Exception caught in MessageLoop");
+#endif
     }
 
     return 0;

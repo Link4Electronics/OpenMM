@@ -32,6 +32,8 @@ static mem::cmd_param PARAM_loadingscreen {"loadingscreen", "Show loading screen
 
 void mmLoader::Init(aconst char* underlay_name, f32 bar_x, f32 bar_y)
 {
+    Current = this;
+
     bar_x_ = UI_XPos + std::lround(UI_Width * bar_x);
     bar_y_ = UI_YPos + std::lround(UI_Height * bar_y);
 
@@ -72,6 +74,9 @@ void mmLoader::Cull()
 void mmLoader::EndTask(f32 /*percent*/)
 {
     task_percent_ = 100;
+
+    // Render one frame of the loading screen so it's visible before transition
+    Update();
 }
 
 void mmLoader::BeginTask(LocString* /*text*/, f32 /*percent*/)

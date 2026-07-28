@@ -62,9 +62,38 @@ void asCamera::SetView(f32 horz_fov, f32 aspect, f32 near_clip, f32 far_clip)
     }
 }
 
+void asCamera::Regen()
+{
+    agiViewParameters& params = viewport_->GetParams();
+
+    f32 aspect = aspect_;
+    if (auto_aspect_)
+    {
+        agiPipeline* pipe = Pipe();
+        aspect = (static_cast<f32>(pipe->GetWidth()) * params.Width) /
+            (static_cast<f32>(pipe->GetHeight()) * params.Height);
+    }
+
+    f32 cot = 1.0f / std::tan(fov_ / 2.0f);
+
+    params.Fov = fov_;
+    params.Aspect = aspect;
+    params.Near = near_clip_;
+    params.Far = far_clip_;
+
+    params.ProjX = cot;
+    params.ProjY = cot / aspect;
+    params.ProjZZ = far_clip_ / (far_clip_ - near_clip_);
+    params.ProjZW = -near_clip_ * far_clip_ / (far_clip_ - near_clip_);
+    params.ProjXZ = 0.0f;
+    params.ProjYZ = 0.0f;
+}
+
 void asCamera::DrawBegin()
 {
     write(2, "DBG Camera::DrawBegin\n", 22);
+
+    Regen();
 
     i32 draw_mode = Sim()->GetDrawMode();
 

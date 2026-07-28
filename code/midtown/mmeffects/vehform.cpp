@@ -75,6 +75,15 @@ void mmVehicleForm::Update()
 
 void (*mmVehicleForm::Lighter)(u8*, u32*, u32*, agiMeshSet*) = agiMeshLighterTriple;
 
+// Strong definitions override the 8-byte weak stubs in game_stubs.S (Vector3 is 12 bytes).
+Vector3 agiMeshLighterAmbient {};
+Vector3 agiMeshLighterSun {};
+Vector3 agiMeshLighterSunColor {};
+Vector3 agiMeshLighterFill1 {};
+Vector3 agiMeshLighterFill1Color {};
+Vector3 agiMeshLighterFill2 {};
+Vector3 agiMeshLighterFill2Color {};
+
 static void InitVehicleLighting()
 {
     agiMeshLighterAmbient = Vector3(0.2f, 0.2f, 0.25f);

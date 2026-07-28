@@ -109,9 +109,13 @@ public:
         return underlay_bitmap_;
     }
 
+    agiViewport* GetViewport()
+    {
+        return viewport_;
+    }
+
 private:
-    // ?Regen@asCamera@@AAEXXZ
-    ARTS_IMPORT void Regen();
+    void Regen();
 
     agiViewport* viewport_ {};
     agiLightModel* light_model_ {};

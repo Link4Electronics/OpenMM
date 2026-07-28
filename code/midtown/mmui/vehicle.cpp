@@ -40,15 +40,19 @@ Vehicle::Vehicle(i32 arg1)
     AddBMButton(IDC_VEHICLE_SELECT,  "vehi_show"_xconst, VB_X_RIGHT, VB_Y_MID,    4);
     AddBMButton(IDC_VEHICLE_BACK,    "onav_done"_xconst, VB_X_LEFT,  VB_Y_BOTTOM, 4);
     AddBMButton(IDC_VEHICLE_DRIVE,   "vehi_play"_xconst, VB_X_RIGHT, VB_Y_BOTTOM, 4);
+
+    // Match original: 34/640, 175/480, 290/640, 216/480
+    InitCarSelection(1, 34.0f / 640.0f, 175.0f / 480.0f, 290.0f / 640.0f, 216.0f / 480.0f);
 }
 
 void Vehicle::PreSetup()
 {
     AssignBackground("veh_back");
 
-    // Initialize car selection with viewport parameters if not yet done
-    // Viewport: left-center area of the menu
-    InitCarSelection(0, 0.05f, 0.35f, 0.50f, 0.50f);
+    // Original calls InitCarSelection once from constructor, but at that point
+    // VehicleListPtr may not be loaded yet. Call here as well as a safety net
+    // (idempotent guard inside InitCarSelection prevents double allocation).
+    InitCarSelection(1, 34.0f / 640.0f, 175.0f / 480.0f, 290.0f / 640.0f, 216.0f / 480.0f);
 
     VehicleSelectBase::PreSetup();
 }
