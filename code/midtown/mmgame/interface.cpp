@@ -197,6 +197,36 @@ void mmInterface::SetStateDefaults()
     MMSTATE.EventId = 0;
 }
 
+void mmInterface::BeDone()
+{
+    MMSTATE.GameMode = mmGameMode::Cruise;
+    MMSTATE.Weather = mmWeather::Sun;
+    MMSTATE.TimeOfDay = mmTimeOfDay::Noon;
+    MMSTATE.EventId = 0;
+    MMSTATE.AutoTransmission = true;
+    MMSTATE.Difficulty = mmSkillLevel::Amateur;
+
+    // Set car name from current vehicle selection
+    if (VehList())
+    {
+        i32 car = (MenuVehicle) ? MenuVehicle->CurrentCar() : 0;
+        if (mmVehInfo* veh = VehList()->GetVehicleInfo(car))
+        {
+            arts_strcpy(MMSTATE.CarName, veh->BaseName);
+        }
+    }
+
+    // Ensure city name is configured
+    arts_strcpy(CityName, DEFAULT_CITY);
+    if (CityList())
+    {
+        CityList()->SetCurrentCity(DEFAULT_CITY);
+    }
+
+    // Transition to Drive state — MainPhase will restart and load the 3D world
+    MMSTATE.GameState = mmGameState::Drive;
+}
+
 void mmInterface::SetNavigationOrders()
 {
     // FIXME: Requires MenuManager::Instance to be set up with all menus constructed.
@@ -236,6 +266,14 @@ void mmInterface::Reset()
     {
         VehicleListPtr = new mmVehList();
         VehicleListPtr->LoadAll();
+    }
+
+    // Initialize city list if not already done
+    if (!CityListPtr)
+    {
+        CityListPtr = new mmCityList();
+        CityListPtr->LoadAll();
+        CityListPtr->SetCurrentCity(DEFAULT_CITY);
     }
 }
 
@@ -381,7 +419,7 @@ void mmInterface::Update()
                             MenuMgr()->Switch(IDM_MAIN);
                             break;
                         case IDC_VEHICLE_DRIVE:
-                            // TODO: Start race
+                            BeDone();
                             break;
                         case IDC_VEHICLE_SELECT:
                             MenuMgr()->Switch(IDM_SHOWCASE);

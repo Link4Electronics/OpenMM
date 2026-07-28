@@ -47,7 +47,9 @@ define_dummy_symbol(midtown);
 #include "mmcamtour/gamerecord.h"
 #include "mmcar/carsim.h"
 #include "mmcity/loader.h"
+#include "mmcityinfo/citylist.h"
 #include "mmcityinfo/state.h"
+#include "mmcityinfo/vehlist.h"
 #include "mmgame/game.h"
 #include "mmgame/gameman.h"
 #include "mmgame/interface.h"
@@ -652,6 +654,21 @@ static void MainPhase(i32 argc, char** argv)
                 {
                     arts_strcpy(LoadScreen, "title_screen");
                     loader.Init(LoadScreen, 15.0f / 640.0f, 456.0f / 480.0f);
+                }
+
+                // Ensure CityList exists for mmGame::Init (destroyed when Menus phase ended)
+                if (!CityListPtr)
+                {
+                    CityListPtr = new mmCityList();
+                    CityListPtr->LoadAll();
+                    CityListPtr->SetCurrentCity(CityName);
+                }
+
+                // Ensure VehicleList exists for player setup
+                if (!VehicleListPtr)
+                {
+                    VehicleListPtr = new mmVehList();
+                    VehicleListPtr->LoadAll();
                 }
 
                 ARTS_MEM_STAT("GameManager");

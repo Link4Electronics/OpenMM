@@ -20,7 +20,10 @@ define_dummy_symbol(mmgame_gamesingle);
 
 #include "gamesingle.h"
 
+#include "agi/pipeline.h"
+#include "agiworld/meshlight.h"
 #include "arts7/lamp.h"
+#include "data7/metaclass.h"
 #include "mmai/aiMap.h"
 #include "mmai/aiaudiomanager.h"
 #include "mmaudio/manager.h"
@@ -37,6 +40,57 @@ define_dummy_symbol(mmgame_gamesingle);
 i32 mmGameSingle::OppNumCheck[MaxOpponents] {};
 i16 mmGameSingle::OppFinishPositions[MaxOpponents] {};
 #endif
+
+__attribute__((weak)) mmGameSingle::mmGameSingle() {}
+__attribute__((weak)) mmGameSingle::~mmGameSingle() {}
+
+MetaClass* mmGameSingle::GetClass()
+{
+    return nullptr;
+}
+
+mmWaypoints* mmGameSingle::GetWaypoints()
+{
+    return Waypoints;
+}
+
+void mmGameSingle::Update()
+{
+    agiBeginCones();
+    mmGame::Update();
+}
+
+__attribute__((weak)) void mmGameSingle::InitMyPlayer() {}
+__attribute__((weak)) void mmGameSingle::InitOtherPlayers() {}
+__attribute__((weak)) void mmGameSingle::InitGameObjects() {}
+__attribute__((weak)) void mmGameSingle::InitHUD() {}
+__attribute__((weak)) void mmGameSingle::UpdateGameInput(i32) {}
+__attribute__((weak)) void mmGameSingle::UpdateGame() {}
+__attribute__((weak)) void mmGameSingle::NextRace() {}
+__attribute__((weak)) void mmGameSingle::HitWaterHandler() {}
+__attribute__((weak)) void mmGameSingle::UpdateScore() {}
+__attribute__((weak)) void mmGameSingle::DisableRacers() {}
+__attribute__((weak)) void mmGameSingle::EnableRacers() {}
+__attribute__((weak)) void mmGameSingle::FinishMessage(i32, i32) {}
+__attribute__((weak)) i32 mmGameSingle::ProgressCheck(i32, i32) { return 0; }
+__attribute__((weak)) i32 mmGameSingle::RegisterFinish() { return 0; }
+__attribute__((weak)) void mmGameSingle::DeclareFields() {}
+#ifdef ARTS_DEV_BUILD
+__attribute__((weak)) void mmGameSingle::AddWidgets(Bank*) {}
+#endif
+
+__attribute__((weak)) void agiBeginCones() {}
+
+// mmGame inherited virtuals (needed for vtable)
+__attribute__((weak)) void mmGame::InitGameStrings() {}
+__attribute__((weak)) void mmGame::DropThruCityHandler() {}
+__attribute__((weak)) void mmGame::CollideAIOpponents() {}
+__attribute__((weak)) i32 mmGame::GetCDTrack(i16) { return 0; }
+__attribute__((weak)) void mmGame::PlayerSetState() {}
+__attribute__((weak)) void mmGame::SetIconsState() {}
+__attribute__((weak)) void mmGame::UpdateSteeringBrakes() {}
+__attribute__((weak)) i32 mmGame::CalculateRaceScore(i32, i32) { return 0; }
+__attribute__((weak)) void mmGame::RespawnXYZ(Vector3&, f32&) {}
 
 b32 mmGameSingle::Init()
 {

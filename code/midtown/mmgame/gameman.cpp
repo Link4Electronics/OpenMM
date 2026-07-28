@@ -23,6 +23,8 @@ define_dummy_symbol(mmgame_gameman);
 #include "game.h"
 #include "player.h"
 
+static i32 g_GameInitDone = 0;
+
 #include "agi/bitmap.h"
 #include "agi/pipeline.h"
 #include "agi/texdef.h"
@@ -122,7 +124,8 @@ void mmGameManager::Update()
         asNode::Reset();
         NeedsReset = false;
 
-        Current->Player->Camera.FadeIn(1.0f, 0);
+        if (Current && Current->Player)
+            Current->Player->Camera.FadeIn(1.0f, 0);
     }
 
     DebugLog('dees', &gRandSeed, sizeof(gRandSeed));

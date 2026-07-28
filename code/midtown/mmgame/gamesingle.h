@@ -24,10 +24,10 @@ class mmGameSingle final : public mmGame
 {
 public:
     // ??0mmGameSingle@@QAE@XZ
-    ARTS_IMPORT mmGameSingle();
+    ARTS_EXPORT mmGameSingle();
 
     // ??1mmGameSingle@@UAE@XZ
-    ARTS_IMPORT ~mmGameSingle() override;
+    ARTS_EXPORT ~mmGameSingle() override;
 
 #ifdef ARTS_DEV_BUILD
     // ?AddWidgets@mmGameSingle@@UAEXPAVBank@@@Z
@@ -35,10 +35,10 @@ public:
 #endif
 
     // ?GetClass@mmGameSingle@@UAEPAVMetaClass@@XZ
-    ARTS_IMPORT MetaClass* GetClass() override;
+    ARTS_EXPORT MetaClass* GetClass() override;
 
     // ?GetWaypoints@mmGameSingle@@UAEPAVmmWaypoints@@XZ | inline
-    ARTS_IMPORT mmWaypoints* GetWaypoints() override;
+    ARTS_EXPORT mmWaypoints* GetWaypoints() override;
 
     // ?HitWaterHandler@mmGameSingle@@UAEXXZ
     ARTS_IMPORT void HitWaterHandler() override;
@@ -65,7 +65,7 @@ public:
     ARTS_EXPORT void Reset() override;
 
     // ?Update@mmGameSingle@@UAEXXZ
-    ARTS_IMPORT void Update() override;
+    ARTS_EXPORT void Update() override;
 
     // ?UpdateDebugKeyInput@mmGameSingle@@UAEXH@Z | inline
     ARTS_EXPORT void UpdateDebugKeyInput(i32 arg1) override;
