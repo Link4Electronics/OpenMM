@@ -106,6 +106,7 @@ add_executable(Open1560
     ${CMAKE_CURRENT_SOURCE_DIR}/midtown.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/midtown.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_stubs.S
+    ${CMAKE_CURRENT_SOURCE_DIR}/game_stubs_standalone.cpp
 )
 
 target_include_directories(Open1560 PRIVATE ${ARTS_INCLUDE_DIRS})

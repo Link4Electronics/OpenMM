@@ -294,6 +294,11 @@ void agiPipeline::EndAllGfx()
     EndGfx();
 }
 
+RcOwner<agiTexLut> agiPipeline::GetTexLut(aconst char* /*arg1*/)
+{
+    return nullptr;
+}
+
 RcOwner<agiBitmap> agiPipeline::GetBitmap(const char* name, f32 sx, f32 sy, i32 flags)
 {
     auto full_name = arts_formatf<64>("%s.%x.%x.%d", name, mem::bit_cast<u32>(sx), mem::bit_cast<u32>(sy), flags);

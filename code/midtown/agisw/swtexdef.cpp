@@ -71,8 +71,29 @@ void agiSWTexDef::EndGfx()
     state_ = 0;
 }
 
+b32 agiSWTexDef::IsAvailable()
+{
+    return page_state_ == 2;
+}
+
+b32 agiSWTexDef::Lock(agiTexLock& /*arg1*/)
+{
+    return false;
+}
+
+void agiSWTexDef::Request()
+{}
+
+void agiSWTexDef::Set(Vector2& /*arg1*/, Vector2& /*arg2*/)
+{}
+
 void agiSWTexDef::Unlock(agiTexLock& /*arg1*/)
 {}
+
+i32 agiSWTexLut::BeginGfx()
+{
+    return 0;
+}
 
 void agiSWTexLut::EndGfx()
 {}

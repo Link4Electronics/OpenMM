@@ -1075,3 +1075,67 @@ void mmGame::SendChatMessage(char* msg)
 
 #undef X
 }
+
+void mmGame::InitGameStrings()
+{}
+
+void mmGame::InitOtherPlayers()
+{}
+
+void mmGame::HitWaterHandler()
+{
+    Reset();
+}
+
+void mmGame::DropThruCityHandler()
+{
+    Reset();
+}
+
+void mmGame::PlayerSetState()
+{}
+
+void mmGame::Reset()
+{
+    asNode::Reset();
+}
+
+void mmGame::SetIconsState()
+{}
+
+void mmGame::Update()
+{
+    asNode::Update();
+}
+
+i32 mmGame::GetCDTrack(i16)
+{
+    return 0;
+}
+
+MetaClass* mmGame::GetClass()
+{
+    return nullptr;
+}
+
+void mmGame::CollideAIOpponents()
+{}
+
+void mmGame::UpdateSteeringBrakes()
+{}
+
+i32 mmGame::CalculateRaceScore(i32, i32)
+{
+    return 0;
+}
+
+void mmGame::RespawnXYZ(Vector3&, f32&)
+{}
+
+void mmGame::DeclareFields()
+{}
+
+#ifdef ARTS_DEV_BUILD
+void mmGame::AddWidgets(Bank*)
+{}
+#endif

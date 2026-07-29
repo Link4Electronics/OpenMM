@@ -20,7 +20,10 @@ define_dummy_symbol(mmgame_player);
 
 #include "player.h"
 
+#include "arts7/linear.h"
 #include "arts7/sim.h"
+#include "mmcity/cullcity.h"
+#include "vector7/vector3.h"
 
 void mmPlayer::AfterLoad()
 {}
@@ -41,4 +44,105 @@ void mmPlayer::UpdateRegen()
                 std::max<f32>(0.0f, damage - (Car.Sim.MaxDamageScaled * PlayerRegenRate * Sim()->GetUpdateDelta()));
         }
     }
+}
+
+void mmPlayer::EnableRegen(i32 enable)
+{
+    RegenEnabled = enable;
+}
+
+void mmPlayer::Init(char* car_name, char* map_name, mmGame* game)
+{
+    SetName(car_name);
+    AfterLoad();
+
+    Car.Init(car_name, CAR_TYPE_PLAYER, 0);
+
+    Camera.SetView(0.87266f, 1.33333f, 1.0f, 1500.0f);
+
+    MirrorMatrix.Identity();
+    MirrorMatrix.Rotate(Vector3(0.0f, 0.0f, 1.0f), ARTS_PI);
+
+    CullCity()->RenderWeb.MirrorMatrix = &MirrorMatrix;
+    CullCity()->RenderWeb.SetMirrorPos(0.625f, 0.875f, 0.375f, 0.125f, 1.0f);
+
+    field_30 = 0;
+    XCamIndex = 3;
+    XCamStart = 3;
+    XCamCount = 3;
+
+    NearCam.Init(&Car, "bumper");
+    FarCam.Init(&Car, "hood");
+    IndCam.Init(&Car, "far");
+    PovCam.Init(&Car, "pov");
+    DashCam.Init(&Car, "dash");
+
+    PolarCam1.Init(&Car);
+    PolarCam2.Init(&Car);
+    PointCam.Init(&Car);
+    AiCam.Init(&Car);
+    PreCam.Init(&Car);
+    PostCam.Init(&Car);
+
+    CarCams[0] = &NearCam;
+    CarCams[1] = &PovCam;
+    CarCams[2] = &FarCam;
+    CarCams[3] = &PolarCam1;
+    CarCams[4] = &PolarCam2;
+    CarCams[5] = &AiCam;
+
+    Hud.Init(car_name, this);
+    HudMap.Init(&Camera, &Car.Sim.ICS.World, &Hud, game, map_name);
+
+    Reset();
+}
+
+i32 mmPlayer::IsMaxDamaged()
+{
+    return Car.Sim.CurrentDamage >= Car.Sim.MaxDamageScaled;
+}
+
+i32 mmPlayer::IsPOV()
+{
+    return CameraMode == 0 || CameraMode == 1;
+}
+
+void mmPlayer::ResetDamage()
+{
+    Car.Sim.CurrentDamage = 0.0f;
+}
+
+void mmPlayer::SetCamInterest(asInertialCS* /*arg1*/)
+{}
+
+void mmPlayer::SetPreRaceCam()
+{
+    WantPreRaceCam = true;
+}
+
+void mmPlayer::SetWideFOV(b32 wide)
+{
+    WideFov = wide;
+}
+
+void mmPlayer::ToggleCam()
+{
+    if (++CamIndex >= XCamCount)
+        CamIndex = 0;
+}
+
+void mmPlayer::ToggleDash()
+{
+    if (Hud.IsDashActive())
+        Hud.DeactivateDash();
+    else
+        Hud.ActivateDash();
+}
+
+void mmPlayer::ToggleExternalView()
+{}
+
+void mmPlayer::ToggleWideFOV()
+{
+    SetWideFOV(!WideFov);
 }

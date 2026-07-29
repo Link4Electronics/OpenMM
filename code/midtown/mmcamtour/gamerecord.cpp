@@ -19,3 +19,15 @@
 define_dummy_symbol(mmcamtour_gamerecord);
 
 #include "gamerecord.h"
+
+mmGameRecord::mmGameRecord(f32 /*arg1*/)
+{}
+
+mmGameRecord::~mmGameRecord()
+{}
+
+void mmGameRecord::DoScan(Vector4& /*arg1*/)
+{}
+
+void mmGameRecord::Dump(char* /*arg1*/)
+{}

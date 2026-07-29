@@ -20,6 +20,8 @@ define_dummy_symbol(agi_viewport);
 
 #include "viewport.h"
 
+#include <cmath>
+
 #include "pipeline.h"
 #include "vector7/matrix34.h"
 
@@ -35,6 +37,30 @@ agiViewParameters::agiViewParameters()
     Far = 1000.0f;
     DepthScale = 1.0f;
     Orthographic = false;
+}
+
+void agiViewParameters::Perspective(f32 fov, f32 aspect, f32 near, f32 far)
+{
+    f32 half_fov_rad = fov * (ARTS_PI / 360.0f);
+    f32 cot = 1.0f / std::tan(half_fov_rad);
+
+    Fov = fov;
+    Aspect = aspect;
+    Near = near;
+    Far = far;
+
+    ProjX = cot;
+    ProjY = cot / aspect;
+    ProjZZ = far / (far - near);
+    ProjZW = -near * far / (far - near);
+    ProjXZ = 0.0f;
+    ProjYZ = 0.0f;
+
+    DepthScale = 1.0f / (far - near);
+
+    Orthographic = false;
+
+    ++MtxSerial;
 }
 
 void agiViewParameters::SetWorld(const Matrix34& world)

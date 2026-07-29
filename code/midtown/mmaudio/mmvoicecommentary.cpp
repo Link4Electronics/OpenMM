@@ -20,5 +20,32 @@ define_dummy_symbol(mmaudio_mmvoicecommentary);
 
 #include "mmvoicecommentary.h"
 
+mmVoiceCommentary::mmVoiceCommentary()
+{}
+
 void mmVoiceCommentary::PlayLap(i16 /*arg1*/)
+{}
+
+void mmVoiceCommentary::PlayCRPreRace()
+{}
+
+void mmVoiceCommentary::PlayCR(i16 /*arg1*/, i16 /*arg2*/)
+{}
+
+void mmVoiceCommentary::PlayPreRace()
+{}
+
+void mmVoiceCommentary::PlayRoam()
+{}
+
+void mmVoiceCommentary::PlayTimePenalty()
+{}
+
+void mmVoiceCommentary::SetFrequency(f32 /*arg1*/)
+{}
+
+void mmVoiceCommentary::StopNow()
+{}
+
+void mmVoiceCommentary::ValidateCity(char* /*arg1*/)
 {}

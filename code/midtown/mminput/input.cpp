@@ -440,3 +440,181 @@ void mmInput::SetDefaultConfig(i32 config)
 
     InputConfiguration = old_config;
 }
+
+// --- mmInput implementations (replacing weak stubs from game_stubs.cpp) ---
+
+mmInput::mmInput()
+{
+    GameInputPtr = this;
+
+    MouseSensitivity = 1.0f;
+    UserSteeringSensitivity = 1.0f;
+    RoadForceScale = 1.0f;
+    DiscreteSteeringDeltaIn = 1.0f;
+    ForceFeedbackScale = 1.0f;
+    DiscreteSteeringDeltaOut = 1.0f;
+    DiscreteSteeringLimit = 1.0f;
+    SteeringExponent = 2.0f;
+    JoyDeadZone = 0.1f;
+    CollideCooldown = 1.0f;
+    CollidePeriod = 0.1f;
+    ResetMouse = 1;
+    AutoReverse = 1;
+}
+
+mmInput::~mmInput()
+{
+    if (Joy)
+    {
+        delete Joy;
+        Joy = nullptr;
+    }
+
+    if (IO)
+    {
+        delete[] IO;
+        IO = nullptr;
+    }
+
+    if (Events)
+    {
+        delete Events;
+        Events = nullptr;
+    }
+
+    GameInputPtr = nullptr;
+}
+
+i32 mmInput::AttachToPipe()
+{
+    return 0;
+}
+
+void mmInput::ClearEventHitFlags()
+{
+    for (i32 i = 0; i < NumControls; ++i)
+        IO[i].Pressed = false;
+}
+
+b32 mmInput::DeviceConnected()
+{
+    return Joy && Joy->NumSticks > 0;
+}
+
+i32 mmInput::DoingFF()
+{
+    if (HasForceFeedback && MMSTATE.EnableFF)
+    {
+        if (InputConfiguration == mmiWHEEL2AXIS || InputConfiguration == mmiJOYSTICK)
+            return 1;
+    }
+
+    return 0;
+}
+
+i32 mmInput::FFPlay(i32 arg1)
+{
+    if (UseForceFeedback)
+        return Joy->FFPlay(arg1);
+
+    return 0;
+}
+
+i32 mmInput::FFSetValues(i32 arg1, f32 arg2, f32 arg3)
+{
+    if (UseForceFeedback)
+        return Joy->FFSetValues(arg1, arg2, arg3);
+
+    return 0;
+}
+
+f32 mmInput::GetCamPan()
+{
+    return CamPanVal;
+}
+
+f32 mmInput::GetSteering()
+{
+    return SteeringVal;
+}
+
+f32 mmInput::GetThrottle()
+{
+    if (SwapThrottle)
+        return GetBrakesVal();
+
+    return GetThrottleVal();
+}
+
+f32 mmInput::GetThrottleVal()
+{
+    switch (IO[IOID_THROT].GetIODev().IoType)
+    {
+        case ioType::Discrete: return IsInputPressed(IOID_THROT) ? 1.0f : 0.0f;
+        case ioType::Continuous: return ThrottleVal;
+    }
+
+    return 0.0f;
+}
+
+b32 mmInput::Init(IDirectInputDevice2A* /*device*/)
+{
+    return false;
+}
+
+b32 mmInput::JoystickHasCoolie()
+{
+    if (Joy)
+        return Joy->HasCoolie();
+
+    return false;
+}
+
+i32 mmInput::PollStates()
+{
+    return 0;
+}
+
+i32 mmInput::PopEvent(i32* out_event)
+{
+    if (QueuedEvents <= 0)
+        return 0;
+
+    --QueuedEvents;
+    *out_event = static_cast<i32>(EventQueue[QueuedEvents] - 1);
+    return 1;
+}
+
+void mmInput::ProcessJoyEvents()
+{
+}
+
+i64 mmInput::ProcessStates()
+{
+    return 0;
+}
+
+void mmInput::PutEventInQueue(i64 arg1)
+{
+    if (QueuedEvents >= 30)
+        return;
+
+    EventQueue[QueuedEvents++] = arg1;
+}
+
+void mmInput::Reset()
+{
+    SwapThrottle = false;
+    BrakesVal = 0.0f;
+    HandbrakeVal = 0.0f;
+    ThrottleVal = 0.0f;
+    GamepadSteeringVal = 0.0f;
+}
+
+i32 mmInput::ToggleFFEnabled(i32 arg1)
+{
+    if (Joy)
+        return Joy->ToggleEnabled(arg1);
+
+    return 0;
+}

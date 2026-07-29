@@ -21,6 +21,7 @@ define_dummy_symbol(vector7_matrix34);
 #include "matrix34.h"
 
 #include "data7/metadefine.h"
+#include "vector7/vector4.h"
 
 #include <cmath>
 
@@ -264,11 +265,12 @@ Matrix34 Matrix34::Inverse() const
 i32 Matrix34::Approach(const Matrix34& target, f32 speed, f32 threshold, f32 dt)
 {
     f32 step = speed * dt;
-    f32 dist = m3.Dist(target.m3);
+    Vector3 delta = target.m3 - m3;
+    f32 dist = std::sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
     if (dist < threshold)
         return 1;
 
-    Vector3 dir = (target.m3 - m3).Normalize();
+    Vector3 dir = delta * (1.0f / dist);
     m3 = m3 + dir * std::min(step, dist);
     return 0;
 }

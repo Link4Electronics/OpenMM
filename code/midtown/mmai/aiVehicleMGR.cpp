@@ -130,6 +130,58 @@ void aiVehicleActive::DetachMe()
     AiVehicleMgr()->Detach(this);
 }
 
+aiVehicleActive::aiVehicleActive()
+{}
+
+aiVehicleActive::~aiVehicleActive()
+{}
+
+aiVehicleData::aiVehicleData()
+{}
+
+mmPhysEntity* aiVehicleInstance::AttachEntity()
+{
+    return nullptr;
+}
+
+void ARTS_FASTCALL aiVehicleInstance::Draw(i32)
+{}
+
+MetaClass* aiVehicleInstance::GetClass()
+{
+    return nullptr;
+}
+
+aiVehicleData* aiVehicleInstance::GetData()
+{
+    return nullptr;
+}
+
+mmPhysEntity* aiVehicleInstance::GetEntity()
+{
+    return nullptr;
+}
+
+Vector3 aiVehicleInstance::GetVelocity()
+{
+    return {};
+}
+
+void aiVehicleManager::AddWidgets(Bank*)
+{}
+
+void aiVehicleManager::Detach(aiVehicleActive*)
+{}
+
+void aiVehicleManager::Reset()
+{}
+
+void aiVehicleManager::Save()
+{}
+
+void aiVehicleManager::Update()
+{}
+
 #ifdef ARTS_DEV_BUILD
 void aiVehicleInstance::AddWidgets(Bank* /*arg1*/)
 {}

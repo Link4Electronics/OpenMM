@@ -20,6 +20,14 @@ define_dummy_symbol(mmai_aiPedestrian);
 
 #include "aiPedestrian.h"
 
+i32 aiPedestrianInstance::ComputeLod(f32, f32)
+{
+    return 0;
+}
+
+void ARTS_FASTCALL aiPedestrianInstance::Draw(i32)
+{}
+
 #ifdef ARTS_DEV_BUILD
 void aiPedestrianInstance::AddWidgets(Bank* /*arg1*/)
 {}

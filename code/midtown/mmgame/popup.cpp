@@ -54,6 +54,9 @@ ARTS_IMPORT extern u8 PopupCDSecond;
 // ?PopupCDFrame@@3EA
 ARTS_IMPORT extern u8 PopupCDFrame;
 
+mmPopup::mmPopup(mmGame* /*arg1*/, f32 /*arg2*/, f32 /*arg3*/, f32 /*arg4*/, f32 /*arg5*/)
+{}
+
 mmPopup::~mmPopup() = default;
 
 void mmPopup::DisablePU([[maybe_unused]] b32 resume_cd)
@@ -86,6 +89,30 @@ b32 mmPopup::IsEnabled()
 {
     return MenuMgr()->IsPopupOpen();
 }
+
+void mmPopup::ProcessChat()
+{}
+
+void mmPopup::ProcessEscape(i32 /*arg1*/)
+{}
+
+void mmPopup::ProcessKeymap(i32 /*arg1*/)
+{}
+
+void mmPopup::RecordPosition()
+{}
+
+void mmPopup::Reset()
+{}
+
+void mmPopup::ShowResults()
+{}
+
+void mmPopup::ShowRoster()
+{}
+
+void mmPopup::Update()
+{}
 
 void mmPopup::Lock()
 {

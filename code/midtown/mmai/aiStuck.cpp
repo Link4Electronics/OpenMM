@@ -20,5 +20,8 @@ define_dummy_symbol(mmai_aiStuck);
 
 #include "aiStuck.h"
 
+void aiStuck::Update()
+{}
+
 // ?StuckCB@@YAXPAVaiStuck@@@Z
 ARTS_IMPORT /*static*/ void StuckCB(aiStuck* arg1);

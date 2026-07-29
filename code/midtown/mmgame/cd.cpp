@@ -19,3 +19,15 @@
 define_dummy_symbol(mmgame_cd);
 
 #include "cd.h"
+
+void mmCDPlayer::NextTrack()
+{}
+
+void mmCDPlayer::PlayStop()
+{}
+
+void mmCDPlayer::PrevTrack()
+{}
+
+void mmCDPlayer::Toggle()
+{}

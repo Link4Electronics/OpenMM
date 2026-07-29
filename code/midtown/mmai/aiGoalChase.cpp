@@ -26,6 +26,9 @@ define_dummy_symbol(mmai_aiGoalChase);
 #include "aiPath.h"
 #include "aiVehiclePolice.h"
 
+void aiGoalChase::CalcSpeed(f32)
+{}
+
 static mem::cmd_param PARAM_speedycops {"speedycops"};
 static bool EnableCopSpeedBoost = false;
 static const f32 CopFrameRate = 30.0f;

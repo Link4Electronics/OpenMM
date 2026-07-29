@@ -19,3 +19,11 @@
 define_dummy_symbol(mmai_aiaudiomanager);
 
 #include "aiaudiomanager.h"
+
+aiAudioManager* AIAUDMGRPTR {};
+
+void aiAudioManager::LoadCopVoice()
+{}
+
+void aiAudioManager::RemoveVehicle(aiVehicleAmbient* /*arg1*/, i16 /*arg2*/)
+{}

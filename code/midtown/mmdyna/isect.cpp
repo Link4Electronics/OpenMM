@@ -19,3 +19,12 @@
 define_dummy_symbol(mmdyna_isect);
 
 #include "isect.h"
+
+mmIntersection::mmIntersection()
+{}
+
+void mmIntersection::InitSegment(const Vector3& /*arg1*/, const Vector3& /*arg2*/, mmBoundTemplate* /*arg3*/, i32 /*arg4*/, i32 /*arg5*/)
+{}
+
+void mmIntersection::Transform(const Matrix34* /*arg1*/)
+{}

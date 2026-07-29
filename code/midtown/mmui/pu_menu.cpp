@@ -114,3 +114,15 @@ i32 PUMenuBase::AddText(mmTextNode* node, void* font, LocString* text, i32 effec
 {
     return node->AddText(font, text, effects, x * menu_width_, y * menu_height_);
 }
+
+// ?AddExit@PUMenuBase@@QAEMMMMM@Z
+f32 PUMenuBase::AddExit(f32 /*x*/, f32 /*y*/, f32 /*width*/, f32 /*height*/)
+{
+    return 0.0f;
+}
+
+// ?CreateTitle@PUMenuBase@@QAEMXZ
+f32 PUMenuBase::CreateTitle()
+{
+    return 0.0f;
+}

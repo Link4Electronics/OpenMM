@@ -65,7 +65,7 @@ public:
     b32 Load(aconst char* city_name, b32 enable_lm);
 
     // ?SetMirrorPos@asRenderWeb@@QAEXMMMMM@Z
-    ARTS_IMPORT void SetMirrorPos(f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5);
+    void SetMirrorPos(f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5);
 
     // ?Update@asRenderWeb@@UAEXXZ
     ARTS_IMPORT void Update() override;

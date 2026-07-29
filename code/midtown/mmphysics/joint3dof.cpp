@@ -22,6 +22,43 @@ define_dummy_symbol(mmphysics_joint3dof);
 
 #include "inertia.h"
 
+void Joint3Dof::BreakJoint()
+{
+    JointFlags |= JOINT_FLAG_BROKEN;
+}
+
+void Joint3Dof::InitJoint3Dof(asInertialCS* arg1, const Vector3& arg2, asInertialCS* arg3, const Vector3& arg4)
+{
+    ICS1 = arg1;
+    Offset1 = arg2;
+    ICS2 = arg3;
+    Offset2 = arg4;
+
+    if (ICS1 && ICS2)
+    {
+        Orientation1 = ICS1->Matrix;
+        Orientation2 = ICS2->Matrix;
+        Position = ICS2->Matrix.m3 - ICS1->Matrix.m3;
+        JointFlags = JOINT_FLAG_LIMIT;
+    }
+
+    if (ICS1)
+        ICS1->Joint = this;
+    if (ICS2)
+        ICS2->Joint = this;
+}
+
+void Joint3Dof::Reset()
+{
+    JointFlags = 0;
+    Position = Vector3(0.0f, 0.0f, 0.0f);
+}
+
+void Joint3Dof::UnbreakJoint()
+{
+    JointFlags &= ~JOINT_FLAG_BROKEN;
+}
+
 void Joint3Dof::MoveICS()
 {
     // TODO: Why was LinearPush applied here?

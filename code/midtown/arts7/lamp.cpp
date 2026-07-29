@@ -21,8 +21,42 @@ define_dummy_symbol(arts7_lamp);
 #include "lamp.h"
 
 #include "agi/light.h"
+#include "data7/metadefine.h"
+
+asLamp::asLamp()
+{}
 
 asLamp::~asLamp() = default;
+
+void asLamp::AddWidgets(Bank* /*arg1*/)
+{}
+
+void asLamp::Cull()
+{
+    asNode::Cull();
+}
+
+MetaClass* asLamp::GetClass()
+{
+    return asNode::GetClass();
+}
+
+void asLamp::SetColor(const Vector3& /*arg1*/, f32 /*arg2*/)
+{}
+
+void asLamp::SetDistant()
+{}
+
+void asLamp::Update()
+{
+    asNode::Update();
+}
+
+void asLamp::DeclareFields()
+{}
+
+void asLamp::Regen()
+{}
 
 void asLamp::FileIO(MiniParser* /*arg1*/)
 {}

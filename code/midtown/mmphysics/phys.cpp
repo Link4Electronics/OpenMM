@@ -146,6 +146,48 @@ static mmPhysMover* GetInstMover(mmInstance* inst)
     return nullptr;
 }
 
+mmPhysicsMGR* mmPhysicsMGR::Instance = nullptr;
+
+void mmPhysicsMGR::AddWidgets(Bank* /*arg1*/)
+{}
+
+void mmPhysicsMGR::Init(asInertialCS* ics, mmViewCS* vcs)
+{
+    ObjectsChain = &CullCity()->ObjectsChain;
+
+    if (ics != nullptr && vcs != nullptr)
+    {
+        PlayerICS = ics;
+        PlayerVCS = vcs;
+    }
+
+    HitIdBound = CullCity()->HitIdBound;
+    Reset();
+}
+
+void mmPhysicsMGR::Reset()
+{
+    MoverCount = 0;
+    NumActiveRooms = 0;
+    NumBounds = 0;
+    OverSample.Reset();
+}
+
+void mmPhysicsMGR::Shutdown()
+{
+    OverSample.DeactivateNode();
+}
+
+void mmPhysicsMGR::Update()
+{
+    OverSample.Update();
+}
+
+void mmPhysicsMGR::UpdatePaused()
+{
+    OverSample.Update();
+}
+
 void mmPhysExec::Update()
 {
     if (OnlyPlayer)

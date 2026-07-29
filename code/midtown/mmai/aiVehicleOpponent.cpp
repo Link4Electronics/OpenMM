@@ -42,6 +42,15 @@ define_dummy_symbol(mmai_aiVehicleOpponent);
 static mem::cmd_param PARAM_detachopptrailermph {"detachopptrailermph"};
 static mem::cmd_param PARAM_maxoppcolors {"maxoppcolors"};
 
+void aiVehicleOpponent::AddToAiAudMgr()
+{}
+
+void aiVehicleOpponent::AddWidget(Bank*)
+{}
+
+void aiVehicleOpponent::Dump()
+{}
+
 void aiVehicleOpponent::DrawDamage()
 {}
 

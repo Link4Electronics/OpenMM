@@ -20,5 +20,14 @@ define_dummy_symbol(mmcamcs_polarcamcs);
 
 #include "polarcamcs.h"
 
+#include "mmcar/car.h"
+#include "mmcar/carmodel.h"
+
 // ?EnablePolarCamCollision@@3_NA
 ARTS_EXPORT bool EnablePolarCamCollision = false;
+
+void PolarCamCS::Init(mmCar* car)
+{
+    Car = car;
+    CarMatrix = &Car->Sim.LCS.World;
+}

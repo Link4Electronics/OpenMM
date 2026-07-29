@@ -19,3 +19,54 @@
 define_dummy_symbol(mmcar_transmission);
 
 #include "transmission.h"
+
+void mmTransmission::Automatic(i32 arg1)
+{
+    IsAutomatic = arg1 != 0;
+}
+
+i32 mmTransmission::Downshift()
+{
+    if (CurrentGear > 1)
+    {
+        CurrentGear--;
+        GearChanged = true;
+    }
+    return CurrentGear;
+}
+
+i32 mmTransmission::GetCurrentGear()
+{
+    return CurrentGear;
+}
+
+i32 mmTransmission::SetCurrentGear(i32 arg1)
+{
+    CurrentGear = arg1;
+    GearChanged = true;
+    return CurrentGear;
+}
+
+void mmTransmission::SetDrive()
+{
+    CurrentGear = 2;
+    InPark = false;
+    GearChanged = true;
+}
+
+void mmTransmission::SetReverse()
+{
+    CurrentGear = 0;
+    InPark = false;
+    GearChanged = true;
+}
+
+i32 mmTransmission::Upshift()
+{
+    if (CurrentGear < NumGears)
+    {
+        CurrentGear++;
+        GearChanged = true;
+    }
+    return CurrentGear;
+}

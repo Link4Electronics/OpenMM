@@ -20,6 +20,9 @@ define_dummy_symbol(mmcar_carmodel);
 
 #include "carmodel.h"
 
+#include "car.h"
+#include "mmbangers/active.h"
+
 enum
 {
     MESH_BODY = 0,
@@ -57,4 +60,41 @@ mmCarModel::mmCarModel()
 i32 mmCarModel::GetCarFlags(char* /*arg1*/)
 {
     return 0;
+}
+
+void mmCarModel::Activate()
+{
+    SetFlags(INST_FLAG_ACTIVE);
+}
+
+void mmCarModel::ApplyDamage(Vector3& /*arg1*/, f32 /*arg2*/)
+{}
+
+void mmCarModel::ClearDamage(b32 /*arg1*/)
+{}
+
+void mmCarModel::Deactivate()
+{
+    ClearFlags(INST_FLAG_ACTIVE);
+}
+
+void mmCarModel::Impact(Vector3* /*arg1*/)
+{}
+
+void mmCarModel::Init(aconst char* arg1, mmCar* arg2, i32 arg3)
+{
+    Entity = arg2;
+    CarSim = arg2 ? &arg2->Sim : nullptr;
+    PaintJobIndex = arg3;
+}
+
+void mmCarModel::Reset()
+{
+    field_20 = IDENTITY;
+    field_50 = 0;
+    PaintJobIndex = 0;
+    ClearDamage(false);
+    CarFlags = (CarFlags & ~(CAR_FLAG_FL_WHEEL | CAR_FLAG_FR_WHEEL | CAR_FLAG_BL_WHEEL | CAR_FLAG_BR_WHEEL)) |
+        (CAR_FLAG_FL_WHEEL | CAR_FLAG_FR_WHEEL | CAR_FLAG_BL_WHEEL | CAR_FLAG_BR_WHEEL);
+    CarFlags |= CAR_FLAG_ACTIVE;
 }

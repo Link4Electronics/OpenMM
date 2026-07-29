@@ -28,6 +28,51 @@ define_dummy_symbol(mmai_aiGoalFollowWayPts);
 #include "aiPath.h"
 #include "aiVehicleOpponent.h"
 
+aiGoalFollowWayPts::aiGoalFollowWayPts()
+{}
+
+aiGoalFollowWayPts::aiGoalFollowWayPts(char* pathfile, aiRailSet* railset, aiVehicleOpponent* vehicle_opponent,
+    b16* is_backup, b16* is_finished, b16* is_stopped, aconst char* race_name, f32 max_throttle)
+    : Rail(railset)
+    , Vehicle(vehicle_opponent)
+    , BackingUp(is_backup)
+    , IsFinished(is_finished)
+    , IsStopped(is_stopped)
+{}
+
+aiGoalFollowWayPts::~aiGoalFollowWayPts()
+{}
+
+void aiGoalFollowWayPts::AvoidCollision(i32)
+{}
+
+void aiGoalFollowWayPts::AvoidOpponentCollision(aiVehicleOpponent*)
+{}
+
+i32 aiGoalFollowWayPts::DetectCollision(i32*)
+{
+    return 0;
+}
+
+aiVehicleOpponent* aiGoalFollowWayPts::DetectOpponentCollision()
+{
+    return nullptr;
+}
+
+aiPath* aiGoalFollowWayPts::DetRdSegBetweenInts(aiIntersection*, aiIntersection*)
+{
+    return nullptr;
+}
+
+void aiGoalFollowWayPts::Init()
+{}
+
+void aiGoalFollowWayPts::PlanRoute()
+{}
+
+void aiGoalFollowWayPts::SolveTargetPoint()
+{}
+
 b32 aiGoalFollowWayPts::Context()
 {
     if (Car->Sim.CurrentDamage <= Car->Sim.MaxDamageScaled)

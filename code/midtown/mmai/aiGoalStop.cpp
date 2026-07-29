@@ -22,6 +22,9 @@ define_dummy_symbol(mmai_aiGoalStop);
 
 #include "mmcar/car.h"
 
+void aiGoalStop::Init()
+{}
+
 aiGoalStop::aiGoalStop(mmCar* car, b16* is_stopped)
     : Car(car)
     , IsStopped(is_stopped)

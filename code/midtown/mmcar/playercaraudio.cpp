@@ -19,3 +19,9 @@
 define_dummy_symbol(mmcar_playercaraudio);
 
 #include "playercaraudio.h"
+
+void mmPlayerCarAudio::StartSiren()
+{}
+
+void mmPlayerCarAudio::StopSiren()
+{}

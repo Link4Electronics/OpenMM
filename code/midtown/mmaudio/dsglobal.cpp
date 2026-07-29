@@ -142,4 +142,11 @@ u8 DSGlobal::CheckCDFile(aconst char* file_name)
     return false;
 }
 
+#else
+
+char** DSGlobal::GetDeviceNames()
+{
+    return nullptr;
+}
+
 #endif // _WIN32

@@ -93,7 +93,7 @@ public:
     ARTS_IMPORT MetaClass* GetClass() override;
 
     // ?Init@mmHudMap@@QAEXPAVasCamera@@PAVMatrix34@@PAVmmHUD@@PAVmmGame@@PAD@Z
-    ARTS_IMPORT void Init(asCamera* arg1, Matrix34* arg2, mmHUD* arg3, mmGame* arg4, char* arg5);
+    void Init(asCamera* arg1, Matrix34* arg2, mmHUD* arg3, mmGame* arg4, char* arg5);
 
     // ?RegisterCopsnRobbers@mmHudMap@@QAEXPAPAVVector3@@@Z
     ARTS_IMPORT void RegisterCopsnRobbers(Vector3** arg1);

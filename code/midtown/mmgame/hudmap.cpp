@@ -22,7 +22,18 @@ define_dummy_symbol(mmgame_hudmap);
 
 #include "agi/bitmap.h"
 #include "agi/pipeline.h"
+#include "hud.h"
 #include "mmcityinfo/state.h"
+
+void mmHudMap::Init(asCamera* camera, Matrix34* transform, mmHUD* hud, mmGame* game, char* name)
+{
+    Camera = camera;
+    Transform = transform;
+    Hud = hud;
+    Player = hud->Player;
+    SetName(name);
+    Mode = HUD_MAP_SMALL;
+}
 
 mmHudMap::~mmHudMap()
 {

@@ -25,10 +25,26 @@ define_dummy_symbol(mmcity_loader);
 #include "arts7/cullmgr.h"
 #include "eventq7/event.h"
 #include "localize/localize.h"
+#include "mmeffects/mmtext.h"
 
 #include "data7/printer.h"
 
 static mem::cmd_param PARAM_loadingscreen {"loadingscreen", "Show loading screens"};
+
+mmLoader::mmLoader()
+{
+    // Sub-objects are default-initialized (zero from memset in caller)
+    // asCullable constructor sets vtable, then we set mmLoader vtable below
+
+    // vtable pointer is handled by C++ compiler
+
+    Current = this;
+}
+
+mmLoader::~mmLoader()
+{
+    Current = nullptr;
+}
 
 void mmLoader::Init(aconst char* underlay_name, f32 bar_x, f32 bar_y)
 {
@@ -71,21 +87,51 @@ void mmLoader::Cull()
     text_node3_.Cull();
 }
 
-void mmLoader::EndTask(f32 /*percent*/)
+void mmLoader::SetIntroText(LocString* text)
 {
-    task_percent_ = 100;
-
-    // Render one frame of the loading screen so it's visible before transition
+    text_node3_.SetString(0, text);
     Update();
 }
 
-void mmLoader::BeginTask(LocString* /*text*/, f32 /*percent*/)
+void mmLoader::BeginTask(LocString* text, f32 percent)
 {
+    if (percent >= 0.0f)
+    {
+        if (percent > 1.0f)
+            percent = 1.0f;
+
+        current_task_percent_ = percent;
+        task_start_time_ = timer_.Time();
+    }
+
+    task_text_.SetString(0, text);
+    Update();
+}
+
+void mmLoader::EndTask(f32 percent)
+{
+    if (percent >= 0.0f)
+    {
+        if (percent > 1.0f)
+            percent = 1.0f;
+
+        current_task_percent_ = percent;
+        task_start_time_ = timer_.Time();
+    }
+
+    task_text_.SetString(0, LOC_TEXT(""));
+    task_text_.SetString(1, LOC_TEXT(""));
+    Update();
+
     task_percent_ = 0;
 }
 
 void mmLoader::Reset()
 {
+    task_start_percent_ = 0.0f;
+    current_task_percent_ = 0.0f;
+    task_start_time_ = 0.0f;
+    timer_.Reset();
 }
 
 void mmLoader::Update()

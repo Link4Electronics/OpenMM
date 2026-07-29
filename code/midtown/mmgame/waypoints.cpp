@@ -20,5 +20,8 @@ define_dummy_symbol(mmgame_waypoints);
 
 #include "waypoints.h"
 
+void mmWaypoints::GetClosestWaypoint()
+{}
+
 void mmWaypoints::Cull()
 {}

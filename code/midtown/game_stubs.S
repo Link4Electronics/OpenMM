@@ -4008,6 +4008,18 @@ _ZN12mmPlayerData19GetCheckpointPassedEv:
     xor eax, eax
     ret
 
+// mmPlayer::mmPlayer()
+.globl _ZN8mmPlayerC1Ev
+.globl _ZN8mmPlayerC2Ev
+.weak _ZN8mmPlayerC1Ev
+.weak _ZN8mmPlayerC2Ev
+.type _ZN8mmPlayerC1Ev, @function
+.type _ZN8mmPlayerC2Ev, @function
+_ZN8mmPlayerC1Ev:
+_ZN8mmPlayerC2Ev:
+    xor eax, eax
+    ret
+
 // agiRGBLighter::agiRGBLighter()
 .globl _ZN13agiRGBLighterC1Ev
 .weak _ZN13agiRGBLighterC1Ev

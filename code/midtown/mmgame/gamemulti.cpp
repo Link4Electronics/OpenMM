@@ -64,6 +64,15 @@ void mmGameMulti::DeactivateMapNetObject(i32 player)
     icon.Enabled = false;
 }
 
+void mmGameMulti::EnableRacers()
+{}
+
+void mmGameMulti::SendMsg(i32 /*arg1*/)
+{}
+
+void mmGameMulti::UpdateGame()
+{}
+
 void mmGameMulti::StartXYZ(i32 index, Vector3& out_result, Vector3& start_position, f32 rotation, f32 length)
 {
     Matrix34 transform = IDENTITY;

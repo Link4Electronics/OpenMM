@@ -19,3 +19,8 @@
 define_dummy_symbol(mmgame_rainaudio);
 
 #include "rainaudio.h"
+
+mmRainAudio::mmRainAudio()
+{
+    std::memset(gap0, 0, sizeof(gap0));
+}

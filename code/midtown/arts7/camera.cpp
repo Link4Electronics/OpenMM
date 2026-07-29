@@ -191,12 +191,13 @@ void asCamera::SetUnderlay(aconst char* path)
     }
 }
 
-void asCamera::SetViewport(f32 x, f32 y, f32 w, f32 h, i32 /*arg5*/)
+void asCamera::SetViewport(f32 x, f32 y, f32 w, f32 h, i32 clear_flags)
 {
     viewport_->GetParams().X = x;
     viewport_->GetParams().Y = y;
     viewport_->GetParams().Width = w;
     viewport_->GetParams().Height = h;
+    clear_flags_ = clear_flags;
 }
 
 void asCamera::SetWorld(Matrix34& matrix)
@@ -206,10 +207,51 @@ void asCamera::SetWorld(Matrix34& matrix)
 
 asCamera::~asCamera() = default;
 
+void asCamera::DrawEnd()
+{}
+
+void asCamera::FadeIn(f32 /*seconds*/, i32 /*arg2*/)
+{}
+
+void asCamera::FadeOut(f32 /*seconds*/, i32 /*arg2*/)
+{}
+
+void asCamera::SetClipArea(f32 left, f32 right, f32 bottom, f32 top)
+{
+    left_clip_scale_ = left;
+    right_clip_scale_ = right;
+    bottom_clip_scale_ = bottom;
+    top_clip_scale_ = top;
+}
+
+void asCamera::SetFog(f32 start, f32 end, f32 density, f32 r)
+{
+    fog_start_ = start;
+    fog_end_ = end;
+    fog_density_ = density;
+
+    // Interpret fourth arg as grayscale fog color
+    fog_color_.x = r;
+    fog_color_.y = r;
+    fog_color_.z = r;
+}
+
+void asCamera::SetLighting(i32 /*arg1*/)
+{}
+
+void asCamera::SetUnderlayCB(agiBitmap* bitmap, Callback* callback)
+{
+    underlay_bitmap_ = bitmap;
+    underlay_callback_ = callback;
+}
+
 void asCamera::Update()
 {
     asNode::Update();
 }
+
+void asCamera::DeclareFields()
+{}
 
 MetaClass* asCamera::GetClass()
 {

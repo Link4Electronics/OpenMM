@@ -20,6 +20,82 @@ define_dummy_symbol(mmphysics_inertia);
 
 #include "inertia.h"
 
+void asInertialCS::ApplyImpulse(const Vector3& impulse, const Vector3& point)
+{
+    LinearImpulse += impulse;
+    AngularImpulse += point % impulse;
+    NumImpulses++;
+}
+
+Vector3 asInertialCS::GetVelocity(const Vector3* arg1)
+{
+    if (arg1)
+        return LinearVelocity + (AngularVelocity % *arg1);
+    return LinearVelocity;
+}
+
+void asInertialCS::MoveICS()
+{
+    if (State == ICS_STATE_OFF)
+        return;
+
+    LinearVelocity = LinearMomentum * InvMass;
+    AngularVelocity = Vector3(
+        AngularMomentum.x * InvInertia.x,
+        AngularMomentum.y * InvInertia.y,
+        AngularMomentum.z * InvInertia.z);
+
+    if (LimitAngVelocity)
+    {
+        f32 ang_speed = AngularVelocity.Mag();
+        if (ang_speed > MaxAngVelocity)
+            AngularVelocity *= MaxAngVelocity / ang_speed;
+    }
+
+    Matrix.m3 += LinearVelocity * Time;
+
+    f32 ang_speed = AngularVelocity.Mag();
+    if (ang_speed > 0.0f)
+        Matrix.Rotate(AngularVelocity / ang_speed, ang_speed * Time);
+
+    asLinearCS::Update();
+
+    LinearForce = Vector3(0, 0, 0);
+    AngularTorque = Vector3(0, 0, 0);
+
+    if (NumImpulses > 0)
+    {
+        LinearMomentum += LinearImpulse;
+        AngularMomentum += AngularImpulse;
+        LinearImpulse = Vector3(0, 0, 0);
+        AngularImpulse = Vector3(0, 0, 0);
+        NumImpulses = 0;
+    }
+
+    Vel2 = LinearVelocity.Mag2();
+    AngVel2 = AngularVelocity.Mag2();
+    State = (Vel2 + AngVel2 > 0.01f) ? ICS_STATE_AWAKE : ICS_STATE_ASLEEP;
+}
+
+void asInertialCS::Zero()
+{
+    LinearMomentum = Vector3(0, 0, 0);
+    AngularMomentum = Vector3(0, 0, 0);
+    LinearVelocity = Vector3(0, 0, 0);
+    AngularVelocity = Vector3(0, 0, 0);
+    FrameVelocity = Vector3(0, 0, 0);
+    LinearForce = Vector3(0, 0, 0);
+    AngularTorque = Vector3(0, 0, 0);
+    LinearImpulse = Vector3(0, 0, 0);
+    AngularImpulse = Vector3(0, 0, 0);
+    LinearPush = Vector3(0, 0, 0);
+    TurnForce = Vector3(0, 0, 0);
+    FramePush = Vector3(0, 0, 0);
+    NumImpulses = 0;
+    Vel2 = 0.1f;
+    AngVel2 = 0.1f;
+}
+
 void asInertialCS::FileIO(MiniParser* /*arg1*/)
 {}
 

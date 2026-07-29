@@ -19,3 +19,9 @@
 define_dummy_symbol(mmgame_mmambientaudio);
 
 #include "mmambientaudio.h"
+
+mmAmbientAudio::mmAmbientAudio(mmPlayer* /*arg1*/)
+{}
+
+mmAmbientAudio::~mmAmbientAudio()
+{}

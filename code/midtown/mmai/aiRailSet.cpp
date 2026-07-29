@@ -19,3 +19,16 @@
 define_dummy_symbol(mmai_aiRailSet);
 
 #include "aiRailSet.h"
+
+i32 aiRailSet::CalcCopRailPosition(Vector3&, Vector3&, f32, f32)
+{
+    return 0;
+}
+
+void aiRailSet::DrawTurn(f32)
+{}
+
+i32 aiRailSet::SolveTurnType(aiPath*, aiPath*)
+{
+    return 0;
+}

@@ -19,3 +19,15 @@
 define_dummy_symbol(mmeffects_damage);
 
 #include "damage.h"
+
+mmDamage::mmDamage()
+{}
+
+mmDamage::~mmDamage()
+{}
+
+void mmDamage::Apply(Vector3& /*arg1*/, f32 /*arg2*/)
+{}
+
+void mmDamage::Reset(i32 /*arg1*/)
+{}

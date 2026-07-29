@@ -35,6 +35,8 @@ static int dbg_node_fd = -1;
 #include "stream/sparser.h"
 #include "stream/stream.h"
 
+i32 asNode::TimingCount {};
+
 asNode::~asNode()
 {
     if (parent_node_)

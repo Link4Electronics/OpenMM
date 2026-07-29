@@ -60,7 +60,10 @@ void mmGameSingle::Update()
     mmGame::Update();
 }
 
-__attribute__((weak)) void mmGameSingle::InitMyPlayer() {}
+void mmGameSingle::InitMyPlayer()
+{
+    Player = arnew mmPlayer();
+}
 __attribute__((weak)) void mmGameSingle::InitOtherPlayers() {}
 __attribute__((weak)) void mmGameSingle::InitGameObjects() {}
 __attribute__((weak)) void mmGameSingle::InitHUD() {}
@@ -69,7 +72,8 @@ __attribute__((weak)) void mmGameSingle::UpdateGame() {}
 __attribute__((weak)) void mmGameSingle::NextRace() {}
 __attribute__((weak)) void mmGameSingle::HitWaterHandler() {}
 __attribute__((weak)) void mmGameSingle::UpdateScore() {}
-__attribute__((weak)) void mmGameSingle::DisableRacers() {}
+void mmGameSingle::DisableRacers()
+{}
 __attribute__((weak)) void mmGameSingle::EnableRacers() {}
 __attribute__((weak)) void mmGameSingle::FinishMessage(i32, i32) {}
 __attribute__((weak)) i32 mmGameSingle::ProgressCheck(i32, i32) { return 0; }
@@ -81,16 +85,7 @@ __attribute__((weak)) void mmGameSingle::AddWidgets(Bank*) {}
 
 __attribute__((weak)) void agiBeginCones() {}
 
-// mmGame inherited virtuals (needed for vtable)
-__attribute__((weak)) void mmGame::InitGameStrings() {}
-__attribute__((weak)) void mmGame::DropThruCityHandler() {}
-__attribute__((weak)) void mmGame::CollideAIOpponents() {}
-__attribute__((weak)) i32 mmGame::GetCDTrack(i16) { return 0; }
-__attribute__((weak)) void mmGame::PlayerSetState() {}
-__attribute__((weak)) void mmGame::SetIconsState() {}
-__attribute__((weak)) void mmGame::UpdateSteeringBrakes() {}
-__attribute__((weak)) i32 mmGame::CalculateRaceScore(i32, i32) { return 0; }
-__attribute__((weak)) void mmGame::RespawnXYZ(Vector3&, f32&) {}
+// mmGame inherited virtuals (strong in game.cpp)
 
 b32 mmGameSingle::Init()
 {

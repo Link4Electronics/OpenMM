@@ -19,3 +19,12 @@
 define_dummy_symbol(mmcamcs_postcamcs);
 
 #include "postcamcs.h"
+
+#include "mmcar/car.h"
+#include "mmcar/carmodel.h"
+
+void PostCamCS::Init(mmCar* car)
+{
+    Car = car;
+    CarMatrix = &Car->Sim.LCS.World;
+}

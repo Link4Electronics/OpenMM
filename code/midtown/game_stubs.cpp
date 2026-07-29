@@ -60,24 +60,6 @@
 // --- dyna7 ---
 #include "dyna7/dyna.h"
 #include "dyna7/gfx.h"
-// --- mmai ---
-#include "mmai/aiGoalAvoidPlayer.h"
-#include "mmai/aiGoalChase.h"
-#include "mmai/aiGoalFollowWayPts.h"
-#include "mmai/aiGoalStop.h"
-#include "mmai/aiIntersection.h"
-#include "mmai/aiMap.h"
-#include "mmai/aiPath.h"
-#include "mmai/aiPedestrian.h"
-#include "mmai/aiRailSet.h"
-#include "mmai/aiStuck.h"
-#include "mmai/aiVehicle.h"
-#include "mmai/aiVehicleAmbient.h"
-#include "mmai/aiVehicleMGR.h"
-#include "mmai/aiVehicleOpponent.h"
-#include "mmai/aiVehiclePolice.h"
-#include "mmai/aiVehicleSpline.h"
-#include "mmai/aiaudiomanager.h"
 // --- mmanim ---
 #include "mmanim/AnimMgr.h"
 #include "mmanim/bridge.h"
@@ -194,8 +176,6 @@
 
 // === Data Stubs (Weak) ===
 
-__attribute__((weak)) aiAudioManager* AIAUDMGRPTR {};
-__attribute__((weak)) aiMap AIMAP {};
 __attribute__((weak)) AudManager* AUDMGRPTR {};
 __attribute__((weak)) b32 AnnotateTextures {};
 __attribute__((weak)) mmBangerData* BangerProjectile {};
@@ -235,6 +215,8 @@ __attribute__((weak)) i32 EnableCachedPoly {};
 __attribute__((weak)) i32 EnableTexSorting {};
 __attribute__((weak)) i32 EnvMapFlushes {};
 __attribute__((weak)) mmInput* GameInputPtr {};
+__attribute__((weak)) MetaClass* mmInput::GetClass() { return {}; }
+__attribute__((weak)) void mmInput::AddWidgets(Bank* /*arg1*/) {}
 __attribute__((weak)) f32 HitWaterTimer {};
 __attribute__((weak)) mmIODev* IODev {};
 __attribute__((weak)) i32 InputConfiguration {};
@@ -280,13 +262,6 @@ __attribute__((weak)) Vector3 XAXIS {};
 __attribute__((weak)) Vector3 YAXIS {};
 __attribute__((weak)) Vector3 ZAXIS {};
 __attribute__((weak)) i32 ZTrick {};
-__attribute__((weak)) f32 _fAmbientUpdate {};
-__attribute__((weak)) f32 _fCopUpdate {};
-__attribute__((weak)) f32 _fOppUpdate {};
-__attribute__((weak)) f32 _fPedUpdate {};
-__attribute__((weak)) f32 _fTotUpdate {};
-__attribute__((weak)) i32 _nAmbientQty {};
-__attribute__((weak)) i32 _nPedQty {};
 __attribute__((weak)) ulong agiBeginFrame {};
 __attribute__((weak)) ulong agiBeginScene {};
 __attribute__((weak)) i32 agiBitmapCount {};
@@ -369,21 +344,7 @@ __attribute__((weak)) void swTri(agiScreenVtx* arg1, agiScreenVtx* arg2, agiScre
 // === Class Member Stubs (Weak) ===
 
 // --- AudHead ---
-__attribute__((weak)) AudHead::AudHead(Matrix34* arg1) {}
-__attribute__((weak)) i32 AudHead::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
-__attribute__((weak)) void AudHead::SetDoppler(f32 arg1) {}
-__attribute__((weak)) void AudHead::SetRolloff(f32 arg1) {}
 // --- AudManager ---
-__attribute__((weak)) u32 AudManager::AlwaysEAX(u32 arg1) { return {}; }
-__attribute__((weak)) void AudManager::AssignCDVolume(f32 arg1) {}
-__attribute__((weak)) void AudManager::AssignWaveVolume(f32 arg1) {}
-__attribute__((weak)) AudManager::~AudManager() {}
-__attribute__((weak)) AudManager::AudManager() {}
-__attribute__((weak)) u8 AudManager::CheckCDFile(aconst char* arg1) { return {}; }
-__attribute__((weak)) void AudManager::DeallocateUIADF() {}
-__attribute__((weak)) void AudManager::Disable(i16 sfx_mode, i16 cd_mode) {}
-__attribute__((weak)) u32 AudManager::EAXEnabled() { return {}; }
-__attribute__((weak)) void AudManager::Enable(char* arg1, i16 arg2, i16 arg3) {}
 // UNPARSED MEMBER: [mmaudio/dsglobal.h] ARTS_IMPORT static const u32 GetCDMusicOnMask();
 // UNPARSED MEMBER: [mmaudio/dsglobal.h] ARTS_IMPORT static const u32 GetCommentaryOnMask();
 // UNPARSED MEMBER: [mmaudio/dsglobal.h] ARTS_IMPORT static const u32 GetDSound3DMask();
@@ -392,21 +353,7 @@ __attribute__((weak)) void AudManager::Enable(char* arg1, i16 arg2, i16 arg3) {}
 // UNPARSED MEMBER: [mmaudio/dsglobal.h] ARTS_IMPORT static const u32 GetSoundFXOnMask();
 // UNPARSED MEMBER: [mmaudio/dsglobal.h] ARTS_IMPORT static const u32 GetStereoOnMask();
 // UNPARSED MEMBER: [mmaudio/dsglobal.h] ARTS_IMPORT static const u32 GetUsingEAXMask();
-__attribute__((weak)) mmVoiceCommentary* AudManager::GetVoiceCommentaryPtr() { return {}; }
-__attribute__((weak)) i32 AudManager::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
-__attribute__((weak)) i32 AudManager::PlayCDTrack(i32 track, b32 restart) { return {}; }
-__attribute__((weak)) i32 AudManager::PlayCDTrack(i32 track, b32 restart) { return {}; }
-__attribute__((weak)) void AudManager::SetBitDepthAndSampleRate(i32 arg1, ulong arg2) {}
-__attribute__((weak)) void AudManager::SetCDPlayMode(u8 arg1) {}
-__attribute__((weak)) i32 AudManager::SetEAXPreset(EAX_REVERBPROPERTIES* arg1) { return {}; }
-__attribute__((weak)) void AudManager::SetNumChannels(i32 arg1) {}
-__attribute__((weak)) void AudManager::SetVoiceCommentaryPtr(mmVoiceCommentary* arg1) {}
-__attribute__((weak)) void AudManager::StopCD() {}
 // --- AudSound ---
-__attribute__((weak)) AudSound::~AudSound() {}
-__attribute__((weak)) i32 AudSound::IsPlaying() { return {}; }
-__attribute__((weak)) void AudSound::PlayOnce(char* arg1, f32 arg2, f32 arg3) {}
-__attribute__((weak)) void AudSound::Stop() {}
 // --- Bank ---
 // UNPARSED MEMBER: [mmwidget/menu.h] ARTS_IMPORT UIToggleButton* AddToggle(i32 arg1, LocString* arg2, i32* arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7,
 // --- BaseCamCS ---
@@ -421,27 +368,8 @@ __attribute__((weak)) i32 DLPTemplate::BoundBox(Vector3& arg1, Vector3& arg2, ac
 __attribute__((weak)) i32 DLPTemplate::GetCentroid(Vector3& arg1, aconst char* arg2) { return {}; }
 __attribute__((weak)) i32 DLPTemplate::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
 __attribute__((weak)) i32 DLPTemplate::Release() { return {}; }
-// --- DSGlobal ---
-__attribute__((weak)) char** DSGlobal::GetDeviceNames() { return {}; }
-// --- Joint3Dof ---
-__attribute__((weak)) void Joint3Dof::BreakJoint() {}
-__attribute__((weak)) void Joint3Dof::InitJoint3Dof(asInertialCS* arg1, const Vector3& arg2, asInertialCS* arg3, const Vector3& arg4) {}
-__attribute__((weak)) void Joint3Dof::Reset() {}
-__attribute__((weak)) void Joint3Dof::UnbreakJoint() {}
 // --- MArray ---
 __attribute__((weak)) void MArray::AddMenuData(i32 arg1, Vector4& arg2, char* arg3) {}
-// --- Matrix34 ---
-__attribute__((weak)) i32 Matrix34::Approach(const Matrix34& arg1, f32 arg2, f32 arg3, f32 arg4) { return {}; }
-__attribute__((weak)) void Matrix34::Dot(const Matrix34& arg1, const Matrix34& arg2) {}
-__attribute__((weak)) void Matrix34::FastInverse(const Matrix34& arg1) {}
-__attribute__((weak)) void Matrix34::FromEulers(const Vector3& arg1) {}
-__attribute__((weak)) Vector3 Matrix34::GetEulers() { return {}; }
-__attribute__((weak)) void Matrix34::PolarView(const Vector4& arg1) {}
-__attribute__((weak)) void Matrix34::RotateAbs(const Vector3& arg1, f32 arg2) {}
-__attribute__((weak)) void Matrix34::Rotate(const Vector3& arg1, f32 arg2) {}
-// --- Matrix44 ---
-__attribute__((weak)) Matrix44::Matrix44(const Matrix34& arg1) {}
-__attribute__((weak)) Matrix44::Matrix44(const Matrix34& arg1) {}
 // --- MenuManager ---
 __attribute__((weak)) void MenuManager::CheckBG(UIMenu* arg1) {}
 __attribute__((weak)) void MenuManager::DisablePU() {}
@@ -486,12 +414,6 @@ __attribute__((weak)) f32 UIMenu::UI_LEFT_MARGIN {};
 __attribute__((weak)) UIMenu::~UIMenu() {}
 __attribute__((weak)) UIMenu::UIMenu() {}
 __attribute__((weak)) i32 UIMenu::Update() { return {}; }
-// --- Vector2 ---
-__attribute__((weak)) f32 Vector2::InvMag() { return {}; }
-// --- Vector3 ---
-__attribute__((weak)) f32 Vector3::Dist(const Vector3& arg1) { return {}; }
-__attribute__((weak)) f32 Vector3::InvMag() { return {}; }
-__attribute__((weak)) f32 Vector3::Mag() { return {}; }
 // --- agiBILight ---
 __attribute__((weak)) agiBILight::agiBILight(agiPipeline* arg1) {}
 // --- agiBILightModel ---
@@ -535,27 +457,14 @@ __attribute__((weak)) agiMtlParameters::agiMtlParameters() {}
 __attribute__((weak)) void agiMtlParameters::Load(Stream* arg1) {}
 // --- agiPhysParameters ---
 __attribute__((weak)) void agiPhysParameters::Load(Stream* arg1) {}
-// --- agiPipeline ---
-__attribute__((weak)) agiPipeline* agiPipeline::CurrentPipe {};
-__attribute__((weak)) agiRenderer* agiPipeline::CurrentRenderer {};
-__attribute__((weak)) RcOwner<agiTexLut> agiPipeline::GetTexLut(aconst char* arg1) { return {}; }
+
 // --- agiPolySet ---
 __attribute__((weak)) i32 agiPolySet::TriCount {};
 // --- agiProjVtx ---
 __attribute__((weak)) i32 agiProjVtx::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
 // --- agiRGBLighter ---
 __attribute__((weak)) agiRGBLighter::agiRGBLighter() {}
-// --- agiSWRasterizer ---
-__attribute__((weak)) agiSWRasterizer::agiSWRasterizer(agiPipeline* arg1) {}
-__attribute__((weak)) void agiSWRasterizer::Card(i32 arg1, i32 arg2) {}
-__attribute__((weak)) void agiSWRasterizer::Quad(i32 arg1, i32 arg2, i32 arg3, i32 arg4) {}
-__attribute__((weak)) void agiSWRasterizer::Triangle(i32 arg1, i32 arg2, i32 arg3) {}
-__attribute__((weak)) void agiSWRasterizer::Verts(agiVtx* arg1, i32 arg2) {}
-// --- agiSWTexDef ---
-__attribute__((weak)) b32 agiSWTexDef::IsAvailable() { return {}; }
-__attribute__((weak)) void agiSWTexDef::Lock() {}
-__attribute__((weak)) void agiSWTexDef::Request() {}
-__attribute__((weak)) void agiSWTexDef::Set(Vector2& arg1, Vector2& arg2) {}
+
 // --- agiSurfRenderer ---
 __attribute__((weak)) void agiSurfRenderer::DrawCard(Vector3& arg1) {}
 __attribute__((weak)) void agiSurfRenderer::Draw(DLP* arg1, i32 arg2) {}
@@ -597,128 +506,14 @@ __attribute__((weak)) u32 agiViewParameters::ViewSerial {};
 __attribute__((weak)) agiViewport* agiViewport::Active {};
 // --- agiZBufRenderer ---
 __attribute__((weak)) agiZBufRenderer::agiZBufRenderer(agiRasterizer* arg1) {}
-// --- aiAudioManager ---
-__attribute__((weak)) void aiAudioManager::LoadCopVoice() {}
-__attribute__((weak)) void aiAudioManager::RemoveVehicle(aiVehicleAmbient* arg1, i16 arg2) {}
-// --- aiGoalChase ---
-__attribute__((weak)) void aiGoalChase::CalcSpeed(f32 arg1) {}
-// --- aiGoalFollowWayPts ---
-__attribute__((weak)) aiGoalFollowWayPts::~aiGoalFollowWayPts() {}
-__attribute__((weak)) aiGoalFollowWayPts::aiGoalFollowWayPts() {}
-__attribute__((weak)) void aiGoalFollowWayPts::AvoidCollision(i32 dist_to_side) {}
-__attribute__((weak)) void aiGoalFollowWayPts::AvoidOpponentCollision(aiVehicleOpponent* arg1) {}
-__attribute__((weak)) i32 aiGoalFollowWayPts::DetectCollision(i32* arg1) { return {}; }
-__attribute__((weak)) aiVehicleOpponent* aiGoalFollowWayPts::DetectOpponentCollision() { return {}; }
-__attribute__((weak)) aiPath* aiGoalFollowWayPts::DetRdSegBetweenInts(aiIntersection* arg1, aiIntersection* arg2) { return {}; }
-__attribute__((weak)) void aiGoalFollowWayPts::Init() {}
-__attribute__((weak)) void aiGoalFollowWayPts::PlanRoute() {}
-__attribute__((weak)) void aiGoalFollowWayPts::SolveTargetPoint() {}
-// --- aiGoalStop ---
-__attribute__((weak)) void aiGoalStop::Init() {}
-// --- aiIntersection ---
-__attribute__((weak)) aiPath* aiIntersection::Path(i32 arg1) { return {}; }
-// --- aiMap ---
-__attribute__((weak)) void aiMap::AllwaysGreen() {}
-__attribute__((weak)) void aiMap::AllwaysRed() {}
-__attribute__((weak)) i32 aiMap::ChooseNextFreewayLink(aiRailSet* arg1) { return {}; }
-__attribute__((weak)) i32 aiMap::ChooseNextLeftStraightLink(aiRailSet* arg1) { return {}; }
-__attribute__((weak)) i32 aiMap::ChooseNextRightStraightFreewayLink(aiRailSet* arg1) { return {}; }
-__attribute__((weak)) i32 aiMap::ChooseNextRightStraightLink(aiRailSet* arg1) { return {}; }
-__attribute__((weak)) i32 aiMap::ChooseNextStraightLink(aiRailSet* arg1) { return {}; }
-__attribute__((weak)) void aiMap::Clean() {}
-__attribute__((weak)) void aiMap::Cull() {}
-// UNPARSED MEMBER: [mmai/aiMap.h] ARTS_IMPORT i32 DetermineOppMapComponent(Matrix34& arg1, aiRailSet* arg2, i16* arg3, i16* arg4, f32* arg5,
-__attribute__((weak)) void aiMap::DrawAppRoads() {}
-__attribute__((weak)) void aiMap::DrawNextVisibleAmbient() {}
-__attribute__((weak)) MetaClass* aiMap::GetClass() { return {}; }
-__attribute__((weak)) void aiMap::Init(char* arg1, char* arg2, char* arg3, mmCar* arg4) {}
-__attribute__((weak)) void aiMap::Reset() {}
-__attribute__((weak)) void aiMap::Update() {}
-// --- aiPath ---
-__attribute__((weak)) f32 aiPath::CenterLength(i32 arg1, i32 arg2) { return {}; }
-__attribute__((weak)) i32 aiPath::Index(Vector3& arg1) { return {}; }
-__attribute__((weak)) void aiPath::StopDestinationSources(b32 arg1) {}
-// --- aiPedestrianInstance ---
-__attribute__((weak)) i32 aiPedestrianInstance::ComputeLod(f32 arg1, f32 arg2) { return {}; }
-__attribute__((weak)) void aiPedestrianInstance::Draw(DLP* arg1, i32 arg2) {}
-// UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT void ARTS_FASTCALL DrawShadow() override;
-// UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT void ARTS_FASTCALL FromMatrix(const Matrix34& arg1) override;
-// UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Vector3& ARTS_FASTCALL GetPos() override;
-// UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Matrix34& ARTS_FASTCALL ToMatrix(Matrix34& arg1) override;
-// --- aiRailSet ---
-__attribute__((weak)) i32 aiRailSet::CalcCopRailPosition(Vector3& arg1, Vector3& arg2, f32 arg3, f32 arg4) { return {}; }
-__attribute__((weak)) void aiRailSet::DrawTurn(f32 arg1) {}
-__attribute__((weak)) i32 aiRailSet::SolveTurnType(aiPath* arg1, aiPath* arg2) { return {}; }
-// --- aiStuck ---
-__attribute__((weak)) void aiStuck::Update() {}
-// --- aiVehicle ---
-__attribute__((weak)) void aiVehicle::Init(i32 arg1) {}
-__attribute__((weak)) void aiVehicle::Reset() {}
-__attribute__((weak)) void aiVehicle::Update() {}
-// --- aiVehicleActive ---
-__attribute__((weak)) aiVehicleActive::~aiVehicleActive() {}
-__attribute__((weak)) aiVehicleActive::aiVehicleActive() {}
-// --- aiVehicleAmbient ---
-__attribute__((weak)) void aiVehicleAmbient::Dump() {}
-// --- aiVehicleData ---
-__attribute__((weak)) aiVehicleData::aiVehicleData() {}
-// --- aiVehicleInstance ---
-__attribute__((weak)) mmPhysEntity* aiVehicleInstance::AttachEntity() { return {}; }
-// UNPARSED MEMBER: [mmai/aiVehicleMGR.h] ARTS_IMPORT void ARTS_FASTCALL DrawGlow() override;
-__attribute__((weak)) void aiVehicleInstance::Draw(DLP* arg1, i32 arg2) {}
-// UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT void ARTS_FASTCALL DrawShadow() override;
-// UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT void ARTS_FASTCALL FromMatrix(const Matrix34& arg1) override;
-__attribute__((weak)) MetaClass* aiVehicleInstance::GetClass() { return {}; }
-__attribute__((weak)) aiVehicleData* aiVehicleInstance::GetData() { return {}; }
-__attribute__((weak)) mmPhysEntity* aiVehicleInstance::GetEntity() { return {}; }
-// UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Vector3& ARTS_FASTCALL GetPos() override;
-__attribute__((weak)) Vector3 aiVehicleInstance::GetVelocity() { return {}; }
-// UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Matrix34& ARTS_FASTCALL ToMatrix(Matrix34& arg1) override;
-// --- aiVehicleManager ---
-__attribute__((weak)) void aiVehicleManager::AddWidgets(Bank* arg1) {}
-__attribute__((weak)) void aiVehicleManager::Detach(aiVehicleActive* arg1) {}
-__attribute__((weak)) void aiVehicleManager::Reset() {}
-__attribute__((weak)) void aiVehicleManager::Save(Stream* arg1) {}
-__attribute__((weak)) i32 aiVehicleManager::Update() { return {}; }
-// --- aiVehicleOpponent ---
-__attribute__((weak)) void aiVehicleOpponent::AddToAiAudMgr() {}
-__attribute__((weak)) void aiVehicleOpponent::AddWidget(Bank* arg1) {}
-__attribute__((weak)) void aiVehicleOpponent::Dump() {}
-// --- aiVehiclePolice ---
-__attribute__((weak)) void aiVehiclePolice::Dump() {}
-// --- aiVehicleSpline ---
-__attribute__((weak)) void aiVehicleSpline::DrawId() {}
-__attribute__((weak)) MetaClass* aiVehicleSpline::GetClass() { return {}; }
-__attribute__((weak)) void aiVehicleSpline::Reset() {}
-__attribute__((weak)) i32 aiVehicleSpline::Type() { return {}; }
-__attribute__((weak)) void aiVehicleSpline::Update() {}
 // --- asBenchStats ---
 __attribute__((weak)) void asBenchStats::Current(asBenchStats* arg1) {}
 __attribute__((weak)) void asBenchStats::Reset() {}
 // --- asBirthRule ---
 __attribute__((weak)) void asBirthRule::InitSpark(asSparkInfo* arg1, asSparkPos* arg2) {}
-// --- asBound ---
-__attribute__((weak)) asBound::asBound() {}
-// --- asCamera ---
-__attribute__((weak)) asCamera::~asCamera() {}
-__attribute__((weak)) void asCamera::DrawEnd() {}
-__attribute__((weak)) void asCamera::FadeIn(f32 arg1, i32 arg2) {}
-__attribute__((weak)) void asCamera::SetUnderlay(aconst char* arg1) {}
-__attribute__((weak)) void asCamera::SetViewport(f32 arg1, f32 arg2, f32 arg3, f32 arg4, i32 arg5) {}
-__attribute__((weak)) i32 asCamera::Update() { return {}; }
 // --- asInertialCS ---
-__attribute__((weak)) void asInertialCS::ApplyImpulse(const Vector3& arg1, const Vector3& arg2) {}
 __attribute__((weak)) Vector3 asInertialCS::GetVelocity() { return {}; }
-__attribute__((weak)) void asInertialCS::MoveICS() {}
 __attribute__((weak)) i32 asInertialCS::Update() { return {}; }
-__attribute__((weak)) void asInertialCS::Zero() {}
-// --- asLamp ---
-__attribute__((weak)) void asLamp::AddWidgets(Bank* arg1) {}
-__attribute__((weak)) asLamp::asLamp() {}
-__attribute__((weak)) void asLamp::Cull(i32 arg1) {}
-__attribute__((weak)) MetaClass* asLamp::GetClass() { return {}; }
-__attribute__((weak)) void asLamp::SetDistant() {}
-__attribute__((weak)) i32 asLamp::Update() { return {}; }
 // --- asLineSparks ---
 __attribute__((weak)) void asLineSparks::RadialBlast(i32 arg1, Vector3& arg2, Vector3& arg3) {}
 // --- asMeshSetForm ---
@@ -736,8 +531,7 @@ __attribute__((weak)) i32 asNetObject::Update() { return {}; }
 __attribute__((weak)) void asNetwork::CloseSession() {}
 __attribute__((weak)) void asNetwork::DeallocateStreamObjs() {}
 __attribute__((weak)) void asNetwork::Send(ulong arg1, void* arg2, ulong arg3, i32 arg4) {}
-// --- asNode ---
-__attribute__((weak)) i32 asNode::TimingCount {};
+
 // --- asPortalWeb ---
 __attribute__((weak)) asPortalCell* asPortalWeb::AddCell(aconst char* name, asPortalRenderable* render, u32 index) { return {}; }
 __attribute__((weak)) asPortalEdge* asPortalWeb::AddEdge(aconst char* name, asPortalCell* cell1, asPortalCell* cell2, i32 num_edges) { return {}; }
@@ -747,9 +541,6 @@ __attribute__((weak)) void asRenderWeb::Cull(i32 arg1) {}
 __attribute__((weak)) i32 asRenderWeb::Update() { return {}; }
 // --- asSimulation ---
 __attribute__((weak)) void asSimulation::Benchmark() {}
-// --- mmAmbientAudio ---
-__attribute__((weak)) mmAmbientAudio::~mmAmbientAudio() {}
-__attribute__((weak)) mmAmbientAudio::mmAmbientAudio(mmPlayer* arg1) {}
 // --- mmAnimInstState ---
 __attribute__((weak)) i32 mmAnimInstState::FrameDelta {};
 __attribute__((weak)) f32 mmAnimInstState::FrameFraction {};
@@ -796,38 +587,12 @@ __attribute__((weak)) i32 mmBridgeSet::ReadEntry(Stream* arg1, i32 arg2) { retur
 __attribute__((weak)) MetaClass* mmBuildingInstance::GetClass() { return {}; }
 // UNPARSED MEMBER: [mmcity/cullcity.h] ARTS_IMPORT f32 ARTS_FASTCALL GetScale() override;
 __attribute__((weak)) usize mmBuildingInstance::SizeOf() { return {}; }
-// --- mmCDPlayer ---
-__attribute__((weak)) void mmCDPlayer::NextTrack() {}
-__attribute__((weak)) void mmCDPlayer::PlayStop() {}
-__attribute__((weak)) void mmCDPlayer::PrevTrack() {}
-__attribute__((weak)) void mmCDPlayer::Toggle() {}
 // --- mmCRHUD ---
 __attribute__((weak)) void mmCRHUD::ActivateRosterGold(ulong arg1) {}
-// --- mmCar ---
-__attribute__((weak)) void mmCar::Init(aconst char* arg1, i32 arg2, i32 arg3) {}
-__attribute__((weak)) f32 mmCar::PostUpdateTime {};
-__attribute__((weak)) f32 mmCar::TotalUpdateTime {};
-__attribute__((weak)) f32 mmCar::UpdateTime {};
 // --- mmCarModel ---
-__attribute__((weak)) i32 mmCarModel::Activate() { return {}; }
-__attribute__((weak)) void mmCarModel::ApplyDamage(Vector3& arg1, f32 arg2) {}
-__attribute__((weak)) void mmCarModel::ClearDamage(b32 arg1) {}
-__attribute__((weak)) void mmCarModel::Deactivate() {}
+__attribute__((weak)) void mmCarModel::EjectWheels(i32 arg1) {}
 __attribute__((weak)) void mmCarModel::Impact(i32 arg1) {}
 __attribute__((weak)) i32 mmCarModel::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
-__attribute__((weak)) void mmCarModel::Reset() {}
-// --- mmCarSim ---
-__attribute__((weak)) void mmCarSim::Explode() {}
-__attribute__((weak)) mmCarSim::~mmCarSim() {}
-__attribute__((weak)) mmCarSim::mmCarSim() {}
-__attribute__((weak)) void mmCarSim::PlayHorn() {}
-__attribute__((weak)) void mmCarSim::PlayImpactAudio(i16 arg1, mmIntersection* arg2, Vector3* arg3) {}
-__attribute__((weak)) void mmCarSim::ReInit(aconst char* arg1) {}
-__attribute__((weak)) void mmCarSim::RemoveNetVehicleAudio() {}
-__attribute__((weak)) void mmCarSim::Reset() {}
-__attribute__((weak)) void mmCarSim::StartSiren() {}
-__attribute__((weak)) void mmCarSim::StopHorn() {}
-__attribute__((weak)) void mmCarSim::StopSiren() {}
 // --- mmCellRenderer ---
 __attribute__((weak)) i32 mmCellRenderer::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
 __attribute__((weak)) mmCellRenderer::mmCellRenderer() {}
@@ -849,11 +614,25 @@ __attribute__((weak)) void mmCullCity::UpdateSnowTextures() {}
 // --- mmDamage ---
 __attribute__((weak)) mmDamage::~mmDamage() {}
 __attribute__((weak)) mmDamage::mmDamage() {}
+__attribute__((weak)) void mmDamage::Apply(Vector3& arg1, float arg2) {}
+__attribute__((weak)) void mmDamage::Reset(int arg1) {}
 // --- mmDofBangerInstance ---
 // UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT void ARTS_FASTCALL FromMatrix(const Matrix34& arg1) override;
 // UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Vector3& ARTS_FASTCALL GetPos() override;
 __attribute__((weak)) usize mmDofBangerInstance::SizeOf() { return {}; }
 // UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Matrix34& ARTS_FASTCALL ToMatrix(Matrix34& arg1) override;
+// --- mmCarSim ---
+__attribute__((weak)) void mmCarSim::Explode() {}
+__attribute__((weak)) mmCarSim::~mmCarSim() {}
+__attribute__((weak)) mmCarSim::mmCarSim() {}
+__attribute__((weak)) void mmCarSim::PlayHorn() {}
+__attribute__((weak)) void mmCarSim::PlayImpactAudio(i16 arg1, mmIntersection* arg2, Vector3* arg3) {}
+__attribute__((weak)) void mmCarSim::ReInit(aconst char* arg1) {}
+__attribute__((weak)) void mmCarSim::RemoveNetVehicleAudio() {}
+__attribute__((weak)) void mmCarSim::Reset() {}
+__attribute__((weak)) void mmCarSim::StartSiren() {}
+__attribute__((weak)) void mmCarSim::StopHorn() {}
+__attribute__((weak)) void mmCarSim::StopSiren() {}
 // --- mmDropDown ---
 __attribute__((weak)) void mmDropDown::SetDisabledColors() {}
 __attribute__((weak)) void mmDropDown::SetString(LocString* arg1) {}
@@ -864,24 +643,10 @@ __attribute__((weak)) mmEdgeBodyIsect::mmEdgeBodyIsect() {}
 __attribute__((weak)) i32 mmFrictionFF::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
 __attribute__((weak)) void mmFrictionFF::Stop() {}
 // --- mmGame ---
-__attribute__((weak)) void mmGame::AddWidgets(Bank* arg1) {}
-__attribute__((weak)) void mmGame::DropThruCityHandler() {}
-__attribute__((weak)) i32 mmGame::GetCDTrack(i16 arg1) { return {}; }
-__attribute__((weak)) MetaClass* mmGame::GetClass() { return {}; }
-__attribute__((weak)) void mmGame::HitWaterHandler() {}
-__attribute__((weak)) void mmGame::InitGameStrings() {}
-__attribute__((weak)) void mmGame::InitOtherPlayers() {}
-__attribute__((weak)) void mmGame::PlayerSetState() {}
-__attribute__((weak)) void mmGame::Reset() {}
-__attribute__((weak)) void mmGame::SetIconsState() {}
-__attribute__((weak)) void mmGame::Update() {}
+// MOVED TO game.cpp (strong): AddWidgets, DropThruCityHandler, GetCDTrack, GetClass, HitWaterHandler,
+//   InitGameStrings, InitOtherPlayers, PlayerSetState, Reset, SetIconsState, Update
 // --- mmGameManager ---
-__attribute__((weak)) agiTexSorter* mmGameManager::Instance {};
-__attribute__((weak)) void mmGameManager::LoadReplay(aconst char* arg1) {}
-__attribute__((weak)) mmGameManager::~mmGameManager() {}
-__attribute__((weak)) mmGameManager::mmGameManager() {}
-__attribute__((weak)) void mmGameManager::SaveReplay(aconst char* arg1) {}
-__attribute__((weak)) void mmGameManager::StartReplay() {}
+// MOVED TO gameman.cpp (strong): Instance, LoadReplay, ~mmGameManager, mmGameManager, SaveReplay, StartReplay
 // --- mmGameMulti ---
 __attribute__((weak)) void mmGameMulti::EnableRacers() {}
 __attribute__((weak)) void mmGameMulti::SendMsg(i32 arg1) {}
@@ -895,16 +660,8 @@ __attribute__((weak)) mmGameRecord::mmGameRecord(f32 arg1) {}
 // --- mmGameSingle ---
 __attribute__((weak)) void mmGameSingle::DisableRacers() {}
 // --- mmHUD ---
-__attribute__((weak)) void mmHUD::ActivateDash() {}
-__attribute__((weak)) void mmHUD::DeactivateDash() {}
-__attribute__((weak)) void mmHUD::Enable(char* arg1, i16 arg2, i16 arg3) {}
-__attribute__((weak)) void mmHUD::GetPosHdg(Vector4& arg1) {}
-__attribute__((weak)) i32 mmHUD::IsDashActive() { return {}; }
-__attribute__((weak)) mmHUD::~mmHUD() {}
-__attribute__((weak)) void mmHUD::PostChatMessage(aconst char* arg1) {}
-__attribute__((weak)) void mmHUD::SetMessage(LocString* arg1, f32 time, b32 top = false) {}
-__attribute__((weak)) void mmHUD::StopTimers() {}
-__attribute__((weak)) void mmHUD::ToggleExternalView() {}
+// MOVED TO hud.cpp (strong): ActivateDash, DeactivateDash, Enable, GetPosHdg, IsDashActive, ~mmHUD,
+//   PostChatMessage, SetMessage, StopTimers, ToggleExternalView
 // --- mmHitBangerInstance ---
 __attribute__((weak)) void mmHitBangerInstance::Draw(DLP* arg1, i32 arg2) {}
 // --- mmHudMap ---
@@ -931,28 +688,6 @@ __attribute__((weak)) i32 mmIcons::Init(char* arg1, char* arg2, Vector3* arg3) {
 __attribute__((weak)) mmIcons::~mmIcons() {}
 __attribute__((weak)) mmIcons::mmIcons() {}
 __attribute__((weak)) void mmIcons::RegisterOpponents(OppIconInfo* arg1, i32 arg2) {}
-// --- mmInput ---
-__attribute__((weak)) i32 mmInput::AttachToPipe() { return {}; }
-__attribute__((weak)) void mmInput::ClearEventHitFlags() {}
-__attribute__((weak)) b32 mmInput::DeviceConnected() { return {}; }
-__attribute__((weak)) i32 mmInput::DoingFF() { return {}; }
-__attribute__((weak)) i32 mmInput::FFPlay(i32 arg1) { return {}; }
-__attribute__((weak)) i32 mmInput::FFSetValues(i32 arg1, f32 arg2, f32 arg3) { return {}; }
-__attribute__((weak)) f32 mmInput::GetCamPan() { return {}; }
-__attribute__((weak)) f32 mmInput::GetSteering() { return {}; }
-__attribute__((weak)) f32 mmInput::GetThrottle() { return {}; }
-__attribute__((weak)) f32 mmInput::GetThrottleVal() { return {}; }
-__attribute__((weak)) b32 mmInput::Init(IDirectInputDevice2A* device) { return {}; }
-__attribute__((weak)) b32 mmInput::JoystickHasCoolie() { return {}; }
-__attribute__((weak)) mmInput::~mmInput() {}
-__attribute__((weak)) mmInput::mmInput() {}
-__attribute__((weak)) i32 mmInput::PollStates() { return {}; }
-__attribute__((weak)) i32 mmInput::PopEvent(i32* arg1) { return {}; }
-__attribute__((weak)) void mmInput::ProcessJoyEvents() {}
-__attribute__((weak)) i64 mmInput::ProcessStates() { return {}; }
-__attribute__((weak)) void mmInput::PutEventInQueue(i64 arg1) {}
-__attribute__((weak)) void mmInput::Reset() {}
-__attribute__((weak)) i32 mmInput::ToggleFFEnabled(i32 arg1) { return {}; }
 // --- mmInstance ---
 __attribute__((weak)) static mmInstance::void(*DynamicLighter)(u8*, u32*, u32*, agiMeshSet*) { return {}; }
 __attribute__((weak)) MetaClass* mmInstance::GetClass() { return {}; }
@@ -1003,31 +738,16 @@ __attribute__((weak)) void mmMultiCR::UpdateTimeWarning() {}
 __attribute__((weak)) void mmPhysExec::DoUpdateAll() {}
 __attribute__((weak)) void mmPhysExec::DoUpdatePlayerOnly() {}
 // --- mmPhysicsMGR ---
-__attribute__((weak)) void mmPhysicsMGR::AddWidgets(Bank* arg1) {}
 __attribute__((weak)) void mmPhysicsMGR::Collide(Vector3 arg1) {}
 __attribute__((weak)) void mmPhysicsMGR::Cull(i32 arg1) {}
 __attribute__((weak)) i32 mmPhysicsMGR::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
 __attribute__((weak)) agiTexSorter* mmPhysicsMGR::Instance {};
-__attribute__((weak)) void mmPhysicsMGR::Reset() {}
-__attribute__((weak)) void mmPhysicsMGR::Shutdown() {}
-__attribute__((weak)) i32 mmPhysicsMGR::Update() { return {}; }
-__attribute__((weak)) void mmPhysicsMGR::UpdatePaused() {}
 // --- mmPlayer ---
-__attribute__((weak)) void mmPlayer::EnableRegen(i32 arg1) {}
-__attribute__((weak)) i32 mmPlayer::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
-__attribute__((weak)) i32 mmPlayer::IsMaxDamaged() { return {}; }
-__attribute__((weak)) i32 mmPlayer::IsPOV() { return {}; }
-__attribute__((weak)) void mmPlayer::ResetDamage() {}
-__attribute__((weak)) void mmPlayer::SetCamInterest(asInertialCS* arg1) {}
-__attribute__((weak)) void mmPlayer::SetPreRaceCam() {}
-__attribute__((weak)) void mmPlayer::SetWideFOV(b32 arg1) {}
-__attribute__((weak)) void mmPlayer::ToggleCam() {}
-__attribute__((weak)) void mmPlayer::ToggleDash() {}
-__attribute__((weak)) void mmPlayer::ToggleExternalView() {}
-__attribute__((weak)) void mmPlayer::ToggleWideFOV() {}
-// --- mmPlayerCarAudio ---
-__attribute__((weak)) void mmPlayerCarAudio::StartSiren() {}
-__attribute__((weak)) void mmPlayerCarAudio::StopSiren() {}
+// MOVED TO player.cpp (strong): EnableRegen, IsMaxDamaged, IsPOV, ResetDamage, SetCamInterest,
+//   SetPreRaceCam, SetWideFOV, ToggleCam, ToggleDash, ToggleExternalView, ToggleWideFOV
+// NOTE: i32 mmPlayer::Init(char*, char*, Vector3*) kept as weak - different signature than header's void Init(char*, char*, mmGame*)
+// --- mmCtrlCFG ---
+__attribute__((weak)) mmCtrlCFG::~mmCtrlCFG() {}
 // --- mmPlayerConfig ---
 __attribute__((weak)) void mmPlayerConfig::GetAudio() {}
 __attribute__((weak)) void mmPlayerConfig::GetControls() {}
@@ -1036,6 +756,7 @@ __attribute__((weak)) void mmPlayerConfig::GetViewSettings() {}
 __attribute__((weak)) mmPlayerConfig::~mmPlayerConfig() {}
 __attribute__((weak)) mmPlayerConfig::mmPlayerConfig() {}
 __attribute__((weak)) void mmPlayerConfig::Save(Stream* arg1) {}
+__attribute__((weak)) MetaClass* mmPlayerConfig::GetClass() { return {}; }
 // --- mmPlayerData ---
 __attribute__((weak)) i32 mmPlayerData::GetBlitzPassed() { return {}; }
 __attribute__((weak)) i32 mmPlayerData::GetCheckpointPassed() { return {}; }
@@ -1094,6 +815,7 @@ __attribute__((weak)) mmSkidManager::~mmSkidManager() {}
 __attribute__((weak)) mmSkidManager::mmSkidManager() {}
 __attribute__((weak)) void mmSkidManager::ReInit(aconst char* arg1) {}
 __attribute__((weak)) void mmSkidManager::Reset() {}
+__attribute__((weak)) MetaClass* mmSkidManager::GetClass() { return {}; }
 // --- mmSky ---
 __attribute__((weak)) i32 mmSky::Init(char* arg1, char* arg2, Vector3* arg3) { return {}; }
 // --- mmSplash ---
@@ -1123,14 +845,6 @@ __attribute__((weak)) mmPhysEntity* mmTrailerInstance::GetEntity() { return {}; 
 // UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Vector3& ARTS_FASTCALL GetPos() override;
 __attribute__((weak)) Vector3 mmTrailerInstance::GetVelocity() { return {}; }
 // UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Matrix34& ARTS_FASTCALL ToMatrix(Matrix34& arg1) override;
-// --- mmTransmission ---
-__attribute__((weak)) void mmTransmission::Automatic(i32 arg1) {}
-__attribute__((weak)) i32 mmTransmission::Downshift() { return {}; }
-__attribute__((weak)) i32 mmTransmission::GetCurrentGear() { return {}; }
-__attribute__((weak)) i32 mmTransmission::SetCurrentGear(i32 arg1) { return {}; }
-__attribute__((weak)) void mmTransmission::SetDrive() {}
-__attribute__((weak)) void mmTransmission::SetReverse() {}
-__attribute__((weak)) i32 mmTransmission::Upshift() { return {}; }
 // --- mmUnhitBangerInstance ---
 __attribute__((weak)) void mmUnhitBangerInstance::InitBreakables(aconst char* name, aconst char* part, mmBangerData* bng_data) {}
 __attribute__((weak)) void mmUnhitBangerInstance::Reset() {}
@@ -1145,16 +859,6 @@ __attribute__((weak)) agiTexDef* mmVehicleForm::SphMapTex {};
 __attribute__((weak)) MetaClass* mmViewCS::GetClass() { return {}; }
 __attribute__((weak)) void mmViewCS::Reset() {}
 __attribute__((weak)) i32 mmViewCS::Update() { return {}; }
-// --- mmVoiceCommentary ---
-__attribute__((weak)) mmVoiceCommentary::mmVoiceCommentary() {}
-__attribute__((weak)) void mmVoiceCommentary::PlayCRPreRace() {}
-__attribute__((weak)) void mmVoiceCommentary::PlayCR(i16 arg1, i16 arg2) {}
-__attribute__((weak)) void mmVoiceCommentary::PlayPreRace() {}
-__attribute__((weak)) void mmVoiceCommentary::PlayRoam() {}
-__attribute__((weak)) void mmVoiceCommentary::PlayTimePenalty() {}
-__attribute__((weak)) void mmVoiceCommentary::SetFrequency(f32 arg1) {}
-__attribute__((weak)) void mmVoiceCommentary::StopNow() {}
-__attribute__((weak)) void mmVoiceCommentary::ValidateCity(char* arg1) {}
 // --- mmWaypointInstance ---
 __attribute__((weak)) i32 mmWaypointInstance::ComputeLod(f32 arg1, f32 arg2) { return {}; }
 __attribute__((weak)) void mmWaypointInstance::Draw(DLP* arg1, i32 arg2) {}
@@ -1162,8 +866,6 @@ __attribute__((weak)) MetaClass* mmWaypointInstance::GetClass() { return {}; }
 // UNPARSED MEMBER: [mmcity/cullcity.h] ARTS_IMPORT f32 ARTS_FASTCALL GetScale() override;
 // --- mmWaypoints ---
 __attribute__((weak)) void mmWaypoints::GetClosestWaypoint() {}
-// --- mmWheel ---
-__attribute__((weak)) f32 mmWheel::PtxMaxSkidCount {};
 // --- mmYInstance ---
 // UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT void ARTS_FASTCALL FromMatrix(const Matrix34& arg1) override;
 // UNPARSED MEMBER: [mmai/aiPedestrian.h] ARTS_IMPORT Vector3& ARTS_FASTCALL GetPos() override;

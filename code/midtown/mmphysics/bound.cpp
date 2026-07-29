@@ -19,3 +19,19 @@
 define_dummy_symbol(mmphysics_bound);
 
 #include "bound.h"
+
+#include "agi/physdef.h"
+
+asBound::asBound()
+{}
+
+agiPhysParameters& asBound::GetPhysMtl(const mmPolygon& /*arg1*/)
+{
+    static agiPhysParameters default_params;
+    return default_params;
+}
+
+i32 asBound::Impact(mmIntersection* /*arg1*/, asBound* /*arg2*/, i32 /*arg3*/, i32 /*arg4*/, i32 /*arg5*/)
+{
+    return 0;
+}

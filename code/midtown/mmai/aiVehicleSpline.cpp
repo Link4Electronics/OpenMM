@@ -20,6 +20,25 @@ define_dummy_symbol(mmai_aiVehicleSpline);
 
 #include "aiVehicleSpline.h"
 
+void aiVehicleSpline::DrawId()
+{}
+
+MetaClass* aiVehicleSpline::GetClass()
+{
+    return nullptr;
+}
+
+void aiVehicleSpline::Reset()
+{}
+
+i32 aiVehicleSpline::Type()
+{
+    return 0;
+}
+
+void aiVehicleSpline::Update()
+{}
+
 void aiVehicleSpline::Impact(i32 /*arg1*/)
 {}
 

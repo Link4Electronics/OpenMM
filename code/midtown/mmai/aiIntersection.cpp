@@ -22,6 +22,11 @@ define_dummy_symbol(mmai_aiIntersection);
 
 #include "aiPath.h"
 
+aiPath* aiIntersection::Path(i32)
+{
+    return nullptr;
+}
+
 void aiIntersection::Dump()
 {
     Displayf("Intersection %d, Position = %.2f, %.2f, %.2f", Id, Pos.x, Pos.y, Pos.z);

@@ -124,5 +124,8 @@ void mmSingleCircuit::Reset()
 void mmSingleCircuit::UpdateDebugKeyInput(i32 /*arg1*/)
 {}
 
+void mmSingleCircuit::DisableRacers()
+{}
+
 void mmSingleCircuit::UpdateGameInput(i32 /*arg1*/)
 {}

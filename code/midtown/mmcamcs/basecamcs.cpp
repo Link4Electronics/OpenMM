@@ -28,3 +28,21 @@ void BaseCamCS::UpdateInput()
 
 void BaseCamCS::SetST(f32* /*arg1*/)
 {}
+
+// ?AddWidgets@BaseCamCS@@UAEXPAVBank@@@Z
+void BaseCamCS::AddWidgets(Bank* /*arg1*/)
+{}
+
+// ?AfterLoad@BaseCamCS@@UAEXXZ
+void BaseCamCS::AfterLoad()
+{}
+
+// ?ForceMatrixDelta@BaseCamCS@@UAEXABVVector3@@@Z
+void BaseCamCS::ForceMatrixDelta(const Vector3& /*arg1*/)
+{}
+
+// ?GetClass@BaseCamCS@@UAEPAVMetaClass@@XZ
+MetaClass* BaseCamCS::GetClass()
+{
+    return nullptr;
+}

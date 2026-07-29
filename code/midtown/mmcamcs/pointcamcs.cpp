@@ -19,3 +19,12 @@
 define_dummy_symbol(mmcamcs_pointcamcs);
 
 #include "pointcamcs.h"
+
+#include "mmcar/car.h"
+#include "mmcar/carmodel.h"
+
+void PointCamCS::Init(mmCar* car)
+{
+    Car = car;
+    CarMatrix = &Car->Sim.LCS.World;
+}

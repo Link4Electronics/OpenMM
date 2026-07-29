@@ -19,3 +19,24 @@
 define_dummy_symbol(agi_palette);
 
 #include "palette.h"
+
+#include "agi/rgba.h"
+
+agiPalette::agiPalette()
+{}
+
+u32 agiPalette::FindColor(agiRgba /*arg1*/)
+{
+    return 0;
+}
+
+u32 agiPalette::GetColor(agiRgba /*arg1*/)
+{
+    return 0;
+}
+
+void agiPalette::Kill()
+{
+    ColorCount = 0;
+    ChangeCount = 0;
+}

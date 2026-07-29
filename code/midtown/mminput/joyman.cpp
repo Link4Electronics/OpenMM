@@ -27,6 +27,32 @@ define_dummy_symbol(mminput_joyman);
 #include "input.h"
 #include "joystick.h"
 
+mmJoyMan::mmJoyMan()
+{}
+
+mmJoyMan::~mmJoyMan()
+{}
+
+i32 mmJoyMan::FFPlay(i32 /*arg1*/)
+{
+    return 0;
+}
+
+i32 mmJoyMan::FFSetValues(i32 /*arg1*/, f32 /*arg2*/, f32 /*arg3*/)
+{
+    return 0;
+}
+
+i32 mmJoyMan::HasCoolie()
+{
+    return 0;
+}
+
+i32 mmJoyMan::ToggleEnabled(i32 /*arg1*/)
+{
+    return 0;
+}
+
 i32 mmJoyMan::ButtonToBit(i32 button)
 {
     if (button >= mmJoyInput::JButton1 && button <= mmJoyInput::JButton12)

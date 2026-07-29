@@ -36,6 +36,18 @@ void mmExternalView::Reset()
 void mmExternalView::WideFOV(i32 /*arg1*/)
 {}
 
+void mmDashView::Activate()
+{
+    Active = true;
+    ActivateNode();
+}
+
+void mmDashView::Deactivate()
+{
+    Active = false;
+    DeactivateNode();
+}
+
 // ?DashAlphaRef@@3HA
 ARTS_IMPORT extern i32 DashAlphaRef;
 

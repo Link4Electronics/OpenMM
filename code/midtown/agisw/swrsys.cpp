@@ -26,6 +26,10 @@ define_dummy_symbol(agisw_swrsys);
 // ?swVtxBase@@3PAUagiScreenVtx@@A
 ARTS_IMPORT extern agiScreenVtx* swVtxBase;
 
+agiSWRasterizer::agiSWRasterizer(agiPipeline* arg1)
+    : agiRasterizer(arg1)
+{}
+
 i32 agiSWRasterizer::BeginGfx()
 {
     return 0;
@@ -69,6 +73,18 @@ void agiSWRasterizer::Mesh([[maybe_unused]] agiVtxType type, agiVtx* vertices, [
         }
     }
 }
+
+void agiSWRasterizer::Card(i32 /*arg1*/, i32 /*arg2*/)
+{}
+
+void agiSWRasterizer::Quad(i32 /*arg1*/, i32 /*arg2*/, i32 /*arg3*/, i32 /*arg4*/)
+{}
+
+void agiSWRasterizer::Triangle(i32 /*arg1*/, i32 /*arg2*/, i32 /*arg3*/)
+{}
+
+void agiSWRasterizer::Verts(agiVtxType /*arg1*/, agiVtx* /*arg2*/, i32 /*arg3*/)
+{}
 
 void agiSWRasterizer::Points(agiVtxType /*arg1*/, agiVtx* /*arg2*/, i32 /*arg3*/)
 {}

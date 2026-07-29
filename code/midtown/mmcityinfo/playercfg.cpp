@@ -20,6 +20,29 @@ define_dummy_symbol(mmcityinfo_playercfg);
 
 #include "playercfg.h"
 
+mmPlayerConfig::mmPlayerConfig()
+{}
+
+mmPlayerConfig::~mmPlayerConfig()
+{}
+
+void mmPlayerConfig::GetAudio()
+{}
+
+void mmPlayerConfig::GetControls()
+{}
+
+void mmPlayerConfig::GetGraphics()
+{}
+
+void mmPlayerConfig::GetViewSettings()
+{}
+
+b32 mmPlayerConfig::Save(char* /*path*/, b32 /*binary*/)
+{
+    return true;
+}
+
 void mmPlayerConfig::DefaultViewSettings()
 {
     ViewSettings.IconsState = 1;

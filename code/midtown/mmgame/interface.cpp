@@ -31,8 +31,10 @@ define_dummy_symbol(mmgame_interface);
 #include "agi/rsys.h"
 #include "mmui/driver.h"
 #include "mmui/main.h"
+#include "mmui/netselect.h"
 #include "mmui/options.h"
 #include "mmui/placeholder_opts.h"
+#include "mmui/race.h"
 #include "mmui/vehicle.h"
 #include "mmui/quitmenu.h"
 #include "mmwidget/navbar.h"
@@ -277,12 +279,57 @@ void mmInterface::Reset()
     }
 }
 
-void mmInterface::ShowMain(i32 /*arg1*/)
+void mmInterface::ShowMain(i32 arg1)
 {
     MenuMgr()->SetDefaultBackgroundImage("main_back");
-    MenuMgr()->Switch(IDM_MAIN);
-    MenuMgr()->SetFocus(MenuMain);
     MenuMgr()->AddPointer();
+
+    if (arg1 != 0)
+    {
+        MenuMgr()->EnableNavBar();
+
+        if (MMSTATE.NetworkStatus != 0)
+        {
+            MenuMgr()->Switch(IDM_NET_SELECT);
+            MenuMgr()->SetFocus(MenuNetSelect);
+        }
+        else if (GraphicsChange)
+        {
+            // FIXME: PlayerSetState() needed here
+            MenuMgr()->Switch(IDM_OPTIONS);
+            MenuMgr()->SetFocus(MenuOptions);
+
+            if (MenuOptions)
+                MenuOptions->SetPreviousMenuID(GraphicsPreviousMenu);
+
+            GraphicsChange = 0;
+            goto check_net;
+        }
+        else
+        {
+            MenuMgr()->Switch(IDM_RACE);
+            MenuMgr()->SetFocus(MenuRace);
+        }
+    }
+    else
+    {
+        MenuMgr()->EnableNavBar();
+        MenuMgr()->Switch(IDM_MAIN);
+        MenuMgr()->SetFocus(MenuMain);
+    }
+
+check_net:
+    if (NETMGR.InSession())
+    {
+        // NETMGR.Connected() check needed
+        MMSTATE.NetworkStatus = 2;
+    }
+
+    if (MMSTATE.NetworkStatus == 1)
+    {
+        if (MenuNetSelect)
+            MenuNetSelect->SetPreviousMenuID(1);
+    }
 }
 
 void mmInterface::Update()

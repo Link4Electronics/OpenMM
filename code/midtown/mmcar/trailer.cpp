@@ -24,3 +24,21 @@ define_dummy_symbol(mmcar_trailer);
 void mmTrailerInstance::AddWidgets(Bank* /*arg1*/)
 {}
 #endif
+
+void mmTrailer::Activate()
+{}
+
+void mmTrailer::Deactivate()
+{}
+
+void mmTrailer::Init(aconst char* /*arg1*/, mmCarSim* /*arg2*/, Vector3 /*arg3*/)
+{}
+
+void mmTrailer::PostUpdate()
+{}
+
+void mmTrailer::Reset()
+{}
+
+void mmTrailer::SetHackedImpactParams()
+{}

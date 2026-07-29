@@ -19,3 +19,21 @@
 define_dummy_symbol(mmgame_icons);
 
 #include "icons.h"
+
+mmIcons::mmIcons()
+{}
+
+mmIcons::~mmIcons()
+{}
+
+void mmIcons::Init(Matrix34* /*arg1*/, f32 /*arg2*/, f32 /*arg3*/)
+{}
+
+void mmIcons::RegisterOpponents(OppIconInfo* /*arg1*/, i32 /*arg2*/, void* /*arg3*/)
+{}
+
+void mmIcons::Cull()
+{}
+
+void mmIcons::Update()
+{}

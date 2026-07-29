@@ -20,5 +20,14 @@ define_dummy_symbol(mmcamcs_transitioncs);
 
 #include "transitioncs.h"
 
+#include "mmcar/car.h"
+#include "mmcar/carmodel.h"
+
+void TransitionCS::Init(mmCar* car)
+{
+    Car = car;
+    CarMatrix = &Car->Sim.LCS.World;
+}
+
 void TransitionCS::Reset()
 {}

@@ -19,3 +19,6 @@
 define_dummy_symbol(mmai_aiVehiclePolice);
 
 #include "aiVehiclePolice.h"
+
+void aiVehiclePolice::Dump()
+{}

@@ -23,6 +23,7 @@
 #include "eventq7/eventq.h"
 
 struct IDirectInputA;
+struct IDirectInputDevice2A;
 class mmIODev;
 
 // mmIO Flags
@@ -308,6 +309,9 @@ public:
 
     // ?Init@mmInput@@QAEXH@Z
     ARTS_IMPORT void Init(i32 arg1);
+
+    // ?Init@mmInput@@QAEHPAUIDirectInputDevice2A@@@Z (no DirectInput on Linux)
+    ARTS_IMPORT b32 Init(IDirectInputDevice2A* device);
 
     // ?IsAlreadyAssigned@mmInput@@QAEHPAVmmIO@@HHH@Z
     ARTS_IMPORT i32 IsAlreadyAssigned(mmIO* arg1, i32 arg2, i32 arg3, i32 arg4);

@@ -40,6 +40,17 @@ ARTS_EXPORT f32 ffval = 0.0f;
 
 static f32 fftime = 0.0f;
 
+void mmCar::Init(aconst char* arg1, i32 arg2, i32 arg3)
+{
+    ReInit(arg1, arg3);
+}
+
+#ifdef ARTS_DEV_BUILD
+f32 mmCar::PostUpdateTime = 0.0f;
+f32 mmCar::TotalUpdateTime = 0.0f;
+f32 mmCar::UpdateTime = 0.0f;
+#endif
+
 void mmCar::ApplyAiPhysics()
 {
     if (!Sim.FrontLeft.OnGround && !Sim.FrontRight.OnGround && !Sim.BackLeft.OnGround && !Sim.BackRight.OnGround)

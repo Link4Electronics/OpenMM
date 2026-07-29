@@ -23,6 +23,30 @@ define_dummy_symbol(mmcar_carsim);
 b32 EnableSmoke = true;
 b32 ForceSmoke = false;
 
+void mmCarSim::Explode()
+{}
+
+void mmCarSim::PlayHorn()
+{}
+
+void mmCarSim::PlayImpactAudio(i16 /*arg1*/, mmIntersection* /*arg2*/, Vector3* /*arg3*/)
+{}
+
+void mmCarSim::ReInit(aconst char* /*arg1*/)
+{}
+
+void mmCarSim::RemoveNetVehicleAudio()
+{}
+
+void mmCarSim::StartSiren()
+{}
+
+void mmCarSim::StopHorn()
+{}
+
+void mmCarSim::StopSiren()
+{}
+
 void mmCarSim::RestoreImpactParams()
 {
     ICS.Elasticity = BoundElasticity;

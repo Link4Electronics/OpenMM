@@ -30,7 +30,7 @@ define_dummy_symbol(mmwidget_menu);
 #include "textfield.h"
 
 // Override weak default (game_stubs.cpp provides 0.0f)
-f32 UIMenu::UI_LEFT_MARGIN = 0.0f;
+f32 UIMenu::UI_LEFT_MARGIN = 0.078125f;
 #include "widget.h"
 
 #include "eventq7/event.h"

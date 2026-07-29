@@ -98,7 +98,7 @@ public:
     void IgnoreMover(mmInstance* inst);
 
     // ?Init@mmPhysicsMGR@@QAEXPAVasInertialCS@@PAVmmViewCS@@@Z
-    ARTS_IMPORT void Init(asInertialCS* arg1, mmViewCS* arg2);
+    ARTS_EXPORT void Init(asInertialCS* arg1, mmViewCS* arg2);
 
     // ?NewMover@mmPhysicsMGR@@QAEXPAVmmInstance@@@Z
     ARTS_EXPORT void NewMover(mmInstance* inst);

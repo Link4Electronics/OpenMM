@@ -20,6 +20,8 @@ define_dummy_symbol(mmcar_wheel);
 
 #include "wheel.h"
 
+f32 mmWheel::PtxMaxSkidCount = 30.0f;
+
 #include "arts7/sim.h"
 #include "mmbangers/active.h"
 

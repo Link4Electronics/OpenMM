@@ -41,6 +41,29 @@ void ARTS_FASTCALL mmSkid::FromMatrix(const Matrix34& /*arg1*/)
 void mmSkid::Update()
 {}
 
+mmSkidManager::mmSkidManager()
+{}
+
+mmSkidManager::~mmSkidManager()
+{}
+
+void mmSkidManager::LayTrack()
+{}
+
+void mmSkidManager::ReInit(mmWheel* /*arg1*/)
+{}
+
+void mmSkidManager::Reset()
+{}
+
+void ARTS_FASTCALL mmSkid::Draw(i32 /*arg1*/)
+{}
+
+MetaClass* mmSkid::GetClass()
+{
+    return nullptr;
+}
+
 static const f32 SkidSpeedThresh = 3.0f;
 static const f32 SkidTrackTimeThresh = 0.1f;
 

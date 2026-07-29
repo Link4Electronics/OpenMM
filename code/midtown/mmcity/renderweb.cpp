@@ -20,13 +20,52 @@ define_dummy_symbol(mmcity_renderweb);
 
 #include "renderweb.h"
 
+#include "agi/pipeline.h"
+#include "agi/viewport.h"
+
+// ?MirrorDist@@3MA
+ARTS_EXPORT f32 MirrorDist = 200.0f;
+
+static i32 MirrorLeft {};
+static i32 MirrorTop {};
+static i32 MirrorWidth {};
+static i32 MirrorHeight {};
+
+void asRenderWeb::SetMirrorPos(f32 x1, f32 y1, f32 x2, f32 y2, f32 dist)
+{
+    agiViewParameters& vp = Viewport->GetParams();
+
+    vp.X = x1;
+    vp.Y = y1;
+    vp.Width = x2;
+    vp.Height = y2;
+
+    ++agiViewParameters::ViewSerial;
+
+    f32 aspect = (Pipe()->GetWidth() * x2) / (Pipe()->GetHeight() * y2);
+    vp.Perspective(dist, aspect, 1.0f, MirrorDist);
+
+    MirrorLeft = (i32)(Pipe()->GetWidth() * x1);
+    MirrorTop = (i32)(Pipe()->GetHeight() * (1.0f - (y1 + y2)));
+    MirrorWidth = (i32)(Pipe()->GetWidth() * x2);
+    MirrorHeight = (i32)(Pipe()->GetHeight() * y2);
+}
+
+void DrawMirrorBorder()
+{
+    agiPipeline* pipe = Pipe();
+
+    pipe->ClearRect(MirrorLeft, MirrorTop, MirrorWidth, 1, 0);
+    pipe->ClearRect(MirrorLeft, MirrorTop + MirrorHeight - 1, MirrorWidth, 1, 0);
+    pipe->ClearRect(MirrorLeft, MirrorTop + 1, 1, MirrorHeight - 2, 0);
+    pipe->ClearRect(MirrorLeft + MirrorWidth - 1, MirrorTop + 1, 1, MirrorHeight - 2, 0);
+}
+
 #include "cellrend.h"
 #include "loader.h"
 
 #include "agi/dlptmpl.h"
 #include "agi/getdlp.h"
-#include "agi/pipeline.h"
-#include "agi/viewport.h"
 #include "data7/memstat.h"
 #include "data7/metadefine.h"
 #include "localize/localize.h"
@@ -42,9 +81,6 @@ static mem::cmd_param PARAM_invlodfactor {"invlodfactor"};
 
 f32 asRenderWeb::InvLodFactor = 0.65f;
 i32 asRenderWeb::PassMask = 0;
-
-// ?MirrorDist@@3MA
-ARTS_EXPORT f32 MirrorDist = 200.0f;
 
 hook_func(INIT_main, [] {
     asRenderWeb::InvLodFactor = PARAM_invlodfactor.get_or(0.65f);

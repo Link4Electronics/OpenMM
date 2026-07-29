@@ -70,6 +70,33 @@ void mmMultiCR::StealGold(mmCar* car)
     field_1EEB0->Initialized = true;
 }
 
+void mmMultiCR::DropGold(Vector3 /*arg1*/, i32 /*arg2*/)
+{}
+
+void mmMultiCR::FillResults()
+{}
+
+void mmMultiCR::FondleCarMass(mmCar* /*arg1*/, f32 /*arg2*/)
+{}
+
+void mmMultiCR::UpdateBank()
+{}
+
+void mmMultiCR::UpdateGold()
+{}
+
+void mmMultiCR::UpdateHideout()
+{}
+
+void mmMultiCR::UpdateHUD()
+{}
+
+void mmMultiCR::UpdateLimit()
+{}
+
+void mmMultiCR::UpdateTimeWarning()
+{}
+
 void mmMultiCR::UpdateGame()
 {
     switch (GameState)

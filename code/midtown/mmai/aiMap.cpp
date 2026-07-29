@@ -189,6 +189,77 @@ b32 aiMap::ChooseNextLaneLink(aiRailSet* rail)
     }
 }
 
+aiMap AIMAP;
+
+f32 _fAmbientUpdate {};
+f32 _fCopUpdate {};
+f32 _fOppUpdate {};
+f32 _fPedUpdate {};
+f32 _fTotUpdate {};
+i32 _nAmbientQty {};
+i32 _nPedQty {};
+
+void aiMap::AllwaysGreen()
+{
+    AlwaysGreen = true;
+}
+
+void aiMap::AllwaysRed()
+{
+    AlwaysRed = true;
+}
+
+i32 aiMap::ChooseNextFreewayLink(aiRailSet*)
+{
+    return 0;
+}
+
+i32 aiMap::ChooseNextLeftStraightLink(aiRailSet*)
+{
+    return 0;
+}
+
+i32 aiMap::ChooseNextRightStraightFreewayLink(aiRailSet*)
+{
+    return 0;
+}
+
+i32 aiMap::ChooseNextRightStraightLink(aiRailSet*)
+{
+    return 0;
+}
+
+i32 aiMap::ChooseNextStraightLink(aiRailSet*)
+{
+    return 0;
+}
+
+void aiMap::Clean()
+{}
+
+void aiMap::Cull()
+{}
+
+void aiMap::DrawAppRoads()
+{}
+
+void aiMap::DrawNextVisibleAmbient()
+{}
+
+MetaClass* aiMap::GetClass()
+{
+    return nullptr;
+}
+
+void aiMap::Init(char*, char*, char*, mmCar*)
+{}
+
+void aiMap::Reset()
+{}
+
+void aiMap::Update()
+{}
+
 b32 aiMap::ChooseNextRandomLink(aiRailSet* rail)
 {
     aiPath* path = rail->CurLink;

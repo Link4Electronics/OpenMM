@@ -153,7 +153,7 @@ public:
     ARTS_IMPORT void GetTime(char* arg1, f32 arg2);
 
     // ?Init@mmHUD@@QAEXPADPAVmmPlayer@@@Z
-    ARTS_IMPORT void Init(char* arg1, mmPlayer* arg2);
+    void Init(char* arg1, mmPlayer* arg2);
 
     // ?IsDashActive@mmHUD@@QAEHXZ
     ARTS_IMPORT i32 IsDashActive();

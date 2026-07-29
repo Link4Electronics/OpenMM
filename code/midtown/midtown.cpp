@@ -714,7 +714,7 @@ static void MainPhase(i32 argc, char** argv)
         // Show main menu now that loading is complete
         if (mm_interface)
         {
-            mm_interface->ShowMain(1);
+            mm_interface->ShowMain(0);
         }
     }
 

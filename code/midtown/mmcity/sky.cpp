@@ -19,3 +19,6 @@
 define_dummy_symbol(mmcity_sky);
 
 #include "sky.h"
+
+void mmSky::Init(aconst char* /*arg1*/)
+{}

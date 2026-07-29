@@ -19,3 +19,12 @@
 define_dummy_symbol(mmai_aiVehicle);
 
 #include "aiVehicle.h"
+
+void aiVehicle::Init(i32)
+{}
+
+void aiVehicle::Reset()
+{}
+
+void aiVehicle::Update()
+{}

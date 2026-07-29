@@ -19,3 +19,17 @@
 define_dummy_symbol(mmaudio_head);
 
 #include "head.h"
+
+AudHead::AudHead(Matrix34* /*arg1*/)
+{}
+
+i32 AudHead::Init()
+{
+    return 0;
+}
+
+void AudHead::SetDoppler(f32 /*arg1*/)
+{}
+
+void AudHead::SetRolloff(f32 /*arg1*/)
+{}

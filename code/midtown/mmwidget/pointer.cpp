@@ -93,3 +93,11 @@ f32 sfPointer::GetPointerHeight()
 }
 
 void sfPointer::ResChange(i32, i32) {} // ARTS_IMPORT stub
+
+MetaClass* sfPointer::GetClass()
+{
+    return nullptr;
+}
+
+void sfPointer::WaitForRelease()
+{}

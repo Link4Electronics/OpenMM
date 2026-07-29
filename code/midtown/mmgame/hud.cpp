@@ -80,6 +80,12 @@ void mmTimer::Update()
     }
 }
 
+void mmHUD::Init(char* name, mmPlayer* player)
+{
+    Player = player;
+    SetName(name);
+}
+
 void mmHUD::ToggleMirror()
 {
     ScreenClearCount = 3;
@@ -110,6 +116,41 @@ void mmHUD::TogglePositionDisplay(i32 mode)
 }
 
 void mmHUD::UpdatePaused()
+{}
+
+void mmHUD::ActivateDash()
+{
+    DashView.Activate();
+}
+
+void mmHUD::DeactivateDash()
+{
+    DashView.Deactivate();
+}
+
+void mmHUD::Enable()
+{
+    ActivateNode();
+}
+
+i32 mmHUD::IsDashActive()
+{
+    return DashView.Active;
+}
+
+void mmHUD::GetPosHdg(Vector4&)
+{}
+
+void mmHUD::PostChatMessage(aconst char*)
+{}
+
+void mmHUD::SetMessage(LocString* /*msg*/, f32 /*time*/, b32 /*top*/)
+{}
+
+void mmHUD::StopTimers()
+{}
+
+void mmHUD::ToggleExternalView()
 {}
 
 mmArrow::mmArrow()

@@ -63,7 +63,7 @@ public:
     ARTS_IMPORT MetaClass* GetClass() override;
 
     // ?Init@mmPlayer@@QAEXPAD0PAVmmGame@@@Z
-    ARTS_IMPORT void Init(char* arg1, char* arg2, mmGame* arg3);
+    void Init(char* arg1, char* arg2, mmGame* arg3);
 
     // ?IsMaxDamaged@mmPlayer@@QAEHXZ
     ARTS_IMPORT i32 IsMaxDamaged();

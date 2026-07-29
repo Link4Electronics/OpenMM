@@ -28,7 +28,7 @@ static i32 g_GameInitDone = 0;
 
 mmGameManager* mmGameManager::Instance = nullptr;
 
-__attribute__((weak)) mmGameManager::mmGameManager()
+mmGameManager::mmGameManager()
 {
     Instance = this;
 
@@ -49,19 +49,19 @@ __attribute__((weak)) mmGameManager::mmGameManager()
     field_58 = 0;
 }
 
-__attribute__((weak)) mmGameManager::~mmGameManager() {}
+mmGameManager::~mmGameManager() {}
 
-__attribute__((weak)) void mmGameManager::LoadReplay(aconst char*) {}
-__attribute__((weak)) void mmGameManager::SaveReplay(aconst char*) {}
-__attribute__((weak)) void mmGameManager::StartReplay() {}
-__attribute__((weak)) f32 mmGameManager::GetBrakes() { return 0.0f; }
-__attribute__((weak)) f32 mmGameManager::GetSteering() { return 0.0f; }
-__attribute__((weak)) f32 mmGameManager::GetThrottle() { return 0.0f; }
-__attribute__((weak)) MetaClass* mmGameManager::GetClass() { return nullptr; }
-__attribute__((weak)) void mmGameManager::DeclareFields() {}
+void mmGameManager::LoadReplay(aconst char*) {}
+void mmGameManager::SaveReplay(aconst char*) {}
+void mmGameManager::StartReplay() {}
+f32 mmGameManager::GetBrakes() { return 0.0f; }
+f32 mmGameManager::GetSteering() { return 0.0f; }
+f32 mmGameManager::GetThrottle() { return 0.0f; }
+MetaClass* mmGameManager::GetClass() { return nullptr; }
+void mmGameManager::DeclareFields() {}
 #ifdef ARTS_DEV_BUILD
 class Bank;
-__attribute__((weak)) void mmGameManager::AddWidgets(Bank*) {}
+void mmGameManager::AddWidgets(Bank*) {}
 #endif
 
 #include "agi/bitmap.h"

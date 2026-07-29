@@ -18,4 +18,7 @@
 
 define_dummy_symbol(mmcity_positions);
 
-#include "positions.h"
+#include "position.h"
+
+mmPositions::mmPositions()
+{}

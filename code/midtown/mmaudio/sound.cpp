@@ -19,3 +19,26 @@
 define_dummy_symbol(mmaudio_sound);
 
 #include "sound.h"
+
+AudSound::~AudSound()
+{}
+
+i32 AudSound::IsPlaying(i32 /*arg1*/)
+{
+    return 0;
+}
+
+void AudSound::PlayOnce(f32 /*arg1*/, f32 /*arg2*/)
+{}
+
+void AudSound::Stop()
+{}
+
+void AudSound::Update()
+{}
+
+void AudSound::Reset()
+{}
+
+void AudSound::AddWidgets(Bank* /*arg1*/)
+{}

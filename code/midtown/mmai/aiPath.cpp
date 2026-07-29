@@ -75,6 +75,19 @@ Vector3* aiPath::VertZDir(i32 index)
     return nullptr;
 }
 
+f32 aiPath::CenterLength(i32, i32)
+{
+    return 0.0f;
+}
+
+i32 aiPath::Index(Vector3&)
+{
+    return 0;
+}
+
+void aiPath::StopDestinationSources(b32)
+{}
+
 void aiPath::Blocked(b32 blocked)
 {
     IsBlocked = blocked || IsAlwaysBlocked;

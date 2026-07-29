@@ -114,6 +114,20 @@ Three layers provide fallbacks on Linux:
 - **VehicleSelectBase and Vehicle** have minimal implementations — some methods (DecCar, etc.) are still weak no-ops
 - **Intro video** plays only if FFmpeg dev libraries are installed at build time. Probes `game/logos.avi` then `logos.avi` to handle different CWDs.
 
+### ShowMain fix (interface.cpp:280)
+- Rewrote `mmInterface::ShowMain(i32 arg1)` to match game.asm branching:
+  - Default background: `"bgframe"` (was `"main_back"`)
+  - `EnableNavBar()` always called (was missing)
+  - `arg1 == 0`: Switch to `IDM_MAIN`, focus `MenuMain`
+  - `arg1 != 0`: EnableNavBar, then:
+    - `NetworkStatus != 0`: Switch to `IDM_NET_SELECT`, focus `MenuNetSelect`
+    - `GraphicsChange`: Switch to `IDM_OPTIONS`, focus `MenuOptions`, restore `prev_menu_id` from `GraphicsPreviousMenu`, clear `GraphicsChange` (skips common SetFocus)
+    - else: Switch to `IDM_RACE`, focus `MenuRace`
+  - NETMGR session check sets `NetworkStatus = 2` if session active
+  - If `NetworkStatus == 1`: sets `MenuNetSelect->prev_menu_id = IDM_MAIN`
+  - `PlayerSetState()` call still missing (needs full reimplementation → ~27KB asm) — GraphicsChange path currently skips it
+- Changed `UI_LEFT_MARGIN` from `0.0f` to `0.078125f` (game.asm value) in `menu.cpp:33`
+
 ### Vehicle/VehShowcase menus
 - Added bitmap buttons to Vehicle menu: Back (`onav_done`), Drive (`vehi_play`), Showcase (`vehi_show`), Auto (`veh_auto`).
 - Added interface dispatch for Vehicle menu button IDs (Back → Main, Showcase → IDM_SHOWCASE).
@@ -167,7 +181,7 @@ ttf fonts
 
 ## Previously Fixed
 - `mmInterface::SetNavigationOrders()` — added to interface.cpp for widget tab ordering
-- `mmInterface::ShowMain()`, `Reset()`, `Update()` — real implementations
+- `mmInterface::ShowMain()`, `Reset()`, `Update()` — real implementations (ShowMain rewritten to match game.asm: `"main_back"` background, `EnableNavBar`, `arg1` branching, `NetworkStatus`/`GraphicsChange`/NETMGR checks)
 - `UIMenu::SetFocusWidget()`, `SetSelected()` — added strong implementations
 - `MenuManager::GetFont(i32)` — added lazy font initialization
 - **UIIcon implementation**: Rewrote `icon.h` with real members (`dst_x_`, `dst_y_`, `Rc<agiBitmap> bitmap_`). `icon.cpp` has full Init/LoadBitmap/Cull/GetHitArea/CreateDummyBitmap/Switch/Update.
