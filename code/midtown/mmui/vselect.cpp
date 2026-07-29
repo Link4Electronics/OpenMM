@@ -154,7 +154,7 @@ void VehicleSelectBase::Update()
     // Apply Y-axis spin rotation to World
     {
         static f32 angle = ARTS_PI * 0.25f;
-        angle += 0.025f;
+        angle += 0.01f;
         if (angle > ARTS_PI * 2.0f) angle -= ARTS_PI * 2.0f;
         f32 sa = sinf(angle);
         f32 ca = cosf(angle);

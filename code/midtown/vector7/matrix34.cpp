@@ -259,3 +259,74 @@ Matrix34 Matrix34::Inverse() const
 
     return result;
 }
+
+// ?Approach@Matrix34@@QAEHABV1@MMM@Z
+i32 Matrix34::Approach(const Matrix34& target, f32 speed, f32 threshold, f32 dt)
+{
+    f32 step = speed * dt;
+    f32 dist = m3.Dist(target.m3);
+    if (dist < threshold)
+        return 1;
+
+    Vector3 dir = (target.m3 - m3).Normalize();
+    m3 = m3 + dir * std::min(step, dist);
+    return 0;
+}
+
+// ?FromEulers@Matrix34@@QAEXABVVector3@@@Z
+void Matrix34::FromEulers(const Vector3& euler)
+{
+    f32 cx = std::cos(euler.x);
+    f32 sx = std::sin(euler.x);
+    f32 cy = std::cos(euler.y);
+    f32 sy = std::sin(euler.y);
+    f32 cz = std::cos(euler.z);
+    f32 sz = std::sin(euler.z);
+
+    m0.x = cy * cz;
+    m0.y = cy * sz;
+    m0.z = -sy;
+    m1.x = sx * sy * cz - cx * sz;
+    m1.y = sx * sy * sz + cx * cz;
+    m1.z = sx * cy;
+    m2.x = cx * sy * cz + sx * sz;
+    m2.y = cx * sy * sz - sx * cz;
+    m2.z = cx * cy;
+    m3 = Vector3{0.0f, 0.0f, 0.0f};
+}
+
+// ?GetEulers@Matrix34@@QBE?AVVector3@@XZ
+Vector3 Matrix34::GetEulers() const
+{
+    Vector3 euler;
+    euler.y = std::asin(-m0.z);
+    if (std::abs(std::abs(m0.z) - 1.0f) < 1e-6f)
+    {
+        euler.x = 0.0f;
+        euler.z = std::atan2(m1.x, m1.y);
+    }
+    else
+    {
+        euler.x = std::atan2(m1.z, m2.z);
+        euler.z = std::atan2(m0.y, m0.x);
+    }
+    return euler;
+}
+
+// ?PolarView@Matrix34@@QAEXABVVector4@@@Z
+void Matrix34::PolarView(const Vector4& polar)
+{
+    f32 dist = polar.x;
+    f32 azimuth = polar.y;
+    f32 elevation = polar.z;
+
+    f32 ca = std::cos(azimuth);
+    f32 sa = std::sin(azimuth);
+    f32 ce = std::cos(elevation);
+    f32 se = std::sin(elevation);
+
+    m0 = Vector3{ca, sa, 0.0f};
+    m1 = Vector3{-sa * se, ca * se, ce};
+    m2 = Vector3{sa * ce, -ca * ce, se};
+    m3 = Vector3{dist * ca * ce, dist * sa * ce, dist * se};
+}

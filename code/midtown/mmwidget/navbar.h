@@ -36,9 +36,11 @@ class uiNavBar final : public UIMenu
 public:
     uiNavBar();
 
-    ~uiNavBar() override = default;
+    // ??1uiNavBar@@UAE@XZ
+    ARTS_EXPORT ~uiNavBar() override;
 
-    void BackUp() override;
+    // ?BackUp@uiNavBar@@UAEXXZ
+    ARTS_EXPORT void BackUp() override;
 
     void Help();
     void Minimize();

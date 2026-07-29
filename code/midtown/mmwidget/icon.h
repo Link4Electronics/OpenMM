@@ -28,6 +28,7 @@ class UIIcon final : public uiWidget
 {
 public:
     ARTS_IMPORT UIIcon();
+    // ??1UIIcon@@UAE@XZ
     ARTS_EXPORT ~UIIcon() override = default;
 
     ARTS_IMPORT agiBitmap* CreateDummyBitmap();

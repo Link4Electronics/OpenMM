@@ -28,6 +28,8 @@ class agiTexDef;
 class mmVehicleForm final : public asNode
 {
 public:
+    static constexpr i32 MAX_WHEELS = 4;
+
     // ??0mmVehicleForm@@QAE@XZ
     ARTS_EXPORT mmVehicleForm();
 
@@ -56,6 +58,7 @@ public:
 private:
     agiMeshSet* vehicle_mesh_ {};
     agiMeshSet* shadow_mesh_ {};
+    agiMeshSet* wheel_meshes_[MAX_WHEELS] {};
     u32 draw_color_ {};
     i32* color_pointer {};
     i32 color_index_ {};

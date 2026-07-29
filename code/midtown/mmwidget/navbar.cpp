@@ -27,6 +27,8 @@ define_dummy_symbol(mmwidget_navbar);
 
 #include <SDL3/SDL_video.h>
 
+uiNavBar::~uiNavBar() = default;
+
 uiNavBar::uiNavBar()
     : UIMenu(0)
 {

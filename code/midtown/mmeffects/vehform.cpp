@@ -105,6 +105,10 @@ static void InitVehicleLighting()
     agiMeshLighterFill2Color = Vector3(0.25f, 0.25f, 0.3f);
 }
 
+static const char* WHEEL_GROUPS[mmVehicleForm::MAX_WHEELS] = {
+    "WHL0", "WHL1", "WHL2", "WHL3"
+};
+
 void mmVehicleForm::SetShape(char* name, char* group, char* arg3, Vector3* offset)
 {
     Displayf("DBG SetShape: name=%s group=%s arg3=%s", name, group, arg3 ? arg3 : "(null)");
@@ -121,6 +125,14 @@ void mmVehicleForm::SetShape(char* name, char* group, char* arg3, Vector3* offse
 
     if (arg3)
         shadow_mesh_ = GetMeshSet(name, arg3, offset, 0x107);
+
+    for (i32 i = 0; i < MAX_WHEELS; ++i)
+    {
+        wheel_meshes_[i] = GetMeshSet(name, const_cast<char*>(WHEEL_GROUPS[i]), offset, 0x107);
+        Displayf("DBG SetShape: wheel_mesh_[%d]=%p", i, (void*)wheel_meshes_[i]);
+        if (!wheel_meshes_[i])
+            Displayf("DBG SetShape: wheel_mesh_[%d] FAILED to load!", i);
+    }
 }
 
 void mmVehicleForm::Cull()
@@ -130,29 +142,46 @@ void mmVehicleForm::Cull()
     static bool once = (InitVehicleLighting(), true);
     (void)once;
 
-    if (vehicle_mesh_ && vehicle_mesh_->LockIfResident())
+    auto old_cull = agiCurState.SetCullMode(agiCullMode::None);
+
+    auto RenderMesh = [&](agiMeshSet* mesh, bool lit)
     {
-        // Disable backface culling — BMS meshes were designed for the
-        // software renderer which never culls, so polygon winding is inconsistent.
-        auto old_cull = agiCurState.SetCullMode(agiCullMode::None);
+        if (!mesh)
+            return;
 
-        vehicle_mesh_->Geometry(MESH_DRAW_CLIP, vehicle_mesh_->Vertices, vehicle_mesh_->Planes);
-        vehicle_mesh_->DrawLit(Lighter, MESH_DRAW_CLIP, nullptr);
+        if (mesh->LockIfResident())
+        {
+            if (lit)
+            {
+                mesh->Geometry(MESH_DRAW_CLIP, mesh->Vertices, mesh->Planes);
+                mesh->DrawLit(Lighter, MESH_DRAW_CLIP, nullptr);
+            }
+            else
+            {
+                mesh->Draw(MESH_DRAW_CLIP);
+            }
+            mesh->Unlock();
+        }
+        else
+        {
+            mesh->PageIn();
+        }
+    };
 
-        agiCurState.SetCullMode(old_cull);
+    RenderMesh(vehicle_mesh_, true);
 
-        vehicle_mesh_->Unlock();
-    }
-    else if (vehicle_mesh_)
-    {
-        vehicle_mesh_->PageIn();
-    }
+    for (i32 i = 0; i < MAX_WHEELS; ++i)
+        RenderMesh(wheel_meshes_[i], true);
 
+    // Shadow: use vertex colors with semi-transparency
     if (shadow_mesh_)
     {
         if (shadow_mesh_->LockIfResident())
         {
-            shadow_mesh_->DrawColor(0x55000000, MESH_DRAW_CLIP);
+            if (shadow_mesh_->Colors)
+                shadow_mesh_->DrawColor(0x88FFFFFF, MESH_DRAW_CLIP);
+            else
+                shadow_mesh_->DrawColor(0x55000000, MESH_DRAW_CLIP);
             shadow_mesh_->Unlock();
         }
         else
@@ -160,4 +189,6 @@ void mmVehicleForm::Cull()
             shadow_mesh_->PageIn();
         }
     }
+
+    agiCurState.SetCullMode(old_cull);
 }

@@ -48,6 +48,7 @@ public:
     ARTS_IMPORT i32 LoadStats(char* arg1);
     ARTS_IMPORT void PostSetup() override;
     ARTS_IMPORT void PreSetup() override;
+    // ?Reset@VehicleSelectBase@@UAEXXZ
     ARTS_EXPORT void Reset() override;
     ARTS_IMPORT void SetLastUnlockedVehicle();
     ARTS_IMPORT void SetLockedLabel();

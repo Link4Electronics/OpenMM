@@ -230,7 +230,10 @@ i32 agiGLTexDef::BeginGfx()
     glTexParameteri(
         GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (Tex.Flags & agiTexParameters::WrapV) ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 
-    SetFilters(GL_LINEAR, GL_LINEAR);
+    if (num_levels != 1)
+        SetFilters(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    else
+        SetFilters(GL_LINEAR, GL_LINEAR);
 
     if (num_levels != 1)
     {

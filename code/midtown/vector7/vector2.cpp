@@ -19,3 +19,20 @@
 define_dummy_symbol(vector7_vector2);
 
 #include "vector2.h"
+
+#include <cmath>
+
+// ?Mag@Vector2@@QBEMXZ
+f32 Vector2::Mag() const
+{
+    return std::sqrt(x * x + y * y);
+}
+
+// ?InvMag@Vector2@@QBEMXZ
+f32 Vector2::InvMag() const
+{
+    f32 mag = Mag();
+    if (mag == 0.0f)
+        return 0.0f;
+    return 1.0f / mag;
+}

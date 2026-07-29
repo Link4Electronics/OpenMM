@@ -36,7 +36,8 @@ public:
     ~UITextDropdown() override;
 
     void Action(eqEvent arg1) override;
-    void AssignString(string options);
+    // ?AssignString@UITextDropdown@@QAEXVstring@@@Z
+    ARTS_EXPORT void AssignString(string options);
     void CaptureAction(eqEvent arg1) override;
     void Cull() override;
     f32 GetScreenHeight() override;
