@@ -486,6 +486,18 @@ void mmInterface::Update()
                                 vs->IncCar();
                             break;
                         }
+                        case IDC_VEHICLE_COLOR_PREV:
+                        {
+                            if (VehicleSelectBase* vs = static_cast<VehicleSelectBase*>(menu))
+                                vs->DecColor();
+                            break;
+                        }
+                        case IDC_VEHICLE_COLOR_NEXT:
+                        {
+                            if (VehicleSelectBase* vs = static_cast<VehicleSelectBase*>(menu))
+                                vs->IncColor();
+                            break;
+                        }
                     }
                 }
                 // Quit confirmation dialog

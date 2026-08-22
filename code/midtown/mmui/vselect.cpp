@@ -34,6 +34,7 @@ define_dummy_symbol(mmui_vselect);
 #include "mmcityinfo/playerdata.h"
 #include "mmcityinfo/state.h"
 #include "mmcityinfo/vehlist.h"
+#include "mmeffects/card2d.h"
 #include "mmeffects/vehform.h"
 #include "mmui/vehicle.h"
 #include "mmwidget/manager.h"
@@ -55,7 +56,10 @@ VehicleSelectBase::~VehicleSelectBase()
 {}
 
 void VehicleSelectBase::Reset()
-{}
+{
+    std::memset(gap90, 0, sizeof(gap90));
+    b_state_ = 0;
+}
 
 void VehicleSelectBase::PostSetup()
 {}
@@ -75,16 +79,9 @@ static void LoadCarMesh(VehicleSelectBase* base, i32 car)
 
 void VehicleSelectBase::PreSetup()
 {
-    Displayf("DBG VehicleSelectBase::PreSetup enter");
-    Displayf("DBG   VehicleListPtr=%p NumVehicles=%d", (void*)VehicleListPtr, VehicleListPtr ? VehicleListPtr->NumVehicles : -1);
-    mmVehInfo* info0 = VehicleListPtr ? VehicleListPtr->GetVehicleInfo(0) : nullptr;
-    Displayf("DBG   Vehicle[0]: BaseName=%s Description=%s", info0 ? info0->BaseName : "(null)", info0 ? info0->Description : "(null)");
-
     mmVehicleForm* forms = GetVehicleFormArray();
     i32 car = CurrentCar();
-    Displayf("DBG   CurrentCar=%d", car);
     mmVehInfo* info = VehicleListPtr ? VehicleListPtr->GetVehicleInfo(car) : nullptr;
-    Displayf("DBG   Vehicle[car]: BaseName=%s Description=%s", info ? info->BaseName : "(null)", info ? info->Description : "(null)");
 
     // Safety: guard against uninitialized forms
     if (!forms)
@@ -242,7 +239,6 @@ void VehicleSelectBase::Update()
             params.View.m3;
     }
 
-    forms[car].SetColor(0xFFFFFFFF);
 }
 
 void VehicleSelectBase::InitCarSelection(i32 mode, f32 x, f32 y, f32 w, f32 h)
@@ -299,13 +295,47 @@ void VehicleSelectBase::InitCarSelection(i32 mode, f32 x, f32 y, f32 w, f32 h)
     }
 
     // Allocate int data arrays
-    SetTopSpeedArray(static_cast<i32*>(arts_operator_new(count * sizeof(i32))));
+    // top_speed_array_ stores 4 floats per vehicle (Mass, Durability, Horsepower, TopSpeed)
+    SetTopSpeedArray(static_cast<i32*>(arts_operator_new(count * 4 * sizeof(i32))));
     SetExtraArray(static_cast<i32*>(arts_operator_new(count * sizeof(i32))));
+    if (GetExtraArray())
+    {
+        std::memset(GetExtraArray(), 0, count * sizeof(i32));
+    }
+
+    // Point each form's color_pointer to its extra_array_ entry (matching original game.asm)
+    mmVehicleForm* forms = GetVehicleFormArray();
+    i32* extra = GetExtraArray();
+    if (forms && extra)
+    {
+        for (i32 i = 0; i < count; ++i)
+            forms[i].SetColorPointer(&extra[i]);
+    }
 
     // Create prev/next vehicle buttons
     f32 button_y = 1.0f - (y + h) + h;
     AddBMButton(IDC_VEHICLE_PREV, "roller_up", x, button_y, 3);
     AddBMButton(IDC_VEHICLE_NEXT, "roller_down", x + w, button_y, 3);
+
+    // Build VEHICLES dropdown options string
+    string veh_options;
+    for (i32 i = 0; i < count; ++i)
+    {
+        mmVehInfo* info = VehicleListPtr ? VehicleListPtr->GetVehicleInfo(i) : nullptr;
+        if (i > 0) veh_options += "|";
+        veh_options += info ? info->Description : "Unknown";
+    }
+
+    // VEHICLES dropdown (car name selector)
+    f32 dd_x = x;
+    f32 dd_w = w;
+    f32 dd_y = 1.0f - 0.9f;
+    f32 dd_h = 0.0667f;
+    i32& picked_id = *reinterpret_cast<i32*>(&gap90[0x0C]);
+    picked_id = 0;
+    AddTextDropdown(-1, LOC_TEXT("VEHICLES"), &picked_id,
+        dd_x, dd_y, dd_w, dd_h, std::move(veh_options), 18, 1, 0,
+        Callback(static_cast<Callback::Member0>(&VehicleSelectBase::TDPickCB), static_cast<Base*>(this)), nullptr);
 
     SetFocusWidget(-1);
 }
@@ -345,27 +375,83 @@ void VehicleSelectBase::DecCar()
     }
 }
 
+static i32 CountColorOptions(const char* colors)
+{
+    if (!colors || !*colors)
+        return 1;
+
+    i32 count = 1;
+    while (*colors)
+    {
+        if (*colors == '|')
+            ++count;
+        ++colors;
+    }
+    return count;
+}
+
 void VehicleSelectBase::IncColor()
-{}
+{
+    if (!extra_array_)
+        return;
+
+    i32 car = CurrentCar();
+    mmVehInfo* info = VehicleListPtr ? VehicleListPtr->GetVehicleInfo(car) : nullptr;
+    if (!info)
+        return;
+
+    i32 num_colors = CountColorOptions(info->Colors);
+    if (num_colors <= 1)
+        return;
+
+    i32& color = extra_array_[car];
+    color = (color + 1) % num_colors;
+    MMSTATE.CurrentColor = color;
+}
 
 void VehicleSelectBase::DecColor()
-{}
+{
+    if (!extra_array_)
+        return;
+
+    i32 car = CurrentCar();
+    mmVehInfo* info = VehicleListPtr ? VehicleListPtr->GetVehicleInfo(car) : nullptr;
+    if (!info)
+        return;
+
+    i32 num_colors = CountColorOptions(info->Colors);
+    if (num_colors <= 1)
+        return;
+
+    i32& color = extra_array_[car];
+    color = (color - 1 + num_colors) % num_colors;
+    MMSTATE.CurrentColor = color;
+}
 
 void VehicleSelectBase::ColorCB()
-{}
+{
+    if (!extra_array_)
+        return;
+
+    i32 car = CurrentCar();
+    extra_array_[car] = MMSTATE.CurrentColor;
+}
 
 void VehicleSelectBase::SetLockedLabel()
-{}
+{
+    *reinterpret_cast<i32*>(&gap90[0xD4]) = static_cast<i32>(MMCURRPLAYER.Difficulty);
+}
 
 void VehicleSelectBase::SetPick(i32 arg1, i16 arg2)
 {
     CarMod(arg1);
 
-    i32 car = CurrentCar();
     i32 count = VehicleListPtr ? VehicleListPtr->NumVehicles : 0;
-
-    if (count <= 0 || car < 0 || car >= count)
+    if (count <= 0)
         return;
+
+    SetCurrentCar(arg1);
+    i32 car = arg1;
 
     mmVehicleForm* forms = GetVehicleFormArray();
     mmVehInfo* info = VehicleListPtr ? VehicleListPtr->GetVehicleInfo(car) : nullptr;
@@ -391,32 +477,138 @@ void VehicleSelectBase::SetPick(i32 arg1, i16 arg2)
 }
 
 void VehicleSelectBase::TDPickCB()
-{}
+{
+    i32 picked_id = *reinterpret_cast<i32*>(&gap90[0x0C]);
+    SetPick(picked_id, 1);
+}
 
-void VehicleSelectBase::AllSetCar(char* arg1, i32 arg2)
-{}
+void VehicleSelectBase::AllSetCar(char* name, i32 color_index)
+{
+    if (!VehicleListPtr)
+        return;
 
-void VehicleSelectBase::AssignVehicleStats(i32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5)
-{}
+    i32 id = VehicleListPtr->GetVehicleID(name);
+    i32& picked_id = *reinterpret_cast<i32*>(&gap90[0x0C]);
+
+    if (picked_id != id)
+    {
+        picked_id = id;
+        SetPick(id, 0);
+        FillStats();
+    }
+
+    if (extra_array_)
+    {
+        i32 car = CurrentCar();
+        extra_array_[car] = color_index;
+    }
+}
+
+void VehicleSelectBase::AssignVehicleStats(i32 index, f32 mass, f32 durability, f32 top_speed, f32 horsepower)
+{
+    if (!VehicleListPtr || index < 0 || index >= VehicleListPtr->NumVehicles)
+        return;
+    if (!top_speed_array_)
+        return;
+
+    top_speed_array_[index * 4 + 0] = *reinterpret_cast<i32*>(&mass);
+    top_speed_array_[index * 4 + 1] = *reinterpret_cast<i32*>(&durability);
+    top_speed_array_[index * 4 + 2] = *reinterpret_cast<i32*>(&horsepower);
+    top_speed_array_[index * 4 + 3] = *reinterpret_cast<i32*>(&top_speed);
+
+    f32* max_mass = reinterpret_cast<f32*>(&gap90[0xB0]);
+    f32* max_durability = reinterpret_cast<f32*>(&gap90[0xB4]);
+    f32* max_top_speed = reinterpret_cast<f32*>(&gap90[0xC0]);
+    f32* max_horsepower = reinterpret_cast<f32*>(&gap90[0xC4]);
+
+    if (index == 0 || mass > *max_mass) *max_mass = mass;
+    if (index == 0 || durability > *max_durability) *max_durability = durability;
+    if (index == 0 || top_speed > *max_top_speed) *max_top_speed = top_speed;
+    if (index == 0 || horsepower > *max_horsepower) *max_horsepower = horsepower;
+}
 
 void VehicleSelectBase::CarMod(i32& arg1)
-{}
+{
+    i32 count = VehicleListPtr ? VehicleListPtr->NumVehicles : 0;
+    if (count <= 0)
+    {
+        arg1 = 0;
+        return;
+    }
+
+    if (arg1 < 0)
+        arg1 += count;
+    else
+        arg1 %= count;
+}
 
 i32 VehicleSelectBase::CurrentVehicleIsLocked()
 {
-    return 0;
+    mmVehInfo* info = VehicleListPtr ? VehicleListPtr->GetVehicleInfo(CurrentCar()) : nullptr;
+    return (info && info->IsLocked) ? 1 : 0;
 }
 
 void VehicleSelectBase::FillStats()
-{}
-
-i32 VehicleSelectBase::LoadStats(char* arg1)
 {
-    return 0;
+    i32 car = CurrentCar();
+    if (!VehicleListPtr || car < 0 || car >= VehicleListPtr->NumVehicles)
+        return;
+    if (!top_speed_array_)
+        return;
+
+    f32* dest = reinterpret_cast<f32*>(&gap90[0xA0]);
+    i32* src = &top_speed_array_[car * 4];
+    for (i32 i = 0; i < 4; ++i)
+        *reinterpret_cast<i32*>(&dest[i]) = src[i];
+}
+
+i32 VehicleSelectBase::LoadStats(char* /*arg1*/)
+{
+    if (!VehicleListPtr)
+        return 0;
+
+    i32 count = VehicleListPtr->NumVehicles;
+    for (i32 i = 0; i < count; ++i)
+    {
+        mmVehInfo* info = VehicleListPtr->GetVehicleInfo(i);
+        if (info && info->IsValid())
+        {
+            AssignVehicleStats(i,
+                static_cast<f32>(info->Mass),
+                static_cast<f32>(info->Durability),
+                static_cast<f32>(info->TopSpeed),
+                static_cast<f32>(info->Horsepower));
+        }
+    }
+
+    return 1;
 }
 
 void VehicleSelectBase::SetLastUnlockedVehicle()
-{}
+{
+    i32 last_unlocked = *reinterpret_cast<i32*>(&gap90[0x14]);
+    if (last_unlocked >= 0)
+    {
+        SetPick(last_unlocked, 1);
+    }
+    else
+    {
+        if (!VehicleListPtr)
+            return;
+
+        for (i32 i = 0; i < VehicleListPtr->NumVehicles; ++i)
+        {
+            mmVehInfo* info = VehicleListPtr->GetVehicleInfo(i);
+            if (info && !info->IsLocked)
+            {
+                SetPick(i, 1);
+                return;
+            }
+        }
+    }
+}
 
 void VehicleSelectBase::SetShowcaseFlag()
-{}
+{
+    *reinterpret_cast<i32*>(&gap90[0x18]) = 1;
+}

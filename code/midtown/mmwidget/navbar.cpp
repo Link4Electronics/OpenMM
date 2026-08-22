@@ -59,7 +59,7 @@ uiNavBar::uiNavBar()
         exit->MaxY = 0.07f;
     }
 
-    mnav_prev_btn_ = AddBMButton(IDC_NAV_PREV, "mnav_prev"_xconst, 0.0f, 0.9f, 5);
+    mnav_prev_btn_ = AddBMButton(IDC_NAV_PREV, "mnav_prev"_xconst, 0.90f, 0.9f, 5);
     mnav_prev_btn_->Height = 0.05f;
     mnav_prev_btn_->MaxY = 0.95f;
 

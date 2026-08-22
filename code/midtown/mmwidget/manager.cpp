@@ -551,6 +551,23 @@ void MenuManager::SwitchNow(i32 id)
             new_menu->SetPreviousMenuID(active_menu_id_);
     }
 
+    // NavBar management — matches game.asm mmInterface::Switch dispatch
+    if (nav_bar_)
+    {
+        nav_bar_->OptionInActive();
+
+        if (id == IDM_SHOWCASE || id == IDM_ABOUT)
+            DisableNavBar();
+        else
+            EnableNavBar();
+
+        if (id == IDM_OPTIONS)
+            nav_bar_->OptionActive();
+
+        if (id == IDM_AUDIO || id == IDM_GRAPHICS || id == IDM_CONTROLS)
+            nav_bar_->TurnOffPrev();
+    }
+
     Enable(id);
     active_menu_id_ = id;
 

@@ -954,6 +954,13 @@ void agiMeshSet::DrawLitEnv(agiMeshLighter lighter, agiTexDef* env_map, Matrix34
     }
 }
 
+void agiMeshSet::DrawLitSph(agiMeshLighter lighter, agiTexDef* /*sph_map*/, u32 flags)
+{
+    // NOTE: Sphere map pass skipped (SphereMap is ARTS_IMPORT, not linked on Linux).
+    // The lit render still applies for the vehicle preview.
+    DrawLit(lighter, flags, nullptr);
+}
+
 void agiMeshSet::DrawNormals([[maybe_unused]] Vector3& color)
 {
     // FIXME: Avoid this check

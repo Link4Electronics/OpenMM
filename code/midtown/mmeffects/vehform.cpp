@@ -29,7 +29,6 @@ define_dummy_symbol(mmeffects_vehform);
 #include "agiworld/meshset.h"
 #include "agiworld/quality.h"
 #include "agiworld/texsheet.h"
-#include "agiworld/texsort.h"
 #include "arts7/camera.h"
 #include "arts7/cullmgr.h"
 #include "arts7/sim.h"
@@ -111,83 +110,85 @@ static const char* WHEEL_GROUPS[mmVehicleForm::MAX_WHEELS] = {
 
 void mmVehicleForm::SetShape(char* name, char* group, char* arg3, Vector3* offset)
 {
-    Displayf("DBG SetShape: name=%s group=%s arg3=%s", name, group, arg3 ? arg3 : "(null)");
-
     char tsh_path[64];
     arts_sprintf(tsh_path, "mtl/%s.TSH", name);
     TEXSHEET.Load(tsh_path);
 
-    Displayf("DBG SetShape: calling GetMeshSet(\"%s\", \"%s\", %p, 0x107)", name, group, (void*)offset);
-
     vehicle_mesh_ = GetMeshSet(name, group, offset, 0x107);
-
-    Displayf("DBG SetShape: vehicle_mesh_=%p offset=%p", (void*)vehicle_mesh_, (void*)offset);
 
     if (arg3)
         shadow_mesh_ = GetMeshSet(name, arg3, offset, 0x107);
 
     for (i32 i = 0; i < MAX_WHEELS; ++i)
     {
-        wheel_meshes_[i] = GetMeshSet(name, const_cast<char*>(WHEEL_GROUPS[i]), offset, 0x107);
-        Displayf("DBG SetShape: wheel_mesh_[%d]=%p", i, (void*)wheel_meshes_[i]);
-        if (!wheel_meshes_[i])
-            Displayf("DBG SetShape: wheel_mesh_[%d] FAILED to load!", i);
+        wheel_meshes_[i] = GetMeshSet(name, WHEEL_GROUPS[i], offset, 0x107);
     }
 }
 
 void mmVehicleForm::Cull()
 {
-    Displayf("DBG mmVehicleForm::Cull entered");
-
     static bool once = (InitVehicleLighting(), true);
     (void)once;
 
-    auto old_cull = agiCurState.SetCullMode(agiCullMode::None);
-
-    auto RenderMesh = [&](agiMeshSet* mesh, bool lit)
+    auto RenderIfResident = [](agiMeshSet* mesh, auto&& draw_fn) -> bool
     {
         if (!mesh)
-            return;
+            return true;
 
         if (mesh->LockIfResident())
         {
-            if (lit)
-            {
-                mesh->Geometry(MESH_DRAW_CLIP, mesh->Vertices, mesh->Planes);
-                mesh->DrawLit(Lighter, MESH_DRAW_CLIP, nullptr);
-            }
-            else
-            {
-                mesh->Draw(MESH_DRAW_CLIP);
-            }
+            draw_fn(mesh);
             mesh->Unlock();
+            return true;
         }
         else
         {
             mesh->PageIn();
+            return false;
         }
     };
 
-    RenderMesh(vehicle_mesh_, true);
-
-    for (i32 i = 0; i < MAX_WHEELS; ++i)
-        RenderMesh(wheel_meshes_[i], true);
-
-    // Shadow: use vertex colors with semi-transparency
-    if (shadow_mesh_)
+    // Read variant from color pointer
+    u32 variant = 0;
+    if (color_pointer)
     {
-        if (shadow_mesh_->LockIfResident())
-        {
-            if (shadow_mesh_->Colors)
-                shadow_mesh_->DrawColor(0x88FFFFFF, MESH_DRAW_CLIP);
-            else
-                shadow_mesh_->DrawColor(0x55000000, MESH_DRAW_CLIP);
-            shadow_mesh_->Unlock();
-        }
+        variant = static_cast<u32>(*color_pointer);
+    }
+
+    // Build flags with variant encoded
+    u32 flags = MESH_DRAW_CLIP | MESH_DRAW_VARIANT(variant);
+
+    // Set render state to normal
+    auto old_cull = agiCurState.SetCullMode(agiCullMode::None);
+
+    // Draw shadow first with semi-transparency
+    RenderIfResident(shadow_mesh_, [&](agiMeshSet* mesh)
+    {
+        auto old_zwrite = agiCurState.SetZWrite(true);
+        u32 shadow_flags = MESH_DRAW_CLIP | MESH_DRAW_VARIANT(0);
+        mesh->DrawColor(0x55000000, shadow_flags);
+        agiCurState.SetZWrite(old_zwrite);
+    });
+
+    // Draw body mesh with correct variant
+    RenderIfResident(vehicle_mesh_, [&](agiMeshSet* mesh)
+    {
+        if (SphMapTex)
+            mesh->DrawLitSph(Lighter, SphMapTex, flags);
         else
+            mesh->DrawLit(Lighter, flags, nullptr);
+    });
+
+    // Draw wheel meshes
+    for (i32 i = 0; i < MAX_WHEELS; ++i)
+    {
+        if (!wheel_meshes_[i])
+            continue;
+
+        RenderIfResident(wheel_meshes_[i], [&, i](agiMeshSet* mesh)
         {
-            shadow_mesh_->PageIn();
-        }
+            mesh->DrawLit(Lighter, flags, nullptr);
+        });
     }
 
     agiCurState.SetCullMode(old_cull);

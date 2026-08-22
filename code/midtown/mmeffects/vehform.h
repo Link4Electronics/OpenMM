@@ -54,6 +54,7 @@ public:
     bool HasMesh() const { return vehicle_mesh_ != nullptr; }
 
     void SetColor(i32 c) { color_index_ = c; }
+    void SetColorPointer(i32* ptr) { color_pointer = ptr; }
 
 private:
     agiMeshSet* vehicle_mesh_ {};

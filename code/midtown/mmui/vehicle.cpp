@@ -22,26 +22,11 @@ define_dummy_symbol(mmui_vehicle);
 
 #include "mmwidget/manager.h"
 
-// Viewport is at screen (0.053, 0.365, 0.453, 0.45) — left mid area
-// Buttons must be placed RIGHT of viewport (screen x > 0.506) or BELOW (screen y > 0.815)
-// ScaleWidget: screen = menu(0.114,0.07) + widget * menu(0.775,0.855)
-// Right column widget x > (0.506-0.114)/0.775 = 0.506
-// Bottom row  widget y > (0.815-0.07)/0.855 = 0.871
-static constexpr f32 VB_X_RIGHT = 0.55f;     // right column (screen ~0.540)
-static constexpr f32 VB_X_LEFT = 0.10f;      // bottom left (screen ~0.192)
-static constexpr f32 VB_Y_TOP = 0.05f;       // above viewport (screen ~0.113)
-static constexpr f32 VB_Y_MID = 0.35f;       // right of viewport top (screen ~0.369)
-static constexpr f32 VB_Y_BOTTOM = 0.88f;    // below viewport (screen ~0.822)
-
 Vehicle::Vehicle(i32 arg1)
     : VehicleSelectBase(arg1)
 {
-    AddBMButton(IDC_VEHICLE_AUTO,    "veh_auto"_xconst,  VB_X_RIGHT, VB_Y_TOP,    4);
-    AddBMButton(IDC_VEHICLE_SELECT,  "vehi_show"_xconst, VB_X_RIGHT, VB_Y_MID,    4);
-    AddBMButton(IDC_VEHICLE_BACK,    "onav_done"_xconst, VB_X_LEFT,  VB_Y_BOTTOM, 4);
-    AddBMButton(IDC_VEHICLE_DRIVE,   "vehi_play"_xconst, VB_X_RIGHT, VB_Y_BOTTOM, 4);
+    AddBMButton(IDC_VEHICLE_DRIVE, "vehi_play"_xconst, 0.55f, 0.88f, 5);
 
-    // Match original: 34/640, 175/480, 290/640, 216/480
     InitCarSelection(1, 34.0f / 640.0f, 175.0f / 480.0f, 290.0f / 640.0f, 216.0f / 480.0f);
 }
 

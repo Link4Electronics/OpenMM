@@ -67,8 +67,6 @@ agiMeshSet* GetMeshSet(aconst char* name, aconst char* group, Vector3* offset, i
         else
             arts_sprintf(bms_path, "bms/%s%s.bms", name, suffix);
 
-        Displayf("DBG GetMeshSet trying: %s", bms_path);
-
         stream = FileSystem::OpenAny(bms_path, true, nullptr, 0);
 
         if (stream)
@@ -119,6 +117,11 @@ agiMeshSet* GetMeshSet(aconst char* name, aconst char* group, Vector3* offset, i
 
     if (offset)
         mesh->Offset(*offset);
+    else
+        mesh->Offset(-bounds);
+
+    if (bounds.Mag2() > 0.0f)
+        Warningf("GetMeshSet: %s bounds=(%.6f,%.6f,%.6f) offset=%s", bms_path, bounds.x, bounds.y, bounds.z, offset ? "yes" : "no");
 
     ++MeshesPaged;
 

@@ -5,6 +5,7 @@ Python scripts for inspecting AR archives (located in project root):
 - **`parse_ar.py`** — Lists all files in AR archives with pixel dimensions for BMF/DDS/JPG/PNG/TGA/BMP. Shows button bitmap paths and dimensions. Usage: `./parse_ar.py`
 - **`debug_ar.py`** — Dumps raw directory structure of an AR file (node entries, offsets, sizes, names). Good for understanding the VFS layout.
 - AR format: u32 magic(`0x53455241 "ARES"`) + u32 node_count + u32 root_count + u32 names_size + node[count] + names_data + file_data. Each node is 12 bytes: u32 offset/u32 size_flags/u32 name_flags.
+- **`node.offset` (`field_0`) is the ABSOLUTE file position** in the AR archive (not relative to the file data section). The data section has 13 bytes of padding after the names section before the first file.
 - File names can embed `\x01` (integer placeholder filled from name_int field) and extensions from a separate extension table.
 
 ### Ownership rules for Ptr<T> + AdoptChild
@@ -173,7 +174,9 @@ ttf fonts
 - Default vehicle: `"vpbug"` (VW New Beetle)
 - Geometry: `bms/<name>[/<group>].bms` loaded via `GetMeshSet(name, group, offset, flags)`
 - Textures: `mtl/<name>.tsh` and `mtl/global.tsh` loaded via TEXSHEET
-- BMS file format: `u32 magic(0x4D534833 "MSH3")` + `Vector3 bounds` + BinaryLoad data
+- BMS file format: 16-byte pager header (`u32 magic(0x4D534833 "MSH3")` + `Vector3 bounds`) + BinaryLoad data (starts at offset 16).
+- The `Vector3 bounds` field encodes each sub-mesh's LOCAL POSITION relative to the car. Body/shadow have `(0,0,0)`, wheels have their car-local coordinates (e.g. VPBUG FL wheel: `(-0.756, 0.310, -1.189)`).
+- `GetMeshSet()` reads magic+bounds, then passes the stream at offset 16 to `BinaryLoad`. When `offset==nullptr` (no explicit position), the stored `bounds` are used to auto-offset the vertices. When `offset` is provided, it must match `bounds` within tolerance or the function returns `nullptr`.
 
 ### Vehicle preview camera setup (vselect.cpp)
 - **Camera/View matrix**: The original code used left-handed `up_world × fwd` for `cam_right` and set `Camera.m2 = +fwd`. The engine's software transform + clip pipeline expects OpenGL convention (camera looks along `-Z`, right-handed). Fixed by using right-handed `fwd × up_world` for `cam_right`, `Camera.m2 = -fwd`, and `View` third column = `-fwd` (with corresponding translation `fwd ^ eye` instead of `-(fwd ^ eye)`).
@@ -206,6 +209,7 @@ ttf fonts
 - **Vehicle list init**: Added `mmVehList` creation + `LoadAll()` call in `mmInterface::Reset()` (`interface.cpp:231`). Was missing — original called it from game.asm startup, so `NumVehicles=0` → 3D preview never rendered.
 - **64-bit gap90 overlap fix**: `vselect.h` originally stored pointers inside `gap90[0xD8]` at 32-bit offsets (0x4C for forms, 0x50 for topSpeed, 0x54 for extra). On 64-bit, 8-byte pointer writes into adjacent 4-byte slots overlapped (forms at gap90[0x4C] wrote 8 bytes through 0x53, corrupting topSpeed at 0x50). Moved all pointers to proper member variables (`dofcs_array_`, `forms_array_`, `top_speed_array_`, `extra_array_`) plus int accessors (`current_car_`, `current_color_`, `vehicle_count_`) outside gap90 (`vselect.h:87-96`).
 - **GetMeshSet LOD suffix fallback**: Vehicle BMS files use LOD suffixes (`_H`, `_M`, `_L`, `_VL`) on the group name (e.g. `BODY_H.BMS` instead of `BODY.BMS`). `GetMeshSet()` now tries the exact name first, then falls back to `_H`, `_M`, `_L`, `_VL` in order (`getmesh.cpp:53-82`). This allows the vehicle preview to load the correct mesh.
+- **Wheel mesh positions (missing wheel offset)**: Wheel BMS files contain per-wheel position in the `Vector3 bounds` field of the 16-byte pager header (e.g. WHL0_H.BMS: `(-0.756, 0.310, -1.189)` = front-left). `GetMeshSet()` was reading this field but discarding it when `offset==nullptr`. Since `SetShape` in `vehform.cpp` passes `nullptr` for offset to all meshes (body, shadow, and wheels), the wheels loaded at the origin inside the car body. **Fixed**: `GetMeshSet` now auto-offsets by stored `bounds` when no explicit offset is given (`getmesh.cpp:118-121`). Body/shadow have `bounds=(0,0,0)` so they're unchanged.
 
 ### ReadFile OVERLAPPED fix (minwin_linux.h)
 - **Root cause**: Linux `ReadFile()` compat wrapper in `code/midtown/core/minwin_linux.h:427` ignored the `OVERLAPPED` parameter and used `::read()` instead of `::pread()`. All pager reads (`PagerInfo_t::Read`) construct an `OVERLAPPED` with the correct file offset, but `ReadFile` on Linux used `::read(fd, ...)` which reads from the current seek position (typically 0 = start of AR file) instead of the correct data offset.
