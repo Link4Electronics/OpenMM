@@ -27,6 +27,7 @@ Tokenizer::Tokenizer(const char* name, Stream* input)
     , input_(input)
 {}
 
+// FUNCTION: MIDTOWN 0x005432F0
 f32 Tokenizer::GetFloat()
 {
     char buffer[32];
@@ -42,6 +43,7 @@ f32 Tokenizer::GetFloat()
     return 0.0f;
 }
 
+// FUNCTION: MIDTOWN 0x00543290
 i32 Tokenizer::GetInt()
 {
     char buffer[32];
@@ -57,6 +59,7 @@ i32 Tokenizer::GetInt()
     return 0;
 }
 
+// FUNCTION: MIDTOWN 0x00543180
 i32 Tokenizer::GetToken(char* buffer, isize buffer_len)
 {
     while (IsSpace(current_char_))
@@ -82,6 +85,7 @@ i32 Tokenizer::GetToken(char* buffer, isize buffer_len)
     return count;
 }
 
+// FUNCTION: MIDTOWN 0x00543350
 void Tokenizer::IgnoreToken()
 {
     char buffer[1];
@@ -89,6 +93,7 @@ void Tokenizer::IgnoreToken()
     GetToken(buffer, ARTS_SIZE(buffer));
 }
 
+// FUNCTION: MIDTOWN 0x00543210
 void Tokenizer::MatchToken(const char* value)
 {
     char buffer[64];

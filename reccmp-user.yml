@@ -1,0 +1,5 @@
+# Local reccmp overrides (per-machine). Point this at the original
+# Midtown Madness beta executable if it is not in the repository root.
+targets:
+  MIDTOWN:
+    path: midtown.exe

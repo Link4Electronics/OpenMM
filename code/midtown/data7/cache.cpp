@@ -68,11 +68,13 @@ static inline constexpr u32 AlignSize(u32 value) noexcept
 
 DataCache::DataCache() = default;
 
+// FUNCTION: MIDTOWN 0x00558930
 DataCache::~DataCache()
 {
     Shutdown();
 }
 
+// FUNCTION: MIDTOWN 0x005590B0
 void DataCache::Age()
 {
     cache_lock_.lock();
@@ -150,6 +152,7 @@ void DataCache::Age()
     cache_lock_.unlock();
 }
 
+// FUNCTION: MIDTOWN 0x00559280
 void* DataCache::Allocate(i32 handle, u32 size)
 {
     if (size == 0)
@@ -169,6 +172,7 @@ void* DataCache::Allocate(i32 handle, u32 size)
     return ptr;
 }
 
+// FUNCTION: MIDTOWN 0x00558D70
 i32 DataCache::BeginObject(i32* handle_ptr, DataCacheCallback relocate, void* context, u32 maxsize)
 {
     cache_lock_.lock();
@@ -232,6 +236,7 @@ i32 DataCache::BeginObject(i32* handle_ptr, DataCacheCallback relocate, void* co
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00558FF0
 void DataCache::EndObject(i32 handle)
 {
     DataCacheObject& dco = GetObject(handle);
@@ -244,6 +249,7 @@ void DataCache::EndObject(i32 handle)
     cache_lock_.unlock();
 }
 
+// FUNCTION: MIDTOWN 0x00559030
 void DataCache::Flush()
 {
     cache_lock_.lock();
@@ -265,6 +271,7 @@ void DataCache::Flush()
     cache_lock_.unlock();
 }
 
+// FUNCTION: MIDTOWN 0x00559330
 void DataCache::GetStatus(u32& objects, u32& bytes, u32& waste)
 {
     if (objects_)
@@ -283,6 +290,7 @@ void DataCache::GetStatus(u32& objects, u32& bytes, u32& waste)
 
 static mem::cmd_param PARAM_cacheage {"cacheage"};
 
+// FUNCTION: MIDTOWN 0x00558940
 void DataCache::Init(u32 heap_size, i32 handle_count, const char* name)
 {
     MaxObjectAge = PARAM_cacheage.get_or<u32>(1000);
@@ -314,6 +322,7 @@ void DataCache::Init(u32 heap_size, i32 handle_count, const char* name)
     name_ = name;
 }
 
+// FUNCTION: MIDTOWN 0x00558B50
 b32 DataCache::Lock(i32* handle)
 {
     ArAssert(*handle != 0, "Invalid Handle");
@@ -338,6 +347,7 @@ b32 DataCache::Lock(i32* handle)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x005589E0
 void DataCache::Shutdown()
 {
     if (heap_ == nullptr)
@@ -355,6 +365,7 @@ void DataCache::Shutdown()
     object_lock_.close();
 }
 
+// FUNCTION: MIDTOWN 0x00558BF0
 void DataCache::Unlock(i32 handle)
 {
     cache_lock_.lock();
@@ -369,6 +380,7 @@ void DataCache::Unlock(i32 handle)
     cache_lock_.unlock();
 }
 
+// FUNCTION: MIDTOWN 0x00558C60
 void DataCache::UnlockAndFree(i32 handle)
 {
     cache_lock_.lock();
@@ -397,6 +409,7 @@ void DataCache::Free(i32 handle)
     cache_lock_.unlock();
 }
 
+// FUNCTION: MIDTOWN 0x00558D00
 void DataCache::CleanEndOfHeap()
 {
     for (; cur_objects_; --cur_objects_)
@@ -415,6 +428,7 @@ void DataCache::CleanEndOfHeap()
     }
 }
 
+// FUNCTION: MIDTOWN 0x00558F20
 void DataCache::InitObject(
     i32 handle, i32* handle_ptr, DataCacheCallback relocate, void* context, u8* data, u32 maxsize)
 {
@@ -442,6 +456,7 @@ void DataCache::InitObject(
         object_lock_.lock();
 }
 
+// FUNCTION: MIDTOWN 0x00558B00
 void DataCache::Relocate(DataCacheObject* dco, u8* ptr)
 {
     if (isize delta = ptr - dco->pBase)
@@ -452,6 +467,7 @@ void DataCache::Relocate(DataCacheObject* dco, u8* ptr)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00558A20
 void DataCache::Unload(i32 handle)
 {
     DataCacheObject& dco = GetObject(handle);

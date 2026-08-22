@@ -45,6 +45,7 @@ eqEventQ::~eqEventQ()
         eqEventHandler::SuperQ->RemoveClient(this);
 }
 
+// FUNCTION: MIDTOWN 0x00545840
 void eqEventQ::Activate(void* window, b32 active)
 {
     eqEvent event;
@@ -54,6 +55,7 @@ void eqEventQ::Activate(void* window, b32 active)
     eqEventMonitor::Activate(window, active);
 }
 
+// FUNCTION: MIDTOWN 0x00545800
 void eqEventQ::Destroy(void* window)
 {
     eqEvent event;
@@ -63,6 +65,7 @@ void eqEventQ::Destroy(void* window)
     eqEventMonitor::Destroy(window);
 }
 
+// FUNCTION: MIDTOWN 0x005457A0
 void eqEventQ::Keyboard(void* window, i32 modifiers, i32 virtual_key, i32 ascii_key, i32 state)
 {
     eqEvent event;
@@ -72,6 +75,7 @@ void eqEventQ::Keyboard(void* window, i32 modifiers, i32 virtual_key, i32 ascii_
     eqEventMonitor::Keyboard(window, modifiers, virtual_key, ascii_key, state);
 }
 
+// FUNCTION: MIDTOWN 0x00545710
 void eqEventQ::Mouse(void* window, i32 new_buttons, i32 changed_buttons, i32 buttons, i32 mouse_x, i32 mouse_y,
     i32 window_x, i32 window_y)
 {
@@ -83,6 +87,7 @@ void eqEventQ::Mouse(void* window, i32 new_buttons, i32 changed_buttons, i32 but
     eqEventMonitor::Mouse(window, new_buttons, changed_buttons, buttons, mouse_x, mouse_y, window_x, window_y);
 }
 
+// FUNCTION: MIDTOWN 0x005458C0
 b32 eqEventQ::Pop(eqEvent* event)
 {
     if (eqEventHandler::SuperQ == nullptr)
@@ -110,6 +115,7 @@ b32 eqEventQ::Pop(eqEvent* event)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00545670
 void eqEventQ::Redraw(void* window, i32 arg2, i32 arg3, i32 arg4, i32 arg5)
 {
     eqEvent event;
@@ -119,6 +125,7 @@ void eqEventQ::Redraw(void* window, i32 arg2, i32 arg3, i32 arg4, i32 arg5)
     eqEventMonitor::Redraw(window, arg2, arg3, arg4, arg5);
 }
 
+// FUNCTION: MIDTOWN 0x005456D0
 void eqEventQ::Refocus(void* window, i32 focused)
 {
     eqEvent event;
@@ -133,6 +140,7 @@ void eqEventQ::Clear()
     read_head_ = write_head_;
 }
 
+// FUNCTION: MIDTOWN 0x00545880
 void eqEventQ::Queue(eqEvent& event)
 {
     if (!(enabled_events_ & EQ_EVENT_MASK(event.Type)))

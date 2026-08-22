@@ -44,6 +44,7 @@ eqEventHandler::~eqEventHandler()
     }
 }
 
+// FUNCTION: MIDTOWN 0x00544D80
 void eqEventHandler::AddClient(eqEventMonitor* monitor)
 {
     if (monitor->handler_ != nullptr)
@@ -68,6 +69,7 @@ void eqEventHandler::AddClient(eqEventMonitor* monitor)
     Errorf("AddClient: already too many clients");
 }
 
+// FUNCTION: MIDTOWN 0x00544DE0
 void eqEventHandler::RemoveClient(eqEventMonitor* monitor)
 {
     if (monitor->handler_ == nullptr)
@@ -133,6 +135,7 @@ eqEventMonitor::~eqEventMonitor()
         handler_->RemoveClient(this);
 }
 
+// FUNCTION: MIDTOWN 0x00544E60
 void eqEventMonitor::Redraw(void* window, i32 arg2, i32 arg3, i32 arg4, i32 arg5)
 {
     if (handler_->debug_)
@@ -141,6 +144,7 @@ void eqEventMonitor::Redraw(void* window, i32 arg2, i32 arg3, i32 arg4, i32 arg5
     }
 }
 
+// FUNCTION: MIDTOWN 0x00544EA0
 void eqEventMonitor::Refocus(void* window, i32 focused)
 {
     if (handler_->debug_)
@@ -149,6 +153,7 @@ void eqEventMonitor::Refocus(void* window, i32 focused)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00544EE0
 void eqEventMonitor::Mouse(void* window, i32 new_buttons, i32 changed_buttons, i32 buttons, i32 mouse_x, i32 mouse_y,
     i32 window_x, i32 window_y)
 {
@@ -160,6 +165,7 @@ void eqEventMonitor::Mouse(void* window, i32 new_buttons, i32 changed_buttons, i
     }
 }
 
+// FUNCTION: MIDTOWN 0x00544F60
 void eqEventMonitor::Keyboard(void* window, i32 modifiers, i32 virtual_key, i32 ascii_key, i32 /*state*/)
 {
     if (handler_->debug_)
@@ -171,6 +177,7 @@ void eqEventMonitor::Keyboard(void* window, i32 modifiers, i32 virtual_key, i32 
     }
 }
 
+// FUNCTION: MIDTOWN 0x00544FF0
 void eqEventMonitor::Destroy(void* window)
 {
     if (handler_->debug_)
@@ -179,6 +186,7 @@ void eqEventMonitor::Destroy(void* window)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00545020
 void eqEventMonitor::Activate(void* window, b32 active)
 {
     if (handler_->debug_)
@@ -187,6 +195,7 @@ void eqEventMonitor::Activate(void* window, b32 active)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00545060
 void eqEventMonitor::SetWantMotion(i32 enabled)
 {
     if (handler_)
@@ -204,6 +213,7 @@ eqEventReplayChannelClass::eqEventReplayChannelClass()
     : eqReplayChannel('EQ01')
 {}
 
+// FUNCTION: MIDTOWN 0x00545310
 void eqEventReplayChannelClass::DoPlayback(Stream* file)
 {
     // UNTESTED
@@ -242,6 +252,7 @@ void eqEventReplayChannelClass::DoPlayback(Stream* file)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00545100
 void eqEventReplayChannelClass::DoRecord(Stream* file)
 {
     // UNTESTED
@@ -317,6 +328,7 @@ void eqEventReplayChannelClass::DoRecord(Stream* file)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00545490
 void eqEventReplayChannelClass::QueueKeyboard(i32 arg1, i32 arg2, i32 arg3, i32 /*arg4*/)
 {
     // UNTESTED
@@ -339,6 +351,7 @@ void eqEventReplayChannelClass::QueueKeyboard(i32 arg1, i32 arg2, i32 arg3, i32 
     }
 }
 
+// FUNCTION: MIDTOWN 0x00545400
 void eqEventReplayChannelClass::QueueMouse(i32 arg1, i32 arg2, i32 arg3, i32 arg4, i32 arg5, i32 arg6, i32 arg7)
 {
     // UNTESTED

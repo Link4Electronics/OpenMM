@@ -1,2 +1,2 @@
-# Open1560 main code
+# OpenMM main code
 add_subdirectory(midtown)

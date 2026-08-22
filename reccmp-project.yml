@@ -1,0 +1,15 @@
+# reccmp project configuration for OpenMM.
+# https://github.com/isledecomp/reccmp
+#
+# The reference binary is the original Midtown Madness Sneak Preview
+# Beta (build 1560) executable. Drop it into the repository root as
+# `midtown.exe` (or point reccmp-user.yml at its real location), then
+# record its hash:
+#
+#   pip install reccmp
+#   reccmp-project detect --search-path .
+#
+targets:
+  MIDTOWN:
+    filename: midtown.exe
+    source_root: code/midtown

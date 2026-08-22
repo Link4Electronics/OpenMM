@@ -111,6 +111,7 @@ ARTS_NOINLINE void MetaClass::Unregister()
     }
 }
 
+// FUNCTION: MIDTOWN 0x005595D0
 void MetaClass::InitFields()
 {
     ArAssert(Current == nullptr, "Cannot declare nested fields");
@@ -124,6 +125,7 @@ void MetaClass::InitFields()
     Current = nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00559510
 b32 MetaClass::IsSubclassOf(MetaClass* parent)
 {
     for (MetaClass* cls = this; cls; cls = cls->parent_)
@@ -135,6 +137,7 @@ b32 MetaClass::IsSubclassOf(MetaClass* parent)
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x005597F0
 void MetaClass::Load(MiniParser* parser, void* ptr)
 {
     if (fields_ == nullptr)
@@ -195,6 +198,7 @@ void MetaClass::Load(MiniParser* parser, void* ptr)
         static_cast<Base*>(ptr)->AfterLoad();
 }
 
+// FUNCTION: MIDTOWN 0x005595F0
 void MetaClass::Save(MiniParser* parser, void* ptr)
 {
     if (fields_ == nullptr)
@@ -234,6 +238,7 @@ void MetaClass::Save(MiniParser* parser, void* ptr)
         Free(default_ptr, 0);
 }
 
+// FUNCTION: MIDTOWN 0x00559740
 void MetaClass::SkipBlock(MiniParser* parser)
 {
     parser->Errorf("'%s' is not a valid field name in %s.", parser->GetBuffer(), GetName());
@@ -334,6 +339,7 @@ void MetaClass::FixupClasses()
     }
 }
 
+// FUNCTION: MIDTOWN 0x00559960
 ARTS_NOINLINE void MetaClass::DeclareNamedTypedField(const char* name, usize offset, MetaType* type)
 {
     MetaField* field = new MetaField {nullptr, name, offset, type};
@@ -341,6 +347,7 @@ ARTS_NOINLINE void MetaClass::DeclareNamedTypedField(const char* name, usize off
     ppField = &field->Next;
 }
 
+// FUNCTION: MIDTOWN 0x00559540
 MetaClass* MetaClass::FindByName(const char* name, MetaClass* root)
 {
     for (MetaClass* cls = root; cls; cls = cls->next_child_)
@@ -356,6 +363,7 @@ MetaClass* MetaClass::FindByName(const char* name, MetaClass* root)
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x005594E0
 void MetaClass::UndeclareAll()
 {
     for (i32 i = 0; i < NextSerial; ++i)

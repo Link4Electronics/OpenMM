@@ -184,6 +184,7 @@ asCullManager::~asCullManager()
     PGRAPH = nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00512040
 void asCullManager::DeclareCamera(asCamera* camera)
 {
     Displayf("DBG DeclareCamera: entering");
@@ -199,6 +200,7 @@ void asCullManager::DeclareCamera(asCamera* camera)
     }
 }
 
+// FUNCTION: MIDTOWN 0x005120A0
 void asCullManager::DeclareCullable(asCullable* cullable)
 {
     ArAssert(cullable, "Cullable is null");
@@ -220,6 +222,7 @@ void asCullManager::DeclareCullable(asCullable* cullable)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00512140
 void asCullManager::DeclareCullable2D(asCullable* cullable)
 {
     ArAssert(cullable, "Cullable2D is null");
@@ -247,6 +250,7 @@ void asCullManager::AddPage(Callback callback)
 
     page_callbacks_[num_pages_++] = callback;
 }
+// FUNCTION: MIDTOWN 0x005121E0
 #endif
 
 void asCullManager::DeclareBitmap(asCullable* cullable, agiBitmap* bitmap)
@@ -259,6 +263,7 @@ void asCullManager::DeclareBitmap(asCullable* cullable, agiBitmap* bitmap)
         DeclareCullable2D(cullable);
 }
 
+// FUNCTION: MIDTOWN 0x00512250
 void asCullManager::DeclarePrint(asCullable* cullable)
 {
     ArAssert(cullable, "Print Cullable is null");
@@ -269,6 +274,7 @@ void asCullManager::DeclarePrint(asCullable* cullable)
         DeclareCullable2D(cullable);
 }
 
+// FUNCTION: MIDTOWN 0x00511AC0
 void asCullManager::Reset()
 {
     LockGuard lock(mutex_);
@@ -285,6 +291,7 @@ void asCullManager::Reset()
     stats_timer_.Reset();
 }
 
+// FUNCTION: MIDTOWN 0x00511D60
 void asCullManager::Update()
 {
     if (!Sim()->IsFullUpdate())
@@ -391,11 +398,13 @@ void asCullManager::Update()
     gRandSeed = rand_seed;
 }
 
+// FUNCTION: MIDTOWN 0x00511B20
 void asCullManager::DisplayVersionString() const
 {
     agiPrintf(0, 0, text_color_, VERSION_STRING);
 }
 
+// FUNCTION: MIDTOWN 0x00511BD0
 void asCullManager::PrintMiniStats()
 {
     current_frame_time_ = CurrentFrameTime;
@@ -407,6 +416,7 @@ void asCullManager::PrintMiniStats()
         average_frame_time_ * 1000.0f);
 }
 
+// FUNCTION: MIDTOWN 0x00511C60
 void asCullManager::PrintStats()
 {
     PrintMiniStats();

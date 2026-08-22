@@ -2,51 +2,58 @@ name: build
 
 on: [push, pull_request]
 
-env:
-  PREMAKE_GENERATOR: vs2019
-  BUILD_CONFIGURATION: Final
-  GH_TOKEN: ${{github.token}}
-
 permissions:
   contents: write
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake ninja-build libgl1-mesa-dev libfreetype-dev \
+          libavformat-dev libavcodec-dev libswscale-dev libavutil-dev
+
+    - name: Set up SDL
+      uses: libsdl-org/setup-sdl@main
       with:
-        msbuild-architecture: x86
-      
+        add-to-environment: true
+        build-type: Release
+        install-linux-dependencies: true
+        cmake-generator: Ninja
+        version: 3-latest
+
     - name: Format Check
       run: python3 tools/format.py --dry
 
     - name: ASM Check
       run: python3 tools/asm.py
 
-    - name: Premake
-      run: tools/premake5.exe ${{env.PREMAKE_GENERATOR}} --MM1_GAME_DIRECTORY="${{github.workspace}}/build/output/"
+    - name: Configure
+      run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
-      run: msbuild /verbosity:minimal /nologo /m /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform=Win32 "build/Open1560.sln"
+      run: cmake --build build
 
     - name: Generate Summary
-      run: python3 tools/asm.py >> $env:GITHUB_STEP_SUMMARY
+      run: python3 tools/asm.py >> "$GITHUB_STEP_SUMMARY"
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4.6.2
       with:
-        name: Open1560
-        path: build/output
+        name: OpenMM
+        path: game/OpenMM
         if-no-files-found: error
 
     - name: Update Release
       if: github.repository_owner == '0x1F9F1' && github.ref == 'refs/heads/master'
       run: |
-        7z a -tzip "artifacts/Open1560.zip" "${{github.workspace}}/build/output/*"
-        gh release upload "build" "artifacts/Open1560.zip" --clobber
+        mkdir -p artifacts
+        cp game/OpenMM artifacts/
+        cd artifacts && tar czf OpenMM.tar.gz OpenMM
+        gh release upload "build" "artifacts/OpenMM.tar.gz" --clobber
         git push --force origin HEAD:refs/tags/build

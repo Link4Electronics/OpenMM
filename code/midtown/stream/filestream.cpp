@@ -54,6 +54,7 @@ FileStream::~FileStream()
     Close();
 }
 
+// FUNCTION: MIDTOWN 0x005435A0
 i32 FileStream::Close()
 {
     Flush();
@@ -81,6 +82,7 @@ i32 FileStream::Close()
     return result;
 }
 
+// FUNCTION: MIDTOWN 0x005433C0
 i32 FileStream::Create(const char* path)
 {
     if (file_handle_ != INVALID_HANDLE_VALUE)
@@ -97,11 +99,13 @@ void* FileStream::GetMapping()
     return file_mapping_;
 }
 
+// FUNCTION: MIDTOWN 0x005433B0
 usize FileStream::GetPagerHandle()
 {
     return reinterpret_cast<usize>(pager_handle_);
 }
 
+// FUNCTION: MIDTOWN 0x005433F0
 i32 FileStream::Open(const char* path, b32 read_only)
 {
     if (file_handle_ != INVALID_HANDLE_VALUE)
@@ -139,6 +143,7 @@ i32 FileStream::Open(const char* path, b32 read_only)
     return 1;
 }
 
+// FUNCTION: MIDTOWN 0x005434F0
 isize FileStream::RawRead(void* ptr, isize size)
 {
     DWORD result = 0;
@@ -146,21 +151,25 @@ isize FileStream::RawRead(void* ptr, isize size)
     return ReadFile(file_handle_, ptr, static_cast<DWORD>(size), &result, NULL) ? result : 0;
 }
 
+// FUNCTION: MIDTOWN 0x00543530
 i32 FileStream::RawSeek(i32 pos)
 {
     return SetFilePointer(file_handle_, pos, NULL, FILE_BEGIN);
 }
 
+// FUNCTION: MIDTOWN 0x00543570
 i32 FileStream::RawSize()
 {
     return GetFileSize(file_handle_, NULL);
 }
 
+// FUNCTION: MIDTOWN 0x00543550
 i32 FileStream::RawTell()
 {
     return SetFilePointer(file_handle_, 0, NULL, FILE_CURRENT);
 }
 
+// FUNCTION: MIDTOWN 0x00543510
 isize FileStream::RawWrite(const void* ptr, isize size)
 {
     DWORD result = 0;
@@ -168,6 +177,7 @@ isize FileStream::RawWrite(const void* ptr, isize size)
     return WriteFile(file_handle_, ptr, static_cast<DWORD>(size), &result, NULL) ? result : 0;
 }
 
+// FUNCTION: MIDTOWN 0x005434D0
 i32 FileStream::Stderr()
 {
     if (file_handle_ != INVALID_HANDLE_VALUE)
@@ -178,6 +188,7 @@ i32 FileStream::Stderr()
     return (file_handle_ != INVALID_HANDLE_VALUE) ? 1 : -1;
 }
 
+// FUNCTION: MIDTOWN 0x00543490
 i32 FileStream::Stdin()
 {
     if (file_handle_ != INVALID_HANDLE_VALUE)
@@ -188,6 +199,7 @@ i32 FileStream::Stdin()
     return (file_handle_ != INVALID_HANDLE_VALUE) ? 1 : -1;
 }
 
+// FUNCTION: MIDTOWN 0x005434B0
 i32 FileStream::Stdout()
 {
     if (file_handle_ != INVALID_HANDLE_VALUE)

@@ -219,6 +219,7 @@ static bool ClipQuad(agiScreenVtx* verts)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00539E60
 void agiPipeline::Print(i32 x, i32 y, i32 color, const char* text)
 {
     if (y + agiFontHeight <= 0 || y >= Pipe()->GetHeight())
@@ -347,6 +348,7 @@ void agiPipeline::Print(i32 x, i32 y, i32 color, const char* text)
     agiCurState.SetTexturePerspective(persp);
 }
 
+// FUNCTION: MIDTOWN 0x0053A050
 b32 agiPipeline::PrintIs3D()
 {
     // NOTE: If PrintIs3D is false, then Cull is drawing stuff outside of BeginScene.
@@ -354,12 +356,14 @@ b32 agiPipeline::PrintIs3D()
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x0053A070
 void agiPipeline::PrintInit()
 {
     if (!BuiltinFontTexture)
         InitBuiltin();
 }
 
+// FUNCTION: MIDTOWN 0x0053A080
 void agiPipeline::PrintShutdown()
 {
     BuiltinFontTexture = nullptr;

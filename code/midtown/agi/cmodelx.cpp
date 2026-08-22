@@ -233,51 +233,61 @@ RcOwner<agiColorModel> agiColorModel::FindMatch(i32 mask_r, i32 mask_g, i32 mask
     Quitf("Couldn't find match for R=%x G=%x B=%x A=%x", mask_r, mask_g, mask_b, mask_a);
 }
 
+// FUNCTION: MIDTOWN 0x0053F460
 u32 agiColorModelARGB::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u32*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053E510
 u32 agiColorModelRGB555::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u16*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053E6F0
 u32 agiColorModelRGB565::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u16*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053E8D0
 u32 agiColorModelRGB555_Rev::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u16*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053EAB0
 u32 agiColorModelRGB565_Rev::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u16*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053EC60
 u32 agiColorModelRGB888::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u32*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053EE00
 u32 agiColorModelRGB888_Rev::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u32*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053F030
 u32 agiColorModelRGBA5551::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u16*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053F260
 u32 agiColorModelRGBA4444::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u16*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053F640
 u32 agiColorModelABGR::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return reinterpret_cast<u32*>(static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];

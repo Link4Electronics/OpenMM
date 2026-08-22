@@ -1,37 +1,55 @@
 # How to build
 
-To be able to make changes to the Open1560 code a development environment is required. This page will explain how to set this up.
+To be able to make changes to the OpenMM code a development environment is required. This page will explain how to set this up.
 
-## Visual Studio 2022
+## Dependencies
 
-The Open1560 code is build and developed using Visual Studio 2022. The community edition can be downloaded [here](https://visualstudio.microsoft.com/vs/community/). Make sure to select `Desktop Development with C++" during the installation.
+OpenMM uses [CMake](https://cmake.org/) (3.20+) and builds natively on Linux. Required:
+
+- SDL3 (`libsdl3-dev`, or build from source — see below)
+- OpenGL development headers (`libgl1-mesa-dev`)
+- FreeType (`libfreetype-dev`)
+
+Optional:
+
+- FFmpeg dev libraries (`libavformat-dev libavcodec-dev libswscale-dev libavutil-dev`) — enables intro video playback.
+
+On Ubuntu 24.04 and older, SDL3 is not packaged; build it once:
+
+```sh
+git clone --depth 1 --branch release-3.2.16 https://github.com/libsdl-org/SDL sdl3
+cmake -S sdl3 -B sdl3/build -DCMAKE_BUILD_TYPE=Release -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
+sudo cmake --install sdl3/build
+```
+
+(CI instead uses the [`libsdl-org/setup-sdl`](https://github.com/libsdl-org/setup-sdl) action, which builds and caches SDL automatically.)
 
 ## Git clone
 
-Use [git](https://git-scm.com/) bash to clone the repo with the following command:
+Use [git](https://git-scm.com/) to clone the repo with the following command:
 ```
-git clone https://github.com/0x1F9F1/Open1560.git
+git clone https://github.com/0x1F9F1/OpenMM.git
 ```
 
 Replace `0x1F9F1` with your own GitHub username if you created a fork already.
 
-This will create the Open1560 directory.
+This will create the OpenMM directory.
 
-## Prepare script
+## Build
 
-After having done that, shift+right click on the directory Open1560 directory and select "Open PowerShell window here". Then run the following command with after replacing the location of the Midtown Madness in it:
+From the repo root:
 
+```sh
+mkdir build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build -j$(nproc)
 ```
-tools/premake5.exe vs2022 --MM1_GAME_DIRECTORY=c:/location/of/mm1/installation
-```
 
-Make sure to use `/`s and not `\`s in the Midtown Madness path.
-
-This will create the Visual Studio project files which will be used in the next step.
+The binary is copied to `game/OpenMM` after linking. Run it from your Midtown Madness directory (the folder containing `core.ar`, `ui.ar`, ...).
 
 ## Get started
 
-Now the code can be openened by double clicking the newly created `build/Open1560.sln` project file for Visual Studio. If all the previous steps were done correctly, clicking `Start Debugging` at the top of the screen in Visual Studio should build and run Open1560. Feel free to play around with the code and make changes.
+Open the code in your favorite editor (VS Code / CLion both understand the CMake setup: open the repository root and select the `build` directory as the CMake build dir). If all the previous steps were done correctly, running `game/OpenMM` inside your MM1 install should build and run OpenMM. Feel free to play around with the code and make changes.
 
 For more in-depth development information, see [methodology](./methodology.md).
 

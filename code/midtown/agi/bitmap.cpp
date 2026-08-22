@@ -32,9 +32,11 @@ agiBitmap::agiBitmap(agiPipeline* pipe)
     : agiRefreshable(pipe)
 {}
 
+// FUNCTION: MIDTOWN 0x0053C600
 void agiBitmap::UpdateFlags()
 {}
 
+// FUNCTION: MIDTOWN 0x0053C6A0
 aconst char* agiBitmap::GetName()
 {
     static char buffer[64]; // FIXME: Static buffer
@@ -42,6 +44,7 @@ aconst char* agiBitmap::GetName()
     return buffer;
 }
 
+// FUNCTION: MIDTOWN 0x0053C3C0
 i32 agiBitmap::Init(const char* name, f32 sx, f32 sy, i32 flags)
 {
     EndGfx();
@@ -92,6 +95,7 @@ i32 agiBitmap::Init(const char* name, f32 sx, f32 sy, i32 flags)
     return SafeBeginGfx();
 }
 
+// FUNCTION: MIDTOWN 0x0053C5D0
 void agiBitmap::SetTransparency(b32 enabled)
 {
     if (enabled)

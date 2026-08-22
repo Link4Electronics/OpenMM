@@ -49,18 +49,22 @@ agiRasterizer::agiRasterizer(agiPipeline* pipe)
     RAST = this;
 }
 
+// FUNCTION: MIDTOWN 0x00539C60
 void agiRasterizer::BeginGroup()
 {}
 
+// FUNCTION: MIDTOWN 0x00539C70
 void agiRasterizer::EndGroup()
 {}
 
+// FUNCTION: MIDTOWN 0x00539C80
 void agiRasterizer::Quad(i32 v0, i32 v1, i32 v2, i32 v3)
 {
     Triangle(v0, v1, v2);
     Triangle(v0, v2, v3);
 }
 
+// FUNCTION: MIDTOWN 0x00539CB0
 void agiRasterizer::Poly(i32* indices, i32 count)
 {
     for (i32 i = 0; i + 2 < count; ++i)
@@ -69,11 +73,13 @@ void agiRasterizer::Poly(i32* indices, i32 count)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00539CF0
 void agiRasterizer::Mesh2(agiScreenVtx2*, i32, u16*, i32)
 {
     Quitf("agiRasterizer::Mesh2 not implemented for this renderer.");
 }
 
+// FUNCTION: MIDTOWN 0x00539D10
 void agiRasterizer::LineList(agiVtxType type, agiVtx* vertices, i32 vertex_count)
 {
     BeginGroup();
@@ -86,6 +92,7 @@ void agiRasterizer::LineList(agiVtxType type, agiVtx* vertices, i32 vertex_count
     EndGroup();
 }
 
+// FUNCTION: MIDTOWN 0x00539C20
 void agiRendStateStruct::Reset()
 {
     std::memset(this, 0xFF, sizeof(*this));

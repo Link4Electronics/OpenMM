@@ -35,6 +35,7 @@ static i32 cpuid()
     return values[3];
 }
 
+// FUNCTION: MIDTOWN 0x0055DD70
 initHaveMMX::initHaveMMX()
 {
     i32 flags = cpuid();

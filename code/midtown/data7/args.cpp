@@ -32,6 +32,7 @@ asArg::asArg(char flag, const char* usage)
     }
 }
 
+// FUNCTION: MIDTOWN 0x0055A5E0
 void asArg::Print(const char* name)
 {
     Displayf("%s: Found: %d Flag: %c Msg: (%s)", name ? name : "ARG", Found, Flag, Usage);
@@ -58,6 +59,7 @@ ArgSet::~ArgSet()
     }
 }
 
+// FUNCTION: MIDTOWN 0x0055A730
 void ArgSet::ParseArgs(i32 argc, const char** argv)
 {
     ArWithStaticHeap static_heap;
@@ -148,6 +150,7 @@ void ArgSet::ParseArgs(i32 argc, const char** argv)
     }
 }
 
+// FUNCTION: MIDTOWN 0x0055A6E0
 void ArgSet::Print(const char* title)
 {
     Displayf("%s:", title ? title : "ARGSET");
@@ -159,6 +162,7 @@ void ArgSet::Print(const char* title)
     }
 }
 
+// FUNCTION: MIDTOWN 0x0055A970
 void ArgSet::Usage()
 {
     Displayf("Usage:\t%s", Path);

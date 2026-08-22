@@ -29,9 +29,11 @@ agiRefreshable::agiRefreshable(agiPipeline* pipe)
     pipe_->NotifyNew(this);
 }
 
+// FUNCTION: MIDTOWN 0x0053A150
 void agiRefreshable::Restore()
 {}
 
+// FUNCTION: MIDTOWN 0x0053A210
 aconst char* agiRefreshable::GetName()
 {
     return "generic refreshable"_xconst;
@@ -49,6 +51,7 @@ agiRefreshable::~agiRefreshable()
         pipe_->NotifyDelete(this);
 }
 
+// FUNCTION: MIDTOWN 0x0053A160
 ARTS_NOINLINE void agiRefreshable::AddRef()
 {
     ValidatePtr("AddRef");
@@ -56,6 +59,7 @@ ARTS_NOINLINE void agiRefreshable::AddRef()
     ++ref_count_;
 }
 
+// FUNCTION: MIDTOWN 0x0053A180
 ARTS_NOINLINE i32 agiRefreshable::Release()
 {
     ValidatePtr("Release");
@@ -72,6 +76,7 @@ ARTS_NOINLINE i32 agiRefreshable::Release()
     return refs;
 }
 
+// FUNCTION: MIDTOWN 0x0053A120
 i32 agiRefreshable::SafeBeginGfx()
 {
     if (!pipe_ || !pipe_->HaveGfxStarted())
@@ -83,11 +88,13 @@ i32 agiRefreshable::SafeBeginGfx()
     return BeginGfx();
 }
 
+// FUNCTION: MIDTOWN 0x0053A220
 b32 agiRefreshable::IsTexture()
 {
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x0053A1B0
 ARTS_NOINLINE void agiRefreshable::ValidatePtr(const char* reason)
 {
     usize volatile ptr = reinterpret_cast<usize>(this);

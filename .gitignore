@@ -13,3 +13,6 @@
 !/game/
 !/game/Open1560-README.url
 !/game/open1560.ar
+/build_msvc/
+/tools/__pycache__/
+/reccmp-report/progress.json

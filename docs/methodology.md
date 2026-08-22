@@ -50,7 +50,7 @@ Compiled in debug mode (with optimisations disabled), though no debug symbols. G
 
 # Debug Symbols (Linker Map)
 There are 4 known linker maps: 1427, 1560 Debug, 1560 Release, 1588 Release, 1589 Debug Trial.\
-Comparisons can be found [here](https://github.com/0x1F9F1/Open1560/issues/46#issuecomment-697062680).
+Comparisons can be found [here](https://github.com/0x1F9F1/OpenMM/issues/46#issuecomment-697062680).
 
 # Disassembly
 The game has been fully disassembled into `game.asm`, making it much easier to replace symbols and patch functions.
@@ -67,7 +67,7 @@ Currently does nothing, apart from signaling that a function is not yet implemen
 # ARTS_EXPORT
 Marks the function as dllexport, to force the compiler to generate a definition for it.
 
-`Open1560.exp` (generated from an empty .def file) is used to disable actually exporting any functions from the exe.
+`OpenMM.exp` (generated from an empty .def file) is used to disable actually exporting any functions from the exe.
 
 If replacing a global variable which was not trivially constructible and destructible, make sure to also remove the original static initializer.
 

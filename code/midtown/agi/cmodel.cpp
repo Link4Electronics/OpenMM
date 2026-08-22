@@ -24,6 +24,7 @@ define_dummy_symbol(agi_cmodel);
 #include "vector7/vector3.h"
 #include "vector7/vector4.h"
 
+// FUNCTION: MIDTOWN 0x0053DAD0
 u32 agiColorModel::FindColor(i32 r, i32 g, i32 b, i32 a)
 {
     return FindColor(agiRgba {static_cast<u8>(r), static_cast<u8>(g), static_cast<u8>(b), static_cast<u8>(a)});

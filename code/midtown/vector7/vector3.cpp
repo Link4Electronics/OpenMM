@@ -26,6 +26,7 @@ define_dummy_symbol(vector7_vector3);
 #include "data7/metatype.h"
 #include "data7/miniparser.h"
 
+// FUNCTION: MIDTOWN 0x00548340
 #include <cmath>
 
 f32 Vector3::Mag() const
@@ -33,6 +34,7 @@ f32 Vector3::Mag() const
     return std::sqrt(Mag2());
 }
 
+// FUNCTION: MIDTOWN 0x00548400
 f32 Vector3::InvMag() const
 {
     f32 m = Mag2();
@@ -43,16 +45,19 @@ f32 Vector3::InvMag() const
     return 0.0f;
 }
 
+// FUNCTION: MIDTOWN 0x00548460
 f32 Vector3::Dist(const Vector3& other) const
 {
     return (*this - other).Mag();
 }
 
+// FUNCTION: MIDTOWN 0x00546580
 void Vector3::Dot(const Vector3& vec, const Matrix34& mat)
 {
     *this = (mat.m0 * vec.x) + (mat.m1 * vec.y) + (mat.m2 * vec.z) + mat.m3;
 }
 
+// FUNCTION: MIDTOWN 0x005465F0
 void Vector3::Dot3x3(const Vector3& vec, const Matrix34& mat)
 {
     *this = (mat.m0 * vec.x) + (mat.m1 * vec.y) + (mat.m2 * vec.z);

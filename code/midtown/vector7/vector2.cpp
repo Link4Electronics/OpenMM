@@ -22,12 +22,14 @@ define_dummy_symbol(vector7_vector2);
 
 #include <cmath>
 
+// FUNCTION: MIDTOWN 0x00553B50
 // ?Mag@Vector2@@QBEMXZ
 f32 Vector2::Mag() const
 {
     return std::sqrt(x * x + y * y);
 }
 
+// FUNCTION: MIDTOWN 0x00553BD0
 // ?InvMag@Vector2@@QBEMXZ
 f32 Vector2::InvMag() const
 {

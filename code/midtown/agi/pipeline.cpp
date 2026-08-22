@@ -37,16 +37,19 @@ define_dummy_symbol(agi_pipeline);
 #include "texdef.h"
 #include "texlib.h"
 
+// FUNCTION: MIDTOWN 0x005377C0
 i32 agiPipeline::Validate()
 {
     return AGI_ERROR_SUCCESS;
 }
 
+// FUNCTION: MIDTOWN 0x00537F90
 void agiPipeline::BeginFrame()
 {
     STATS = {};
 }
 
+// FUNCTION: MIDTOWN 0x00538280
 void agiPipeline::BeginScene()
 {
     UpdateLutQueue();
@@ -54,32 +57,39 @@ void agiPipeline::BeginScene()
     ++scene_index_;
 }
 
+// FUNCTION: MIDTOWN 0x005382A0
 void agiPipeline::EndScene()
 {}
 
+// FUNCTION: MIDTOWN 0x005382B0
 void agiPipeline::EndFrame()
 {}
 
+// FUNCTION: MIDTOWN 0x00537D90
 RcOwner<agiMtlDef> agiPipeline::CreateMtlDef()
 {
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00537DA0
 RcOwner<agiLight> agiPipeline::CreateLight()
 {
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00537DB0
 RcOwner<agiLightModel> agiPipeline::CreateLightModel()
 {
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00537FB0
 RcOwner<agiBitmap> agiPipeline::CreateBitmap()
 {
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00537FC0
 void agiPipeline::CopyBitmap(
     i32 /*dst_x*/, i32 /*dst_y*/, agiBitmap* /*src*/, i32 /*src_x*/, i32 /*src_y*/, i32 /*width*/, i32 /*height*/)
 {}
@@ -88,17 +98,21 @@ void agiPipeline::StretchCopyBitmap(i32 /*dst_x*/, i32 /*dst_y*/, i32 /*dst_w*/,
     i32 /*src_x*/, i32 /*src_y*/, i32 /*src_w*/, i32 /*src_h*/)
 {}
 
+// FUNCTION: MIDTOWN 0x005382F0
 void agiPipeline::ClearRect(i32 /*x*/, i32 /*y*/, i32 /*width*/, i32 /*height*/, u32 /*color*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00538300
 void agiPipeline::Defragment()
 {}
 
+// FUNCTION: MIDTOWN 0x005382C0
 b32 agiPipeline::LockFrameBuffer(agiSurfaceDesc& /*arg1*/)
 {
     return 0;
 }
 
+// FUNCTION: MIDTOWN 0x005382D0
 void agiPipeline::UnlockFrameBuffer()
 {}
 
@@ -130,6 +144,7 @@ f32 UI_ScaleY = 0.0f;
 f32 UI_FullW = 0.0f;
 f32 UI_FullH = 0.0f;
 
+// FUNCTION: MIDTOWN 0x00537DC0
 i32 agiPipeline::BeginAllGfx()
 {
     i32 error = BeginGfx();
@@ -271,6 +286,7 @@ void agiPipeline::DumpStatus()
         agiDisplayf("Template %s @ %p", i->Key.get(), i->Value);
 }
 
+// FUNCTION: MIDTOWN 0x00537EC0
 void agiPipeline::EndAllGfx()
 {
     CurrentRenderer = nullptr;
@@ -294,11 +310,13 @@ void agiPipeline::EndAllGfx()
     EndGfx();
 }
 
+// FUNCTION: MIDTOWN 0x00537A70
 RcOwner<agiTexLut> agiPipeline::GetTexLut(aconst char* /*arg1*/)
 {
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x005379D0
 RcOwner<agiBitmap> agiPipeline::GetBitmap(const char* name, f32 sx, f32 sy, i32 flags)
 {
     auto full_name = arts_formatf<64>("%s.%x.%x.%d", name, mem::bit_cast<u32>(sx), mem::bit_cast<u32>(sy), flags);
@@ -382,6 +400,7 @@ SDL_Window* GetRootWindow()
     return g_MainWindow;
 }
 
+// FUNCTION: MIDTOWN 0x005377D0
 i32 agiPipeline::Init(
     const char* name, i32 x, i32 y, i32 width, i32 height, i32 bit_depth, i32 flags, SDL_Window* window)
 {
@@ -399,6 +418,7 @@ i32 agiPipeline::Init(
     return BeginAllGfx();
 }
 
+// FUNCTION: MIDTOWN 0x005380F0
 void agiPipeline::NotifyDelete(agiRefreshable* ptr)
 {
     if (ptr == objects_)
@@ -410,6 +430,7 @@ void agiPipeline::NotifyDelete(agiRefreshable* ptr)
         ptr->next_->prev_ = ptr->prev_;
 }
 
+// FUNCTION: MIDTOWN 0x005380C0
 void agiPipeline::NotifyNew(agiRefreshable* ptr)
 {
     ptr->next_ = objects_;
@@ -420,6 +441,7 @@ void agiPipeline::NotifyNew(agiRefreshable* ptr)
     objects_ = ptr;
 }
 
+// FUNCTION: MIDTOWN 0x00537F50
 void agiPipeline::RestoreAll()
 {
     agiDisplayf("Restoring lost objects");
@@ -430,6 +452,7 @@ void agiPipeline::RestoreAll()
     agiDisplayf("Done restoring lost objects");
 }
 
+// FUNCTION: MIDTOWN 0x00538130
 void agiPipeline::ValidateObject(agiRefreshable* ptr)
 {
     if (this != ptr->pipe_)

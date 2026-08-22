@@ -20,8 +20,8 @@ BEGIN
         BEGIN
             VALUE "FileDescription", "Midtown Madness! Executable"
             VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "Open1560"
-            VALUE "OriginalFilename", "Open1560.exe"
+            VALUE "InternalName", "OpenMM"
+            VALUE "OriginalFilename", "OpenMM.exe"
             VALUE "ProductName", "Midtown Madness!"
             VALUE "ProductVersion", "1, 0, 0, 1"
         END

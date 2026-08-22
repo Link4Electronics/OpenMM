@@ -25,6 +25,7 @@ define_dummy_symbol(agi_viewport);
 #include "pipeline.h"
 #include "vector7/matrix34.h"
 
+// FUNCTION: MIDTOWN 0x005392D0
 agiViewParameters::agiViewParameters()
 {
     X = 0.0f;
@@ -39,6 +40,7 @@ agiViewParameters::agiViewParameters()
     Orthographic = false;
 }
 
+// FUNCTION: MIDTOWN 0x00539340
 void agiViewParameters::Perspective(f32 fov, f32 aspect, f32 near, f32 far)
 {
     f32 half_fov_rad = fov * (ARTS_PI / 360.0f);
@@ -81,11 +83,13 @@ agiViewport::~agiViewport()
         Active = nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x005399A0
 void agiViewport::SetWorld(aconst Matrix34& world)
 {
     params_.SetWorld(world);
 }
 
+// FUNCTION: MIDTOWN 0x00539970
 f32 agiViewport::Aspect()
 {
     if (state_)
@@ -98,6 +102,7 @@ f32 agiViewport::Aspect()
     return params_.Width / params_.Height;
 }
 
+// FUNCTION: MIDTOWN 0x00539AD0
 aconst char* agiViewport::GetName()
 {
     static char buffer[128]; // FIXME: Static buffer

@@ -28,35 +28,44 @@ asLamp::asLamp()
 
 asLamp::~asLamp() = default;
 
+// FUNCTION: MIDTOWN 0x005129A0
 void asLamp::AddWidgets(Bank* /*arg1*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00512920
 void asLamp::Cull()
 {
     asNode::Cull();
 }
 
+// FUNCTION: MIDTOWN 0x00512B10
 MetaClass* asLamp::GetClass()
 {
     return asNode::GetClass();
 }
 
+// FUNCTION: MIDTOWN 0x005127D0
 void asLamp::SetColor(const Vector3& /*arg1*/, f32 /*arg2*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00512810
 void asLamp::SetDistant()
 {}
 
+// FUNCTION: MIDTOWN 0x00512830
 void asLamp::Update()
 {
     asNode::Update();
 }
 
+// FUNCTION: MIDTOWN 0x005129B0
 void asLamp::DeclareFields()
 {}
 
+// FUNCTION: MIDTOWN 0x00512980
 void asLamp::Regen()
 {}
 
+// FUNCTION: MIDTOWN 0x00512970
 void asLamp::FileIO(MiniParser* /*arg1*/)
 {}

@@ -34,6 +34,7 @@ void HashTable::operator=(HashTable& other)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00559D90
 void* HashTable::Access(const char* key)
 {
     if (buckets_ == nullptr)
@@ -48,6 +49,7 @@ void* HashTable::Access(const char* key)
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00559D50
 b32 HashTable::Change(const char* old_key, const char* new_key)
 {
     // TODO: Reuse existing entry
@@ -60,6 +62,7 @@ b32 HashTable::Change(const char* old_key, const char* new_key)
     return Insert(new_key, value);
 }
 
+// FUNCTION: MIDTOWN 0x00559C10
 b32 HashTable::Delete(const char* key)
 {
     if (buckets_ == nullptr)
@@ -79,6 +82,7 @@ b32 HashTable::Delete(const char* key)
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x00559A00
 void HashTable::Init(i32 bucket_count)
 {
     Kill();
@@ -88,6 +92,7 @@ void HashTable::Init(i32 bucket_count)
     buckets_ = arnewa HashEntry* [bucket_count_] {};
 }
 
+// FUNCTION: MIDTOWN 0x00559B30
 b32 HashTable::Insert(const char* key, void* value)
 {
     if (buckets_ == nullptr)
@@ -115,6 +120,7 @@ b32 HashTable::Insert(const char* key, void* value)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00559A70
 void HashTable::Kill()
 {
     if (buckets_ == nullptr)
@@ -134,6 +140,7 @@ void HashTable::Kill()
     buckets_ = nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00559A70
 void HashTable::Kill(void* context, void (*callback)(void* context, const char* key, void* value))
 {
     if (buckets_ == nullptr)
@@ -154,6 +161,7 @@ void HashTable::Kill(void* context, void (*callback)(void* context, const char* 
     }
 }
 
+// FUNCTION: MIDTOWN 0x00559F70
 void HashTable::KillAll()
 {
     for (HashTable* i = First; i; i = i->next_table_)
@@ -183,6 +191,7 @@ i32 HashTable::ComputePrime(i32 value)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00559E20
 u32 HashTable::Hash(const char* key)
 {
     u32 hash = 0;
@@ -200,6 +209,7 @@ u32 HashTable::Hash(const char* key)
     return hash % bucket_count_;
 }
 
+// FUNCTION: MIDTOWN 0x00559EB0
 void HashTable::Recompute(i32 capacity)
 {
     capacity = ComputePrime(capacity);
@@ -224,6 +234,7 @@ void HashTable::Recompute(i32 capacity)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00559F90
 void HashTable::RemoveMe()
 {
     for (HashTable** i = &First; *i; i = &(*i)->next_table_)
@@ -236,12 +247,14 @@ void HashTable::RemoveMe()
     }
 }
 
+// FUNCTION: MIDTOWN 0x005599A0
 void HashIterator::Begin()
 {
     Current = nullptr;
     Index = -1;
 }
 
+// FUNCTION: MIDTOWN 0x005599B0
 b32 HashIterator::Next()
 {
     if (Table->buckets_ == nullptr)

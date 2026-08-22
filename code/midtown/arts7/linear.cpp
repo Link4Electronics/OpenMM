@@ -33,6 +33,7 @@ asLinearCS::asLinearCS()
     ClearNodeFlag(NODE_FLAG_2);
 }
 
+// FUNCTION: MIDTOWN 0x00512C60
 #ifdef ARTS_DEV_BUILD
 void asLinearCS::AddWidgets(Bank* bank)
 {
@@ -54,6 +55,7 @@ void asLinearCS::AddWidgets(Bank* bank)
 
     asNode::AddWidgets(bank);
 }
+// FUNCTION: MIDTOWN 0x00512C40
 #endif
 
 void asLinearCS::Cull()
@@ -73,9 +75,11 @@ void asLinearCS::Cull()
 #endif
 }
 
+// FUNCTION: MIDTOWN 0x00512C50
 void asLinearCS::FileIO(MiniParser* /*arg1*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00512B90
 void asLinearCS::Update()
 {
     if (Global)

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480.0" height="40.0" viewBox="0 0 480.0 40.0">
+  <title>OpenMM decompilation progress: 392 / 8487 functions (4.6%)</title>
+  <rect x="0" y="0" width="480.0" height="40.0" rx="8" ry="8" fill="#1b1f24"/>
+  <rect x="4.0" y="4.0" width="472.0" height="32.0" rx="5" ry="5" fill="#30363d"/>
+  <clipPath id="round"><rect x="4.0" y="4.0" width="472.0" height="32.0" rx="5" ry="5"/></clipPath>
+  <rect x="4.0" y="4.0" width="21.800871921762695" height="32.0" clip-path="url(#round)" fill="#2ea44f"/>
+  <text x="240.0" y="25.0" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">392 / 8487 functions (4.6%)</text>
+</svg>

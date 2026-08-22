@@ -33,6 +33,7 @@ b32 LogOpenOn = false;
 HierFileSystem::HierFileSystem() = default;
 HierFileSystem::~HierFileSystem() = default;
 
+// FUNCTION: MIDTOWN 0x00541F00
 // TODO: Use wide char versions of winapi
 
 b32 HierFileSystem::ChangeDir(const char* path)
@@ -45,6 +46,7 @@ static inline constexpr bool IsStdPath(const char* path) noexcept
     return (path[0] == '-') && !path[1];
 }
 
+// FUNCTION: MIDTOWN 0x00541E20
 Owner<Stream> HierFileSystem::CreateOn(const char* path, void* buffer, isize buffer_len)
 {
     Ptr<FileStream> result = arnew FileStream(buffer, buffer_len, this);
@@ -81,6 +83,7 @@ struct HierFileEntry
 
 check_size(HierFileEntry, 0x144);
 
+// FUNCTION: MIDTOWN 0x00541F40
 FileInfo* HierFileSystem::FirstEntry(const char* path)
 {
     if (!QueryOn(path))
@@ -110,11 +113,13 @@ FileInfo* HierFileSystem::FirstEntry(const char* path)
     return result.release();
 }
 
+// FUNCTION: MIDTOWN 0x00541F20
 b32 HierFileSystem::GetDir(char* buffer, isize buffer_len)
 {
     return GetCurrentDirectoryA(buffer_len, buffer) != 0;
 }
 
+// FUNCTION: MIDTOWN 0x00542080
 FileInfo* HierFileSystem::NextEntry(FileInfo* info)
 {
     HierFileEntry* context = static_cast<HierFileEntry*>(info->Context);
@@ -134,6 +139,7 @@ FileInfo* HierFileSystem::NextEntry(FileInfo* info)
     return info;
 }
 
+// FUNCTION: MIDTOWN 0x00541C80
 Owner<Stream> HierFileSystem::OpenOn(const char* path, b32 read_only, void* buffer, isize buffer_len)
 {
     path = FQN(path);
@@ -163,6 +169,7 @@ Owner<Stream> HierFileSystem::OpenOn(const char* path, b32 read_only, void* buff
     return as_owner result;
 }
 
+// FUNCTION: MIDTOWN 0x00541BC0
 b32 HierFileSystem::QueryOn(const char* path)
 {
     if (const char* allowed = HierAllowPath)
@@ -191,6 +198,7 @@ b32 HierFileSystem::QueryOn(const char* path)
     return GetFileAttributesA(FQN(path)) != INVALID_FILE_ATTRIBUTES;
 }
 
+// FUNCTION: MIDTOWN 0x00541B00
 b32 HierFileSystem::ValidPath(const char*)
 {
     return true;
@@ -218,6 +226,7 @@ const char* FQN(const char* path)
     return buffer;
 }
 
+// FUNCTION: MIDTOWN 0x00542150
 void PagerInfo_t::Read(void* buffer, u32 offset, u32 size)
 {
     if (size == 0)

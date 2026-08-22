@@ -22,11 +22,13 @@ define_dummy_symbol(arts7_dof);
 
 #include "sim.h"
 
+// FUNCTION: MIDTOWN 0x00515250
 #include <cmath>
 
 void asDofCS::FileIO(MiniParser* /*arg1*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00514980
 asDofCS::asDofCS()
 {
     ClearNodeFlag(NODE_FLAG_2);
@@ -55,6 +57,7 @@ asDofCS::asDofCS()
     next_type_ = 2;
 }
 
+// FUNCTION: MIDTOWN 0x00514BB0
 void asDofCS::Reset()
 {
     if (mode == 2)
@@ -66,20 +69,24 @@ void asDofCS::Reset()
     asNode::Reset();
 }
 
+// FUNCTION: MIDTOWN 0x005153E0
 MetaClass* asDofCS::GetClass()
 {
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00515270
 void asDofCS::DeclareFields()
 {}
 
+// FUNCTION: MIDTOWN 0x00515260
 #ifdef ARTS_DEV_BUILD
 void asDofCS::AddWidgets(Bank* /*arg1*/)
 {}
 
 void asDofCS::ModeCB()
 {}
+// FUNCTION: MIDTOWN 0x00514C50
 #endif
 
 void asDofCS::Update()

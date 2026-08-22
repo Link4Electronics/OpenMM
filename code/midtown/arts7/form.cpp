@@ -20,5 +20,6 @@ define_dummy_symbol(arts7_form);
 
 #include "form.h"
 
+// FUNCTION: MIDTOWN 0x00514790
 void asForm::FileIO(MiniParser* /*arg1*/)
 {}

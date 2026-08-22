@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
-project(Open1560 VERSION 1.0.0 LANGUAGES C CXX ASM)
+project(OpenMM VERSION 1.0.0 LANGUAGES C CXX ASM)
+
+option(OPENMM_RECCMP "Enable reccmp verification build plumbing (requires MSVC)" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -40,6 +42,12 @@ include_directories(
 
 # Third-party libraries
 add_subdirectory(vendor)
+
+# reccmp tooling (function definitions; targets registered in code/midtown)
+if(OPENMM_RECCMP)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
+    include("reccmp")
+endif()
 
 # Game code
 add_subdirectory(code)

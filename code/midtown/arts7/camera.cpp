@@ -31,6 +31,7 @@ define_dummy_symbol(arts7_camera);
 
 #include <cmath>
 
+// FUNCTION: MIDTOWN 0x00513D00
 #include <unistd.h>
 
 void asCamera::SetView(f32 horz_fov, f32 aspect, f32 near_clip, f32 far_clip)
@@ -62,6 +63,7 @@ void asCamera::SetView(f32 horz_fov, f32 aspect, f32 near_clip, f32 far_clip)
     }
 }
 
+// FUNCTION: MIDTOWN 0x005140E0
 void asCamera::Regen()
 {
     agiViewParameters& params = viewport_->GetParams();
@@ -89,6 +91,7 @@ void asCamera::Regen()
     params.ProjYZ = 0.0f;
 }
 
+// FUNCTION: MIDTOWN 0x00513A60
 void asCamera::DrawBegin()
 {
     Displayf("DBG Camera::DrawBegin");
@@ -177,6 +180,7 @@ asCamera::asCamera()
     SetViewport(0.0f, 0.0f, 1.0f, 1.0f, 0);
 }
 
+// FUNCTION: MIDTOWN 0x00513D80
 void asCamera::SetUnderlay(aconst char* path)
 {
     if (path && *path)
@@ -191,6 +195,7 @@ void asCamera::SetUnderlay(aconst char* path)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00513CB0
 void asCamera::SetViewport(f32 x, f32 y, f32 w, f32 h, i32 clear_flags)
 {
     viewport_->GetParams().X = x;
@@ -200,6 +205,7 @@ void asCamera::SetViewport(f32 x, f32 y, f32 w, f32 h, i32 clear_flags)
     clear_flags_ = clear_flags;
 }
 
+// FUNCTION: MIDTOWN 0x005134E0
 void asCamera::SetWorld(Matrix34& matrix)
 {
     viewport_->SetWorld(matrix);
@@ -207,15 +213,19 @@ void asCamera::SetWorld(Matrix34& matrix)
 
 asCamera::~asCamera() = default;
 
+// FUNCTION: MIDTOWN 0x00513C40
 void asCamera::DrawEnd()
 {}
 
+// FUNCTION: MIDTOWN 0x00513E80
 void asCamera::FadeIn(f32 /*seconds*/, i32 /*arg2*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00513E20
 void asCamera::FadeOut(f32 /*seconds*/, i32 /*arg2*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00513390
 void asCamera::SetClipArea(f32 left, f32 right, f32 bottom, f32 top)
 {
     left_clip_scale_ = left;
@@ -224,6 +234,7 @@ void asCamera::SetClipArea(f32 left, f32 right, f32 bottom, f32 top)
     top_clip_scale_ = top;
 }
 
+// FUNCTION: MIDTOWN 0x00513D50
 void asCamera::SetFog(f32 start, f32 end, f32 density, f32 r)
 {
     fog_start_ = start;
@@ -236,28 +247,34 @@ void asCamera::SetFog(f32 start, f32 end, f32 density, f32 r)
     fog_color_.z = r;
 }
 
+// FUNCTION: MIDTOWN 0x005134C0
 void asCamera::SetLighting(i32 /*arg1*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00513DC0
 void asCamera::SetUnderlayCB(agiBitmap* bitmap, Callback* callback)
 {
     underlay_bitmap_ = bitmap;
     underlay_callback_ = callback;
 }
 
+// FUNCTION: MIDTOWN 0x00513080
 void asCamera::Update()
 {
     asNode::Update();
 }
 
+// FUNCTION: MIDTOWN 0x00514110
 void asCamera::DeclareFields()
 {}
 
+// FUNCTION: MIDTOWN 0x00514280
 MetaClass* asCamera::GetClass()
 {
     return asNode::GetClass();
 }
 
+// FUNCTION: MIDTOWN 0x00514100
 #ifdef ARTS_DEV_BUILD
 void asCamera::AddWidgets(Bank* /*arg1*/)
 {}

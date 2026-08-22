@@ -1,6 +1,6 @@
 # Setup
 
-In most cases, Open1560 should run optimally straight away.
+In most cases, OpenMM should run optimally straight away.
 For a minimal fresh installation, only the `audio.ar`, `core.ar`, and `ui.ar` are required from the original files.
 You do not need to install the XP patch, or use dgVoodoo.
 However, there are certain things you may wish to change:
@@ -15,7 +15,7 @@ However, there are certain things you may wish to change:
 
 # Command Line Arguments
 
-Open1560 uses command line arguments to configure certain aspects of the game.<br/>
+OpenMM uses command line arguments to configure certain aspects of the game.<br/>
 These can be passed on the command line, or in a file named `commandline.txt`.<br/>
 For a tutorial on how to use command line arguments, click [here](https://www.bleepingcomputer.com/tutorials/understanding-command-line-arguments-and-how-to-use-them/).
 
@@ -81,4 +81,4 @@ For a tutorial on how to use command line arguments, click [here](https://www.bl
 # Dev/Debug Functions
 
 Beta 1560 contains many debug functions/hotkeys. To enter debug mode, press CTRL+ALT+SHIFT+F4.
-For a list of hotkeys, see https://github.com/0x1F9F1/Open1560/blob/master/extra/keys.txt
+For a list of hotkeys, see https://github.com/0x1F9F1/OpenMM/blob/master/extra/keys.txt

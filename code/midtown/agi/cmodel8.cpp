@@ -22,11 +22,13 @@ define_dummy_symbol(agi_cmodel8);
 
 #include "surface.h"
 
+// FUNCTION: MIDTOWN 0x0053DF20
 u32 agiColorModel8::GetPixel(agiSurfaceDesc* surface, i32 x, i32 y)
 {
     return (static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x];
 }
 
+// FUNCTION: MIDTOWN 0x0053DF40
 void agiColorModel8::SetPixel(agiSurfaceDesc* surface, i32 x, i32 y, u32 color)
 {
     (static_cast<u8*>(surface->Surface) + (y * surface->Pitch))[x] = static_cast<u8>(color);

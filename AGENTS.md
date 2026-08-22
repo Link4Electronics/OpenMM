@@ -1,4 +1,6 @@
-# Open1560 — Agent Context
+# OpenMM — Agent Context
+
+MM1 Sneak Preview Beta / Build 1560 re-implementation)
 
 ## AR File Debugging Tools
 Python scripts for inspecting AR archives (located in project root):

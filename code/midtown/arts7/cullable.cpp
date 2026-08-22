@@ -22,6 +22,7 @@ define_dummy_symbol(arts7_cullable);
 
 #include "data7/metadefine.h"
 
+// FUNCTION: MIDTOWN 0x005124C0
 void asCullable::Cull()
 {}
 

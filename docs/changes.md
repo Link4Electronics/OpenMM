@@ -1,6 +1,6 @@
 # Changes
 
-This is a list of notable changes made by Open1560. Many other smaller tweaks are not included.
+This is a list of notable changes made by OpenMM. Many other smaller tweaks are not included.
 
 ## Added
 

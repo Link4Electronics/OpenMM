@@ -20,9 +20,11 @@ define_dummy_symbol(agi_light);
 
 #include "light.h"
 
+// FUNCTION: MIDTOWN 0x0053D9B0
 void agiLight::Remove()
 {}
 
+// FUNCTION: MIDTOWN 0x0053D9D0
 aconst char* agiLight::GetName()
 {
     static char buffer[64]; // FIXME: Static buffer
@@ -30,6 +32,7 @@ aconst char* agiLight::GetName()
     return buffer;
 }
 
+// FUNCTION: MIDTOWN 0x0053D980
 i32 agiLight::Init(const agiLightParameters& params)
 {
     EndGfx();

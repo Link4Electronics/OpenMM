@@ -22,6 +22,7 @@ define_dummy_symbol(agisw_swtexdef);
 
 #include "agi/error.h"
 
+// FUNCTION: MIDTOWN 0x0051F5F0
 i32 agiSWTexDef::BeginGfx()
 {
     if (Surface == nullptr)
@@ -63,6 +64,7 @@ i32 agiSWTexDef::BeginGfx()
     return AGI_ERROR_SUCCESS;
 }
 
+// FUNCTION: MIDTOWN 0x0051F6D0
 void agiSWTexDef::EndGfx()
 {
     for (i32 i = 0; i < 7; ++i)
@@ -71,29 +73,36 @@ void agiSWTexDef::EndGfx()
     state_ = 0;
 }
 
+// FUNCTION: MIDTOWN 0x0051F6C0
 b32 agiSWTexDef::IsAvailable()
 {
     return page_state_ == 2;
 }
 
+// FUNCTION: MIDTOWN 0x0051F720
 b32 agiSWTexDef::Lock(agiTexLock& /*arg1*/)
 {
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x0051F780
 void agiSWTexDef::Request()
 {}
 
+// FUNCTION: MIDTOWN 0x0051F5D0
 void agiSWTexDef::Set(Vector2& /*arg1*/, Vector2& /*arg2*/)
 {}
 
+// FUNCTION: MIDTOWN 0x0051F770
 void agiSWTexDef::Unlock(agiTexLock& /*arg1*/)
 {}
 
+// FUNCTION: MIDTOWN 0x0051F800
 i32 agiSWTexLut::BeginGfx()
 {
     return 0;
 }
 
+// FUNCTION: MIDTOWN 0x0051F9E0
 void agiSWTexLut::EndGfx()
 {}

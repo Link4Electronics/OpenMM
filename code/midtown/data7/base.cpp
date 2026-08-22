@@ -22,17 +22,21 @@ define_dummy_symbol(data7_base);
 
 #include "metadefine.h"
 
+// FUNCTION: MIDTOWN 0x0055AB00
 const char* Base::GetTypeNameV()
 {
     return GetClass()->GetName();
 }
 
+// FUNCTION: MIDTOWN 0x0055AB20
 void Base::BeforeSave()
 {}
 
+// FUNCTION: MIDTOWN 0x0055AB30
 void Base::AfterLoad()
 {}
 
+// FUNCTION: MIDTOWN 0x0055AB10
 const char* Base::GetTypeName()
 {
     Base* volatile this_ptr = this;

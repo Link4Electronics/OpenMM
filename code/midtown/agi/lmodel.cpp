@@ -35,6 +35,7 @@ void agiLightModelParameters::operator=(const agiLightModelParameters& arg1)
 
 agiLightModel::~agiLightModel() = default;
 
+// FUNCTION: MIDTOWN 0x0053DCF0
 aconst char* agiLightModel::GetName()
 {
     static char buffer[64];
@@ -42,6 +43,7 @@ aconst char* agiLightModel::GetName()
     return buffer;
 }
 
+// FUNCTION: MIDTOWN 0x0053DC70
 i32 agiLightModel::Init(const agiLightModelParameters& arg1)
 {
     EndGfx();

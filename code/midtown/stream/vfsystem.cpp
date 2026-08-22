@@ -43,11 +43,13 @@ VirtualFileSystem::VirtualFileSystem(Owner<Stream> stream)
 
 VirtualFileSystem::~VirtualFileSystem() = default;
 
+// FUNCTION: MIDTOWN 0x00542710
 b32 VirtualFileSystem::ChangeDir(const char*)
 {
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x00542700
 Owner<Stream> VirtualFileSystem::CreateOn(const char*, void*, isize)
 {
     return nullptr;
@@ -65,6 +67,7 @@ struct VirtualFileEntry
     }
 };
 
+// FUNCTION: MIDTOWN 0x00542730
 FileInfo* VirtualFileSystem::FirstEntry(const char* path)
 {
     VirtualFileInode* nodes = nullptr;
@@ -98,11 +101,13 @@ FileInfo* VirtualFileSystem::FirstEntry(const char* path)
     return result.release();
 }
 
+// FUNCTION: MIDTOWN 0x00542720
 b32 VirtualFileSystem::GetDir(char*, isize)
 {
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x00542880
 FileInfo* VirtualFileSystem::NextEntry(FileInfo* info)
 {
     VirtualFileEntry* context = static_cast<VirtualFileEntry*>(info->Context);
@@ -121,6 +126,7 @@ FileInfo* VirtualFileSystem::NextEntry(FileInfo* info)
     return info;
 }
 
+// FUNCTION: MIDTOWN 0x00542650
 Owner<Stream> VirtualFileSystem::OpenOn(const char* path, b32 read_only, void* buffer, isize buffer_len)
 {
     if (!read_only)
@@ -134,6 +140,7 @@ Owner<Stream> VirtualFileSystem::OpenOn(const char* path, b32 read_only, void* b
     return as_owner arnew VirtualStream(base_stream_.get(), node, buffer, buffer_len, this);
 }
 
+// FUNCTION: MIDTOWN 0x005425D0
 b32 VirtualFileSystem::PagerInfo(const char* path, PagerInfo_t& info)
 {
     VirtualFileInode* node = Lookup(path);
@@ -155,6 +162,7 @@ b32 VirtualFileSystem::PagerInfo(const char* path, PagerInfo_t& info)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00542580
 b32 VirtualFileSystem::QueryOn(const char* path)
 {
     VirtualFileInode* node = Lookup(path);
@@ -162,11 +170,13 @@ b32 VirtualFileSystem::QueryOn(const char* path)
     return node && !node->IsDirectory();
 }
 
+// FUNCTION: MIDTOWN 0x00542300
 b32 VirtualFileSystem::ValidPath(const char*)
 {
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00542380
 void VirtualFileSystem::ExpandName(char* buf, isize buf_len, VirtualFileInode* node, const char* names)
 {
     CStringBuilder builder(buf, buf_len);
@@ -214,6 +224,7 @@ void VirtualFileSystem::ExpandName(char* buf, isize buf_len, VirtualFileInode* n
     }
 }
 
+// FUNCTION: MIDTOWN 0x005424A0
 VirtualFileInode* VirtualFileSystem::Lookup(VirtualFileInode* nodes, i32 node_count, const char* names, char* path)
 {
     if (node_count == 0)
@@ -265,6 +276,7 @@ VirtualFileInode* VirtualFileSystem::Lookup(VirtualFileInode* nodes, i32 node_co
     }
 }
 
+// FUNCTION: MIDTOWN 0x00542310
 void VirtualFileSystem::NormalizeName(char* buf, isize buf_len, const char* path)
 {
     if (!std::strncmp(path, "/VFS/", 5))
@@ -290,6 +302,7 @@ void VirtualFileSystem::NormalizeName(char* buf, isize buf_len, const char* path
     }
 }
 
+// FUNCTION: MIDTOWN 0x005424A0
 inline VirtualFileInode* VirtualFileSystem::Lookup(const char* path)
 {
     CStringBuffer<128> buffer;
@@ -297,6 +310,7 @@ inline VirtualFileInode* VirtualFileSystem::Lookup(const char* path)
     return Lookup(file_nodes_.get(), file_header_.RootCount, file_names_.get(), buffer.get());
 }
 
+// FUNCTION: MIDTOWN 0x00542380
 void VirtualFileSystem::ExpandName(char* buf, isize buf_len, VirtualFileInode* node)
 {
     ExpandName(buf, buf_len, node, file_names_.get());

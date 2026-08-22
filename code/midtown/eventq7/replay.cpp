@@ -39,15 +39,19 @@ eqReplayChannel::~eqReplayChannel()
     }
 }
 
+// FUNCTION: MIDTOWN 0x00546200
 void eqReplayChannel::InitRecord()
 {}
 
+// FUNCTION: MIDTOWN 0x00546210
 void eqReplayChannel::InitPlayback()
 {}
 
+// FUNCTION: MIDTOWN 0x00546220
 void eqReplayChannel::ShutdownRecord()
 {}
 
+// FUNCTION: MIDTOWN 0x00546230
 void eqReplayChannel::ShutdownPlayback()
 {}
 
@@ -58,6 +62,7 @@ eqReplayChannel::eqReplayChannel(ulong magic)
     First = this;
 }
 
+// FUNCTION: MIDTOWN 0x005464A0
 void eqReplay::DoPlayback()
 {
     ArAssert(Playback, "Not playing back");
@@ -93,6 +98,7 @@ void eqReplay::DoPlayback()
     }
 }
 
+// FUNCTION: MIDTOWN 0x00546440
 void eqReplay::DoRecord()
 {
     ArAssert(Recording, "Not recording");
@@ -103,6 +109,7 @@ void eqReplay::DoRecord()
     ReplayStream->Put(u32('ENDF'));
 }
 
+// FUNCTION: MIDTOWN 0x005462D0
 void eqReplay::InitPlayback(const char* path)
 {
     ArAssert(!Playback && !Recording, "Already opened replay");
@@ -123,6 +130,7 @@ void eqReplay::InitPlayback(const char* path)
         i->InitPlayback();
 }
 
+// FUNCTION: MIDTOWN 0x00546240
 void eqReplay::InitRecord(const char* path)
 {
     ArAssert(!Playback && !Recording, "Already opened replay");
@@ -140,6 +148,7 @@ void eqReplay::InitRecord(const char* path)
         i->InitRecord();
 }
 
+// FUNCTION: MIDTOWN 0x005463E0
 void eqReplay::ShutdownPlayback()
 {
     ArAssert(Playback, "Not playing back");
@@ -152,6 +161,7 @@ void eqReplay::ShutdownPlayback()
         i->ShutdownPlayback();
 }
 
+// FUNCTION: MIDTOWN 0x00546380
 void eqReplay::ShutdownRecord()
 {
     ArAssert(Recording, "Not recording");

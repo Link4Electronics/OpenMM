@@ -30,20 +30,25 @@ agiSWRasterizer::agiSWRasterizer(agiPipeline* arg1)
     : agiRasterizer(arg1)
 {}
 
+// FUNCTION: MIDTOWN 0x0051F380
 i32 agiSWRasterizer::BeginGfx()
 {
     return 0;
 }
 
+// FUNCTION: MIDTOWN 0x0051F3A0
 void agiSWRasterizer::BeginGroup()
 {}
 
+// FUNCTION: MIDTOWN 0x0051F390
 void agiSWRasterizer::EndGfx()
 {}
 
+// FUNCTION: MIDTOWN 0x0051F3B0
 void agiSWRasterizer::EndGroup()
 {}
 
+// FUNCTION: MIDTOWN 0x0051F450
 void agiSWRasterizer::Line(i32 i1, i32 i2)
 {
     ++STATS.Lines;
@@ -51,6 +56,7 @@ void agiSWRasterizer::Line(i32 i1, i32 i2)
     swLine(&swVtxBase[i1], &swVtxBase[i2]);
 }
 
+// FUNCTION: MIDTOWN 0x0051F4B0
 void agiSWRasterizer::Mesh([[maybe_unused]] agiVtxType type, agiVtx* vertices, [[maybe_unused]] i32 vertex_count,
     u16* indices, i32 index_count)
 {
@@ -74,20 +80,26 @@ void agiSWRasterizer::Mesh([[maybe_unused]] agiVtxType type, agiVtx* vertices, [
     }
 }
 
+// FUNCTION: MIDTOWN 0x0051F490
 void agiSWRasterizer::Card(i32 /*arg1*/, i32 /*arg2*/)
 {}
 
+// FUNCTION: MIDTOWN 0x0051F410
 void agiSWRasterizer::Quad(i32 /*arg1*/, i32 /*arg2*/, i32 /*arg3*/, i32 /*arg4*/)
 {}
 
+// FUNCTION: MIDTOWN 0x0051F3E0
 void agiSWRasterizer::Triangle(i32 /*arg1*/, i32 /*arg2*/, i32 /*arg3*/)
 {}
 
+// FUNCTION: MIDTOWN 0x0051F3C0
 void agiSWRasterizer::Verts(agiVtxType /*arg1*/, agiVtx* /*arg2*/, i32 /*arg3*/)
 {}
 
+// FUNCTION: MIDTOWN 0x0051F4A0
 void agiSWRasterizer::Points(agiVtxType /*arg1*/, agiVtx* /*arg2*/, i32 /*arg3*/)
 {}
 
+// FUNCTION: MIDTOWN 0x0051F3D0
 void agiSWRasterizer::SetVertCount(i32 /*arg1*/)
 {}

@@ -38,6 +38,7 @@ DLPTemplate::~DLPTemplate()
     DLPTemplateHash.Delete(Name.get());
 }
 
+// FUNCTION: MIDTOWN 0x0053AA30
 void DLPTemplate::InitRemap(agiLib<agiMtlParameters, agiMtlDef>& mlib, agiLib<agiTexParameters, agiTexDef>& tlib,
     agiLib<agiPhysParameters, agiPhysDef>& plib)
 {
@@ -109,6 +110,7 @@ void DLPTemplate::Load(Stream* file)
     InitRemap(mlib, tlib, plib);
 }
 
+// FUNCTION: MIDTOWN 0x0053B070
 void DLPPatch::Load(Stream* file)
 {
     SRes = file->Get<u16>();
@@ -128,6 +130,7 @@ void DLPPatch::Load(Stream* file)
     Name = file->GetString();
 }
 
+// FUNCTION: MIDTOWN 0x0053B4C0
 void DLPVertex::Load(Stream* file)
 {
     Id = file->Get<u16>();
@@ -140,6 +143,7 @@ void DLPVertex::Load(Stream* file)
         (color >> 24) / 255.0f};
 }
 
+// FUNCTION: MIDTOWN 0x0053B030
 void DLPGroup::Init(i32 num_verts, i32 num_patches)
 {
     NumVertices = num_verts;
@@ -149,6 +153,7 @@ void DLPGroup::Init(i32 num_verts, i32 num_patches)
     PatchIndices = arnewa u16[num_patches] {};
 }
 
+// FUNCTION: MIDTOWN 0x0053AEB0
 void DLPGroup::Load(Stream* file)
 {
     u8 name_len = file->Get<u8>();

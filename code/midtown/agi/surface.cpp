@@ -524,11 +524,13 @@ static void copyrow_basic(void* dst, void* src, u32 len, u32 step)
     }
 }
 
+// FUNCTION: MIDTOWN 0x0053D0A0
 void agiSurfaceDesc::CopyFrom(agiSurfaceDesc* src, i32 src_lod)
 {
     CopyFrom(src, src_lod, nullptr);
 }
 
+// FUNCTION: MIDTOWN 0x0053D0A0
 void agiSurfaceDesc::CopyFrom(agiSurfaceDesc* src, i32 src_lod, agiTexParameters* params)
 {
     const u32 dst_width = Width;
@@ -648,6 +650,7 @@ void agiSurfaceDesc::CopyFrom(agiSurfaceDesc* src, i32 src_lod, agiTexParameters
     }
 }
 
+// FUNCTION: MIDTOWN 0x0053D080
 void agiSurfaceDesc::Unload()
 {
     if (Surface)
@@ -674,6 +677,7 @@ void agiSurfaceDesc::Unload()
     return as_owner result;
 }
 
+// FUNCTION: MIDTOWN 0x0053C7E0
 void agiSurfaceDesc::Load()
 {
     if (Surface == nullptr)

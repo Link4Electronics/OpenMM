@@ -40,6 +40,7 @@ struct lutQentry
 static i32 lutQhead = 0;
 static i32 lutQtail = 0;
 
+// FUNCTION: MIDTOWN 0x005383A0
 void agiTexParameters::Load(Stream* file)
 {
     file->Read(Name, sizeof(Name));
@@ -51,6 +52,7 @@ void agiTexParameters::Load(Stream* file)
     file->Get(&align, 1);
 }
 
+// FUNCTION: MIDTOWN 0x005383F0
 void agiTexParameters::Save(Stream* file)
 {
     file->Write(Name, sizeof(Name));
@@ -60,22 +62,27 @@ void agiTexParameters::Save(Stream* file)
     file->Put(0_u8);
 }
 
+// FUNCTION: MIDTOWN 0x00538A70
 b32 agiTexDef::IsAvailable()
 {
     return page_state_ == 2;
 }
 
+// FUNCTION: MIDTOWN 0x005386C0
 b32 agiTexDef::Lock(agiTexLock& /*arg1*/)
 {
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x005386D0
 void agiTexDef::Unlock(agiTexLock& /*arg1*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00538A60
 void agiTexDef::Request()
 {}
 
+// FUNCTION: MIDTOWN 0x00538570
 void agiTexDef::CheckSurface()
 {
     if (Surface->Flags & AGISD_CKSRCBLT)
@@ -90,6 +97,7 @@ static inline constexpr u32 AlignSize(u32 value) noexcept
     return (value + 7) & ~u32(7); // FIXME: 64-bit requires 16-byte alignment
 }
 
+// FUNCTION: MIDTOWN 0x005387D0
 void agiTexDef::DoPageIn()
 {
     // DDS header is always 32-bit layout (124 bytes = 0x7C after magic).
@@ -170,6 +178,7 @@ void agiTexDef::DoPageIn()
     TEXCACHE.EndObject(cache_handle_);
 }
 
+// FUNCTION: MIDTOWN 0x00538680
 aconst char* agiTexDef::GetName()
 {
     static char buffer[64]; // FIXME: Static buffer
@@ -177,6 +186,7 @@ aconst char* agiTexDef::GetName()
     return buffer;
 }
 
+// FUNCTION: MIDTOWN 0x00538600
 i32 agiTexDef::Init(const agiTexParameters& params)
 {
     if (DevelopmentMode || !(EnablePaging & ARTS_PAGE_TEXTURES) || (params.Flags & agiTexParameters::KeepLoaded))
@@ -195,6 +205,7 @@ i32 agiTexDef::Init(const agiTexParameters& params)
     }
 }
 
+// FUNCTION: MIDTOWN 0x00538600
 i32 agiTexDef::Init(const agiTexParameters& params, Ptr<agiSurfaceDesc> surface)
 {
     EndGfx();
@@ -209,16 +220,19 @@ i32 agiTexDef::Init(const agiTexParameters& params, Ptr<agiSurfaceDesc> surface)
     return BeginGfx();
 }
 
+// FUNCTION: MIDTOWN 0x005386B0
 b32 agiTexDef::IsTexture()
 {
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x005389F0
 b32 agiTexDef::LockSurfaceIfResident()
 {
     return (page_state_ > 1) && (cache_handle_ == 0 || TEXCACHE.Lock(&cache_handle_));
 }
 
+// FUNCTION: MIDTOWN 0x00538930
 void agiTexDef::PageInSurface()
 {
     if (pager_.Handle == 0)
@@ -281,6 +295,7 @@ static Ptr<agiSurfaceDesc> CreateMissingTexture()
 
     return surface;
 }
+// FUNCTION: MIDTOWN 0x00538590
 #endif
 
 i32 agiTexDef::Reload()
@@ -305,6 +320,7 @@ i32 agiTexDef::Reload()
     return AGI_ERROR_SUCCESS;
 }
 
+// FUNCTION: MIDTOWN 0x00538A40
 void agiTexDef::UnlockAndFreeSurface()
 {
     if (cache_handle_ != 0)
@@ -313,12 +329,14 @@ void agiTexDef::UnlockAndFreeSurface()
     cache_handle_ = 0;
 }
 
+// FUNCTION: MIDTOWN 0x00538A20
 void agiTexDef::UnlockSurface()
 {
     if (cache_handle_ != 0)
         TEXCACHE.Unlock(cache_handle_);
 }
 
+// FUNCTION: MIDTOWN 0x005386E0
 void agiTexDef::PageOutCallback(void* param, isize delta)
 {
     agiTexDef* self = static_cast<agiTexDef*>(param);
@@ -378,6 +396,7 @@ void UpdateLutQueue()
     }
 }
 
+// FUNCTION: MIDTOWN 0x00538B50
 aconst char* agiTexLut::GetName()
 {
     static char buffer[64]; // FIXME: Static buffer
@@ -385,6 +404,7 @@ aconst char* agiTexLut::GetName()
     return buffer;
 }
 
+// FUNCTION: MIDTOWN 0x00538A80
 i32 agiTexLut::Init(const char* name)
 {
     EndGfx();

@@ -20,6 +20,7 @@ define_dummy_symbol(data7_miniparser);
 
 #include "miniparser.h"
 
+// FUNCTION: MIDTOWN 0x0055E030
 void MiniParser::Commentf(ARTS_FORMAT_STRING const char* format, ...)
 {
     PutCh(';');
@@ -33,6 +34,7 @@ void MiniParser::Commentf(ARTS_FORMAT_STRING const char* format, ...)
 
 static i32 TotalParserErrors = 0;
 
+// FUNCTION: MIDTOWN 0x0055DF90
 void MiniParser::Errorf(ARTS_FORMAT_STRING const char* format, ...)
 {
     ++TotalParserErrors;
@@ -59,6 +61,7 @@ void MiniParser::Errorf(ARTS_FORMAT_STRING const char* format, ...)
     }
 }
 
+// FUNCTION: MIDTOWN 0x0055E600
 f32 MiniParser::FloatVal()
 {
     if (i32 token = NextToken(); token != IntegerToken && token != FloatToken)
@@ -67,6 +70,7 @@ f32 MiniParser::FloatVal()
     return static_cast<f32>(std::atof(buffer_));
 }
 
+// FUNCTION: MIDTOWN 0x0055E090
 i32 MiniParser::GetCh()
 {
     i32 ch = current_char_ = RawGetCh();
@@ -77,11 +81,13 @@ i32 MiniParser::GetCh()
     return ch;
 }
 
+// FUNCTION: MIDTOWN 0x0055E100
 void MiniParser::Indent(i32 amount)
 {
     indentation_ += amount;
 }
 
+// FUNCTION: MIDTOWN 0x0055E5C0
 i64 MiniParser::Int64Val()
 {
     if (i32 token = NextToken(); token != IntegerToken && token != FloatToken)
@@ -90,6 +96,7 @@ i64 MiniParser::Int64Val()
     return std::atoll(buffer_);
 }
 
+// FUNCTION: MIDTOWN 0x0055E580
 i32 MiniParser::IntVal()
 {
     if (i32 token = NextToken(); token != IntegerToken && token != FloatToken)
@@ -98,12 +105,14 @@ i32 MiniParser::IntVal()
     return std::atoi(buffer_);
 }
 
+// FUNCTION: MIDTOWN 0x0055E120
 void MiniParser::Match(i32 expected)
 {
     if (i32 token = NextToken(); token != expected)
         Errorf("Expected '%s', got '%s'", TokenName(expected), TokenName(token));
 }
 
+// FUNCTION: MIDTOWN 0x0055E380
 i32 MiniParser::NextToken()
 {
     if (put_back_)
@@ -223,16 +232,19 @@ i32 MiniParser::NextToken()
     return token;
 }
 
+// FUNCTION: MIDTOWN 0x0055E300
 void MiniParser::PlaceLabel(void* ptr)
 {
     Printf(":%08zx", reinterpret_cast<usize>(ptr));
 }
 
+// FUNCTION: MIDTOWN 0x0055E320
 void MiniParser::PlaceLabelRef(void* ptr)
 {
     Printf("$%08zx", reinterpret_cast<usize>(ptr));
 }
 
+// FUNCTION: MIDTOWN 0x0055DF30
 void MiniParser::PrintString(const char* str, i32 len)
 {
     if (str)
@@ -258,6 +270,7 @@ void MiniParser::PrintString(const char* str, i32 len)
     }
 }
 
+// FUNCTION: MIDTOWN 0x0055DEE0
 void MiniParser::Printf(ARTS_FORMAT_STRING const char* format, ...)
 {
     std::va_list va;
@@ -266,6 +279,7 @@ void MiniParser::Printf(ARTS_FORMAT_STRING const char* format, ...)
     va_end(va);
 }
 
+// FUNCTION: MIDTOWN 0x0055E350
 void MiniParser::PutBack(i32 token)
 {
     if (put_back_)
@@ -274,6 +288,7 @@ void MiniParser::PutBack(i32 token)
     put_back_ = token;
 }
 
+// FUNCTION: MIDTOWN 0x0055E0B0
 void MiniParser::PutCh(i32 value)
 {
     if (current_char_ == '\n')
@@ -287,11 +302,13 @@ void MiniParser::PutCh(i32 value)
     RawPutCh(value);
 }
 
+// FUNCTION: MIDTOWN 0x0055E340
 void* MiniParser::ResolveLabel(char*, void**)
 {
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x0055E160
 const char* MiniParser::TokenName(i32 token)
 {
     switch (token)

@@ -20,5 +20,6 @@ define_dummy_symbol(agi_dlp);
 
 #include "dlp.h"
 
+// FUNCTION: MIDTOWN 0x00540170
 void DLP::EndGfx()
 {}

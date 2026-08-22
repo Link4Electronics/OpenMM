@@ -31,6 +31,7 @@ define_dummy_symbol(data7_timer);
 f32 Timer::TicksToSeconds = 0.0f;
 f32 Timer::TicksToMilliseconds = 0.0f;
 
+// FUNCTION: MIDTOWN 0x00558210
 Timer::Timer()
 {
     if (TicksToSeconds == 0.0f)
@@ -81,6 +82,7 @@ f32 Timer::WaitUntil(f32 target)
 static u32 TimerOldPriorityClass = 0;
 static u32 TimerOldPriority = 0;
 
+// FUNCTION: MIDTOWN 0x005582C0
 void Timer::BeginBenchmark()
 {
     TimerOldPriorityClass = GetPriorityClass(GetCurrentProcess());
@@ -93,17 +95,20 @@ void Timer::BeginBenchmark()
         Errorf("SetThreadPriority failed.");
 }
 
+// FUNCTION: MIDTOWN 0x00558330
 void Timer::EndBenchmark()
 {
     SetPriorityClass(GetCurrentProcess(), TimerOldPriorityClass);
     SetThreadPriority(GetCurrentThread(), TimerOldPriority);
 }
 
+// FUNCTION: MIDTOWN 0x00558200
 void Timer::Sleep(i32 ms)
 {
     SDL_Delay(ms);
 }
 
+// FUNCTION: MIDTOWN 0x005581D0
 ulong Timer::Ticks()
 {
     return static_cast<ulong>(SDL_GetPerformanceCounter());

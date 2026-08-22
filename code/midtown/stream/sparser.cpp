@@ -30,16 +30,19 @@ StreamMiniParser::StreamMiniParser(const char* name, Owner<Stream> stream)
 
 StreamMiniParser::~StreamMiniParser() = default;
 
+// FUNCTION: MIDTOWN 0x00542FC0
 i32 StreamMiniParser::RawGetCh()
 {
     return stream_->GetCh();
 }
 
+// FUNCTION: MIDTOWN 0x00542F80
 void StreamMiniParser::RawPutCh(i32 value)
 {
     stream_->PutCh(static_cast<u8>(value));
 }
 
+// FUNCTION: MIDTOWN 0x00542FF0
 void StreamMiniParser::Load(MetaClass* cls, const char* path, void* ptr)
 {
     Ptr<Stream> input {arts_fopen(path, "r")};
@@ -59,6 +62,7 @@ void StreamMiniParser::Load(MetaClass* cls, const char* path, void* ptr)
     }
 }
 
+// FUNCTION: MIDTOWN 0x005430A0
 void StreamMiniParser::Save(MetaClass* cls, const char* path, void* ptr)
 {
     Ptr<Stream> output {arts_fopen(path, "w")};

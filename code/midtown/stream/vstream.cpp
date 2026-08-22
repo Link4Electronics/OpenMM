@@ -39,6 +39,7 @@ VirtualStream::VirtualStream(
 
 VirtualStream::~VirtualStream() = default;
 
+// FUNCTION: MIDTOWN 0x005438C0
 void* VirtualStream::GetMapping()
 {
     if (void* mapping = base_stream_->GetMapping())
@@ -47,6 +48,7 @@ void* VirtualStream::GetMapping()
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00543750
 b32 VirtualStream::GetPagingInfo(usize& handle, u32& offset, u32& size)
 {
     handle = base_stream_->GetPagerHandle();
@@ -56,6 +58,7 @@ b32 VirtualStream::GetPagingInfo(usize& handle, u32& offset, u32& size)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x005437E0
 isize VirtualStream::RawRead(void* ptr, isize size)
 {
     LockGuard lock(lock_);
@@ -68,21 +71,25 @@ isize VirtualStream::RawRead(void* ptr, isize size)
     return base_stream_->Read(ptr, std::min<isize>(size, isize(data_size_) - here));
 }
 
+// FUNCTION: MIDTOWN 0x00543860
 i32 VirtualStream::RawSeek(i32 pos)
 {
     return base_stream_->Seek(data_offset_ + pos) - data_offset_;
 }
 
+// FUNCTION: MIDTOWN 0x005438B0
 i32 VirtualStream::RawSize()
 {
     return data_size_;
 }
 
+// FUNCTION: MIDTOWN 0x00543890
 i32 VirtualStream::RawTell()
 {
     return base_stream_->Tell() - data_offset_;
 }
 
+// FUNCTION: MIDTOWN 0x00543850
 isize VirtualStream::RawWrite(const void*, isize)
 {
     return -1;

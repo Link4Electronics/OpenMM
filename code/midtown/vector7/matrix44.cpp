@@ -38,6 +38,7 @@ Matrix44::Matrix44(const Matrix44& arg1)
     , m3(arg1.m3)
 {}
 
+// FUNCTION: MIDTOWN 0x00550B80
 void Matrix44::Dot(const Matrix44& lhs, const Matrix44& rhs)
 {
     *this = {lhs.m0 ^ rhs, lhs.m1 ^ rhs, lhs.m2 ^ rhs, lhs.m3 ^ rhs};

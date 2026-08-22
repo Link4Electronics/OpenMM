@@ -20,5 +20,6 @@ define_dummy_symbol(arts7_benchstats);
 
 #include "benchstats.h"
 
+// FUNCTION: MIDTOWN 0x00516240
 void asBenchStats::Print()
 {}

@@ -45,6 +45,7 @@ FileSystem::~FileSystem()
     FS[--FSCount] = nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00541A40
 b32 FileSystem::PagerInfo(const char*, PagerInfo_t&)
 {
     return false;
@@ -128,6 +129,7 @@ static i32 Contains(const char* strs, const char* str)
 static void ExpandEnvs(char* /*str*/)
 {}
 
+// FUNCTION: MIDTOWN 0x00541210
 b32 FileSystem::Search(
     const char* file, const char* folder, const char* ext, i32 ext_id, char* output, isize buffer_len)
 {
@@ -215,6 +217,7 @@ b32 FileSystem::Search(
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x005419E0
 Owner<Stream> FileSystem::OpenAny(const char* path, b32 read_only, void* buffer, isize buffer_len)
 {
     for (i32 i = 0; i < FSCount; ++i)
@@ -228,6 +231,7 @@ Owner<Stream> FileSystem::OpenAny(const char* path, b32 read_only, void* buffer,
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00541A50
 b32 FileSystem::PagerInfoAny(const char* path, PagerInfo_t& pager)
 {
     for (i32 i = 0; i < FSCount; ++i)
@@ -241,6 +245,7 @@ b32 FileSystem::PagerInfoAny(const char* path, PagerInfo_t& pager)
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x005411A0
 FileSystem* FileSystem::SearchAll(
     const char* file, const char* folder, const char* ext, i32 ext_id, char* buffer, isize buffer_len)
 {
@@ -257,6 +262,7 @@ FileSystem* FileSystem::SearchAll(
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00541190
 void FileSystem::NotifyDelete()
 {}
 

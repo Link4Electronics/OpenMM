@@ -26,11 +26,13 @@ struct List::Entry
     Entry* Next {};
 };
 
+// FUNCTION: MIDTOWN 0x0055DBE0
 List::~List()
 {
     Kill();
 }
 
+// FUNCTION: MIDTOWN 0x0055DC90
 void* List::Access(i32 index)
 {
     if (index < 1 || index > size_)
@@ -44,6 +46,7 @@ void* List::Access(i32 index)
     return entry->Value;
 }
 
+// FUNCTION: MIDTOWN 0x0055DCC0
 b32 List::Delete(i32 index)
 {
     if (index < 1 || index > size_)
@@ -64,6 +67,7 @@ b32 List::Delete(i32 index)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x0055DC10
 b32 List::Insert(i32 index, void* value)
 {
     if (index < 1 || index > size_ + 1)
@@ -83,6 +87,7 @@ b32 List::Insert(i32 index, void* value)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x0055DBF0
 void List::Kill()
 {
     while (size_)

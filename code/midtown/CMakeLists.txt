@@ -102,15 +102,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # Main executable
-add_executable(Open1560
+add_executable(OpenMM
     ${CMAKE_CURRENT_SOURCE_DIR}/midtown.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/midtown.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_stubs.S
     ${CMAKE_CURRENT_SOURCE_DIR}/game_stubs_standalone.cpp
 )
 
-target_include_directories(Open1560 PRIVATE ${ARTS_INCLUDE_DIRS})
-target_compile_definitions(Open1560 PRIVATE
+target_include_directories(OpenMM PRIVATE ${ARTS_INCLUDE_DIRS})
+target_compile_definitions(OpenMM PRIVATE
     ARTS_DEV_BUILD=1
     ARTS_TARGET_BUILD=1560
     ARTS_STANDALONE
@@ -118,7 +118,7 @@ target_compile_definitions(Open1560 PRIVATE
 )
 
 # Only apply PCH and C++ flags to C++ sources (not assembly)
-target_compile_options(Open1560 PRIVATE
+target_compile_options(OpenMM PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:-include "${ARTS_PCH}">
     $<$<COMPILE_LANGUAGE:CXX>:-Wno-missing-field-initializers>
     $<$<COMPILE_LANGUAGE:CXX>:-Wno-unused-private-field>
@@ -142,10 +142,10 @@ endif()
 
 if(AVFORMAT_FOUND AND AVCODEC_FOUND AND SWSCALE_FOUND AND AVUTIL_FOUND)
     target_compile_definitions(arts_objs PRIVATE ARTS_HAVE_FFMPEG)
-    target_compile_definitions(Open1560 PRIVATE ARTS_HAVE_FFMPEG)
+    target_compile_definitions(OpenMM PRIVATE ARTS_HAVE_FFMPEG)
 endif()
 
-target_link_libraries(Open1560
+target_link_libraries(OpenMM
     arts_objs
     glad
     miniz
@@ -162,13 +162,24 @@ target_link_libraries(Open1560
     m
 )
 
-target_include_directories(Open1560 PRIVATE ${JPEG_INCLUDE_DIRS} ${AVFORMAT_INCLUDE_DIRS} ${AVCODEC_INCLUDE_DIRS} ${SWSCALE_INCLUDE_DIRS} ${AVUTIL_INCLUDE_DIRS})
+target_include_directories(OpenMM PRIVATE ${JPEG_INCLUDE_DIRS} ${AVFORMAT_INCLUDE_DIRS} ${AVCODEC_INCLUDE_DIRS} ${SWSCALE_INCLUDE_DIRS} ${AVUTIL_INCLUDE_DIRS})
 
 # Copy binary to game directory after build
-add_custom_command(TARGET Open1560 POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Open1560>
-        ${CMAKE_SOURCE_DIR}/game/Open1560
-    COMMENT "Copying Open1560 binary to game directory"
+add_custom_command(TARGET OpenMM POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:OpenMM>
+        ${CMAKE_SOURCE_DIR}/game/OpenMM
+    COMMENT "Copying OpenMM binary to game directory"
 )
 
-target_include_directories(Open1560 PRIVATE ${JPEG_INCLUDE_DIRS})
+target_include_directories(OpenMM PRIVATE ${JPEG_INCLUDE_DIRS})
+
+# reccmp verification build plumbing (see docs/reccmp.md)
+if(OPENMM_RECCMP)
+    if(NOT MSVC)
+        message(FATAL_ERROR "OPENMM_RECCMP requires an MSVC toolchain (see docs/reccmp.md)")
+    endif()
+    set_target_properties(OpenMM PROPERTIES OUTPUT_NAME "midtown")
+    target_link_options(OpenMM PRIVATE /INCREMENTAL:NO /DEBUG)
+    reccmp_add_target(OpenMM ID MIDTOWN)
+    reccmp_configure()
+endif()

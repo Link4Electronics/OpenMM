@@ -104,6 +104,7 @@ void Matrix34::RotateAbs(const Vector3& axis, f32 angle)
     m2 = Vector3{0.0f, 0.0f, 1.0f};
 }
 
+// FUNCTION: MIDTOWN 0x0054AFE0
 void Matrix34::FastInverse(const Matrix34& a)
 {
     // Transpose the 3x3 rotation part
@@ -222,6 +223,7 @@ void Matrix34::ScaleFullAbs(f32 sx, f32 sy, f32 sz)
     m3.z *= sz;
 }
 
+// FUNCTION: MIDTOWN 0x0054D4E0
 // Normalize rotation rows to unit length
 void Matrix34::Normalize()
 {

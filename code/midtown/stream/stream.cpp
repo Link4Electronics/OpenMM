@@ -61,24 +61,29 @@ Stream::~Stream()
     initialized_ = false;
 }
 
+// FUNCTION: MIDTOWN 0x00540900
 void* Stream::GetMapping()
 {
     return nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x00540910
 usize Stream::GetPagerHandle()
 {
     return 0;
 }
 
+// FUNCTION: MIDTOWN 0x00540920
 b32 Stream::GetPagingInfo(usize&, u32&, u32&)
 {
     return false;
 }
 
+// FUNCTION: MIDTOWN 0x00540A20
 void Stream::Debug()
 {}
 
+// FUNCTION: MIDTOWN 0x00540930
 void Stream::Error(const char* msg)
 {
     char buffer[128];
@@ -86,6 +91,7 @@ void Stream::Error(const char* msg)
     Errorf("%s: %s", msg, buffer);
 }
 
+// FUNCTION: MIDTOWN 0x00540840
 isize Stream::Flush()
 {
     isize count = 0;
@@ -130,6 +136,7 @@ isize Stream::Get(u32* values, isize count)
     return count;
 }
 
+// FUNCTION: MIDTOWN 0x00540A70
 ConstString Stream::GetString()
 {
     usize length = Get<u32>();
@@ -142,6 +149,7 @@ ConstString Stream::GetString()
     return result;
 }
 
+// FUNCTION: MIDTOWN 0x00540970
 isize Stream::Printf(ARTS_FORMAT_STRING const char* format, ...)
 {
     std::va_list va;
@@ -314,6 +322,7 @@ isize Stream::Put(const u8* values, isize count)
     return Write(values, sizeof(*values) * count) / sizeof(*values);
 }
 
+// FUNCTION: MIDTOWN 0x00540A30
 isize Stream::PutString(const char* str)
 {
     usize len = std::strlen(str) + 1;
@@ -321,6 +330,7 @@ isize Stream::PutString(const char* str)
     return Put(reinterpret_cast<const u8*>(str), len);
 }
 
+// FUNCTION: MIDTOWN 0x00540540
 isize Stream::Read(void* ptr, isize size)
 {
     if ((buffer_read_ == 0) && (buffer_head_ != 0) && (Flush() < 0))
@@ -384,6 +394,7 @@ isize Stream::Read(void* ptr, isize size)
     return total;
 }
 
+// FUNCTION: MIDTOWN 0x005407E0
 i32 Stream::Seek(i32 position)
 {
     // TODO: Add origin param, similar to fseek
@@ -405,6 +416,7 @@ i32 Stream::Seek(i32 position)
     return RawSeek(position);
 }
 
+// FUNCTION: MIDTOWN 0x00540820
 i32 Stream::Size()
 {
     if (Flush() < 0)
@@ -413,6 +425,7 @@ i32 Stream::Size()
     return RawSize();
 }
 
+// FUNCTION: MIDTOWN 0x005409C0
 isize Stream::Vprintf(const char* format, std::va_list va)
 {
     char buffer[256];
@@ -420,6 +433,7 @@ isize Stream::Vprintf(const char* format, std::va_list va)
     return Write(buffer, std::strlen(buffer));
 }
 
+// FUNCTION: MIDTOWN 0x00540680
 isize Stream::Write(const void* ptr, isize size)
 {
     if ((buffer_read_ != 0) && (Flush() < 0))
@@ -458,14 +472,17 @@ isize Stream::Write(const void* ptr, isize size)
     return size;
 }
 
+// FUNCTION: MIDTOWN 0x00540A10
 void Stream::RawDebug()
 {}
 
+// FUNCTION: MIDTOWN 0x005408B0
 i32 Stream::AlignSize()
 {
     return 1;
 }
 
+// FUNCTION: MIDTOWN 0x005408C0
 i32 Stream::GetError(char* buf, isize buf_len)
 {
     i32 error = errno;
@@ -473,11 +490,13 @@ i32 Stream::GetError(char* buf, isize buf_len)
     return error;
 }
 
+// FUNCTION: MIDTOWN 0x00540DC0
 void Stream::SwapLongs(u32* values, isize count)
 {
     ByteSwapN(values, count);
 }
 
+// FUNCTION: MIDTOWN 0x00540D90
 void Stream::SwapShorts(u16* values, isize count)
 {
     ByteSwapN(values, count);

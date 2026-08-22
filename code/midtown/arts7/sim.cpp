@@ -342,6 +342,7 @@ void asSimulation::EarlyInit(aconst char* proj_path, i32 argc, char** argv)
     arts_sprintf(ExecPath, "%s\\bin\\", proj_path);
 }
 
+// FUNCTION: MIDTOWN 0x0050FB00
 void asSimulation::Init()
 {
     CheckLibraries();
@@ -360,6 +361,7 @@ void asSimulation::Init()
         SunLight->Init(SunParams);
 }
 
+// FUNCTION: MIDTOWN 0x00510350
 void asSimulation::BeginOverSample(i32 samples)
 {
     seconds_ /= samples;
@@ -372,6 +374,7 @@ void asSimulation::EndOverSample(i32 samples)
     inv_seconds_ /= samples;
 }
 
+// FUNCTION: MIDTOWN 0x00510450
 void asSimulation::FixedFrame(f32 frame_rate, i32 frame_samples)
 {
     ResetClock();
@@ -381,11 +384,13 @@ void asSimulation::FixedFrame(f32 frame_rate, i32 frame_samples)
     sample_step_ = 1.0f / (frame_samples * frame_rate);
 }
 
+// FUNCTION: MIDTOWN 0x00510490
 void asSimulation::FrameLock(i32 lock, i32)
 {
     frame_lock_ = lock;
 }
 
+// FUNCTION: MIDTOWN 0x00510520
 void asSimulation::Pause()
 {
     eqEventQ events {-1, -1, 32};
@@ -415,6 +420,7 @@ void asSimulation::Pause()
         ;
 }
 
+// FUNCTION: MIDTOWN 0x0050FE50
 void asSimulation::FirstUpdate()
 {
     ResetClock();
@@ -423,11 +429,13 @@ void asSimulation::FirstUpdate()
     seconds_ = 0.0f;
 }
 
+// FUNCTION: MIDTOWN 0x0050FAD0
 void asSimulation::Quiet()
 {
     Printer = QuietPrinter;
 }
 
+// FUNCTION: MIDTOWN 0x005103F0
 void asSimulation::RealTime(f32 fps)
 {
     ResetClock();
@@ -437,6 +445,7 @@ void asSimulation::RealTime(f32 fps)
     sample_step_ = fps ? (1.0f / fps) : 0.0f;
 }
 
+// FUNCTION: MIDTOWN 0x0050FE40
 void asSimulation::Reset()
 {
     should_reset_ = true;
@@ -445,6 +454,7 @@ void asSimulation::Reset()
 static mem::cmd_param PARAM_smoothstep {"smoothstep"};
 static mem::cmd_param PARAM_maxfps {"maxfps"};
 
+// FUNCTION: MIDTOWN 0x00510300
 void asSimulation::ResetClock()
 {
     inv_seconds_ = 1.0f;
@@ -473,6 +483,7 @@ static int dbg_sim_fd = -1;
 static void dbg_sim_init() { if (dbg_sim_fd < 0) dbg_sim_fd = open("/tmp/opencode/sim_debug.log", O_WRONLY|O_CREAT|O_TRUNC, 0644); }
 #define DBG_SIM(msg) do { dbg_sim_init(); write(dbg_sim_fd, msg, sizeof(msg) - 1); } while(0)
 
+// FUNCTION: MIDTOWN 0x00510200
 void asSimulation::Simulate()
 {
     if (simulate_count == 0)
@@ -510,6 +521,7 @@ void asSimulation::Simulate()
         eqReplay::DoRecord();
 }
 
+// FUNCTION: MIDTOWN 0x0050FE70
 void asSimulation::Update()
 {
     if (seconds_ == 4321.0f)
@@ -631,6 +643,7 @@ void asSimulation::Update()
 #endif
 }
 
+// FUNCTION: MIDTOWN 0x00510290
 void asSimulation::UpdatePaused(asNode* node)
 {
     for (asNode* n = node->GetChildNode(); n; n = n->GetNextNode())
@@ -679,6 +692,7 @@ void asSimulation::DeclareVector(const Vector3* start, const Vector3* end, const
         ++vector_count_;
     }
 }
+// FUNCTION: MIDTOWN 0x00510110
 #endif
 
 void asSimulation::Device()
@@ -878,6 +892,7 @@ void asSimulation::Device()
     curr_stats_.DeviceTime += timer.Time();
 }
 
+// FUNCTION: MIDTOWN 0x005101D0
 void asSimulation::Widgets()
 {
     Timer timer;
@@ -970,6 +985,7 @@ static ARTS_NOINLINE bool IsValidPointer(void* address, usize size, bool access)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00510830
 const char* asNode::VerifyTree()
 {
     if (!IsValidPointer(this, sizeof(*this), true))

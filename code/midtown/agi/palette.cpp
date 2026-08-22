@@ -22,19 +22,23 @@ define_dummy_symbol(agi_palette);
 
 #include "agi/rgba.h"
 
+// FUNCTION: MIDTOWN 0x0053DFB0
 agiPalette::agiPalette()
 {}
 
+// FUNCTION: MIDTOWN 0x0053E2C0
 u32 agiPalette::FindColor(agiRgba /*arg1*/)
 {
     return 0;
 }
 
+// FUNCTION: MIDTOWN 0x0053E230
 u32 agiPalette::GetColor(agiRgba /*arg1*/)
 {
     return 0;
 }
 
+// FUNCTION: MIDTOWN 0x0053DFD0
 void agiPalette::Kill()
 {
     ColorCount = 0;

@@ -45,6 +45,7 @@ asNode::~asNode()
     RemoveAllChildren();
 }
 
+// FUNCTION: MIDTOWN 0x00510D20
 void asNode::Update()
 {
     if (DebugMemory & ARTS_DEBUG_UPDATEMEM)
@@ -89,12 +90,14 @@ void asNode::Update()
     }
 }
 
+// FUNCTION: MIDTOWN 0x00510D90
 void asNode::Reset()
 {
     for (asNode* n = child_node_; n; n = n->next_node_)
         n->Reset();
 }
 
+// FUNCTION: MIDTOWN 0x00510DB0
 void asNode::ResChange(i32 width, i32 height)
 {
     for (asNode* n = child_node_; n; n = n->next_node_)
@@ -158,6 +161,7 @@ void asNode::CloseWidgets()
 
 void asNode::AddButton(Bank* /*arg1*/, i32& /*arg2*/)
 {}
+// FUNCTION: MIDTOWN 0x00510DE0
 #endif
 
 b32 asNode::AddChild(asNode* child)
@@ -195,11 +199,13 @@ void asNode::AdoptChild(Ptr<asNode> child)
         Quitf("asNode::AdoptChild() - Failed to adopt child");
 }
 
+// FUNCTION: MIDTOWN 0x00511130
 const char* asNode::GetNodeType()
 {
     return GetClass()->GetName();
 }
 
+// FUNCTION: MIDTOWN 0x005110F0
 asNode* asNode::GetParent(MetaClass* cls)
 {
     asNode* n = parent_node_;
@@ -213,6 +219,7 @@ asNode* asNode::GetParent(MetaClass* cls)
     return n;
 }
 
+// FUNCTION: MIDTOWN 0x00510E60
 b32 asNode::InsertChild(i32 index, asNode* child)
 {
     if (!child)
@@ -264,6 +271,7 @@ b32 asNode::Load(const char* path)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00511070
 i32 asNode::NumChildren()
 {
     i32 count = 0;
@@ -293,6 +301,7 @@ void asNode::PerfReport(Stream* output, i32 indent)
     for (asNode* n = child_node_; n; n = n->next_node_)
         n->PerfReport(output, indent + 1);
 }
+// FUNCTION: MIDTOWN 0x00510FD0
 #endif
 
 void asNode::RemoveAllChildren()
@@ -350,11 +359,13 @@ b32 asNode::Save(const char* path)
     return true;
 }
 
+// FUNCTION: MIDTOWN 0x00510CF0
 void asNode::SetName(const char* name)
 {
     node_name_ = name;
 }
 
+// FUNCTION: MIDTOWN 0x00511090
 void asNode::SwitchTo(i32 idx)
 {
     idx = std::clamp(idx, -1, NumChildren());

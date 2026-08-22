@@ -58,6 +58,7 @@ ipcMessageQueue::~ipcMessageQueue()
     Shutdown();
 }
 
+// FUNCTION: MIDTOWN 0x0055A1D0
 void ipcMessageQueue::Init(i32 max_messages, i32 mode)
 {
     if (mode == IPC_QUEUE_MODE_SYNC)
@@ -90,6 +91,7 @@ void ipcMessageQueue::Init(i32 max_messages, i32 mode)
     proc_thread_ = ipcCreateThread(ipcMessageQueue::Proc, this, &thread_id);
 }
 
+// FUNCTION: MIDTOWN 0x0055A2E0
 void ipcMessageQueue::Send(Callback cb)
 {
     if (!initialized_)
@@ -133,6 +135,7 @@ void ipcMessageQueue::Send(Callback cb)
         done_event_.wait(lock);
 }
 
+// FUNCTION: MIDTOWN 0x0055A280
 void ipcMessageQueue::Shutdown()
 {
     if (!initialized_)
@@ -154,6 +157,7 @@ void ipcMessageQueue::Shutdown()
     messages_ = nullptr;
 }
 
+// FUNCTION: MIDTOWN 0x0055A0F0
 i32 ipcMessageQueue::MessageLoop()
 {
     ARTS_EXCEPTION_BEGIN
@@ -199,6 +203,7 @@ i32 ipcMessageQueue::MessageLoop()
     return 0;
 }
 
+// FUNCTION: MIDTOWN 0x0055A0E0
 ulong ipcMessageQueue::Proc(void* param)
 {
     return static_cast<ipcMessageQueue*>(param)->MessageLoop();

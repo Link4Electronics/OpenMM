@@ -20,5 +20,6 @@ define_dummy_symbol(arts7_view);
 
 #include "view.h"
 
+// FUNCTION: MIDTOWN 0x00515FF0
 void asViewCS::FileIO(MiniParser* /*arg1*/)
 {}
