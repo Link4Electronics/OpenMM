@@ -446,6 +446,7 @@ void mmInput::SetDefaultConfig(i32 config)
 mmInput::mmInput()
 {
     GameInputPtr = this;
+    Displayf("DBG mmInput ctor this=%p", (void*) this);
 
     MouseSensitivity = 1.0f;
     UserSteeringSensitivity = 1.0f;
@@ -464,6 +465,8 @@ mmInput::mmInput()
 
 mmInput::~mmInput()
 {
+    Displayf("DBG ~mmInput this=%p Joy=%p IO=%p Events=%p", (void*) this, (void*) Joy, (void*) IO, (void*) Events);
+
     if (Joy)
     {
         delete Joy;

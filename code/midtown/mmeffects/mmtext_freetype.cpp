@@ -39,6 +39,10 @@
 #include <freetype/freetype.h>
 #include <freetype/ftmodapi.h>
 
+// Cached global font handles (see mmcity/loader.h); reset on shutdown.
+extern void* myFont;
+extern void* IntroFont;
+
 struct mmSize
 {
     i32 cx {};
@@ -363,6 +367,11 @@ static void mmFont_Shutdown()
     FontHash.Kill(nullptr, [](void*, const char*, void* value) { delete static_cast<mmFont*>(value); });
     FT_Done_Library(mmFont_Library);
     mmFont_Library = nullptr;
+
+    // Cached font handles point into the (now reset) memory arena; force
+    // consumers to re-create them next phase.
+    myFont = nullptr;
+    IntroFont = nullptr;
 }
 
 static FT_MemoryRec_ mmFont_MemoryRec {nullptr, mmFont_AllocFunc, mmFont_FreeFunc, mmFont_ReallocFunc};

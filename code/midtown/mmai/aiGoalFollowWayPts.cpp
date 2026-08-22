@@ -32,7 +32,7 @@ aiGoalFollowWayPts::aiGoalFollowWayPts()
 {}
 
 aiGoalFollowWayPts::aiGoalFollowWayPts(char* pathfile, aiRailSet* railset, aiVehicleOpponent* vehicle_opponent,
-    b16* is_backup, b16* is_finished, b16* is_stopped, aconst char* race_name, f32 max_throttle)
+    i16* is_backup, i16* is_finished, i16* is_stopped, aconst char* race_name, f32 max_throttle)
     : Rail(railset)
     , Vehicle(vehicle_opponent)
     , BackingUp(is_backup)

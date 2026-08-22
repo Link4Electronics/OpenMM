@@ -64,6 +64,9 @@ static void PlayOptionsSoundNow()
 {
     if (!g_UIOptionsStream)
     {
+        // TODO: UI sounds disabled until game audio is implemented.
+        return;
+
         if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
             return;
 
@@ -156,6 +159,9 @@ static void PlayDriverSoundNow()
 {
     if (!g_UIDriverStream)
     {
+        // TODO: UI sounds disabled until game audio is implemented.
+        return;
+
         if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
             return;
 

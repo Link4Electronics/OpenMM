@@ -374,16 +374,16 @@ public:
         return (CurrentState >> ioid) & 1;
     }
 
-    mmJoyMan* Joy;
-    mmIO* IO;
-    i32 NumControls;
-    eqEventQ* Events;
-    eqEvent CaptureEvent;
-    i32 field_54;
+    mmJoyMan* Joy {};
+    mmIO* IO {};
+    i32 NumControls {};
+    eqEventQ* Events {};
+    eqEvent CaptureEvent {};
+    i32 field_54 {};
     i64 EventQueue[30];
-    i32 QueuedEvents;
-    i32 WantPoll;
-    i32 StateCaptured;
+    i32 QueuedEvents {};
+    i32 WantPoll {};
+    i32 StateCaptured {};
     i32 field_154;
     i32 LastUnassigned;
     i32 field_15C;

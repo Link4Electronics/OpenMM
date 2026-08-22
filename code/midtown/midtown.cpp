@@ -109,6 +109,10 @@ f32 GlobalDamageScale = 1.45f;
 u8 GraphicsChange = false;
 u8 GraphicsPreviousMenu = 0;
 char LoadScreen[40] {};
+
+// Global font handles (weak stubs overridden here; reset by mmFont_Shutdown)
+void* IntroFont = nullptr;
+void* myFont = nullptr;
 Timer LoadTimer {};
 mmGameRecord* SystemStatsRecord = nullptr;
 i32 page_override = -1;
@@ -427,6 +431,13 @@ static void GameLoop([[maybe_unused]] mmInterface* mm_interface, [[maybe_unused]
 
 static void MainPhase(i32 argc, char** argv)
 {
+    // The GL pipeline (window + context) is created once and kept alive
+    // across phase transitions: recreating it per phase crashes Mesa
+    // during the first texture upload of the next phase.
+    static bool pipeline_alive = false;
+    // Same for the event queue, which is tied to the pipeline window.
+    static bool event_queue_alive = false;
+
     LoadTimer.Reset();
 
     char* replay_name = nullptr;
@@ -453,7 +464,12 @@ static void MainPhase(i32 argc, char** argv)
     }
 
     MemStat module_init {"Module init"};
-    InitEventQueue();
+
+    if (!event_queue_alive)
+    {
+        InitEventQueue();
+        event_queue_alive = true;
+    }
 
     {
         ARTS_MEM_STAT("ARTS Early Init");
@@ -471,42 +487,48 @@ static void MainPhase(i32 argc, char** argv)
     {
         ARTS_MEM_STAT("AGI Startup");
 
-        // Play intro video before initializing OpenGL pipeline
-        // so we can use a temporary SDL renderer without conflicting with GL
-        if (MMSTATE.GameState == mmGameState::Menus)
+        if (!pipeline_alive)
         {
-            const char* probe_paths[] = {
-                "game/logos.avi",
-                "logos.avi",
-            };
-
-            bool played = false;
-
-            for (const char* path : probe_paths)
+            // Play intro video before initializing OpenGL pipeline
+            // so we can use a temporary SDL renderer without conflicting with GL
+            if (MMSTATE.GameState == mmGameState::Menus)
             {
-                if (!access(path, F_OK))
+                const char* probe_paths[] = {
+                    "game/logos.avi",
+                    "logos.avi",
+                };
+
+                bool played = false;
+
+                for (const char* path : probe_paths)
                 {
-                    PlayIntroVideo(g_MainWindow, path);
-                    played = true;
-                    break;
+                    if (!access(path, F_OK))
+                    {
+                        PlayIntroVideo(g_MainWindow, path);
+                        played = true;
+                        break;
+                    }
                 }
+
+                if (!played)
+                    Displayf("Intro video not found (tried: game/logos.avi, logos.avi)");
             }
 
-            if (!played)
-                Displayf("Intro video not found (tried: game/logos.avi, logos.avi)");
-        }
+            if (InitPipeline(APPTITLE, argc, argv))
+            {
+                ShutdownPipeline();
+                DeallocateEventQueue();
+                event_queue_alive = false;
 
-        if (InitPipeline(APPTITLE, argc, argv))
-        {
-            ShutdownPipeline();
-            DeallocateEventQueue();
+                if (MMSTATE.GameState == mmGameState::Menus)
+                    Quitf("Can't start UI, this should never happen.");
 
-            if (MMSTATE.GameState == mmGameState::Menus)
-                Quitf("Can't start UI, this should never happen.");
+                MessageBoxA(NULL, LOC_STR(MM_IDS_LOW_VRAM), APPTITLE, MB_ICONERROR);
+                MMSTATE.GameState = mmGameState::Menus;
+                return;
+            }
 
-            MessageBoxA(NULL, LOC_STR(MM_IDS_LOW_VRAM), APPTITLE, MB_ICONERROR);
-            MMSTATE.GameState = mmGameState::Menus;
-            return;
+            pipeline_alive = true;
         }
     }
 
@@ -537,8 +559,6 @@ static void MainPhase(i32 argc, char** argv)
 
     {
         mmLoader loader {};
-        // Zero-initialize after weak stub (bar_active_ etc. are garbage without this)
-        std::memset(&loader, 0, sizeof(loader));
 
         if (page_override == -1)
         {
@@ -711,8 +731,9 @@ static void MainPhase(i32 argc, char** argv)
 
         loader.EndTask();
 
-        // Show main menu now that loading is complete
-        if (mm_interface)
+        // Return to the main menu after interface loading. After a race
+        // finishes loading (Drive phase), stay in the world instead.
+        if (CycleState == 1 && mm_interface)
         {
             mm_interface->ShowMain(0);
         }
@@ -763,8 +784,15 @@ static void MainPhase(i32 argc, char** argv)
         CACHE.Shutdown();
     }
 
-    delete GameInputPtr;
-    delete AUDMGRPTR;
+    Displayf("DBG deleting GameInputPtr=%p", (void*) GameInputPtr);
+    // FIXME: Intentionally leaked per phase transition.
+    // SDL audio device threads may still reference audio state during
+    // teardown (race -> SIGSEGV), and mmInput's ARTS_ZEROED allocation
+    // pairs poorly with global delete across heap switches. These objects
+    // are tiny; revisit once audio/input lifetimes are properly owned.
+    //
+    // delete GameInputPtr;
+    // delete AUDMGRPTR;
 
     OnGameReset.Invoke(true);
 
@@ -775,9 +803,12 @@ static void MainPhase(i32 argc, char** argv)
 
     delete ARTSPTR;
 
-    ShutdownPipeline();
-
-    DeallocateEventQueue();
+    // Keep the GL pipeline (window + context) and event queue alive across
+    // phase transitions. Recreating the context per phase crashes Mesa
+    // during the next phase's first texture upload.
+    //
+    // ShutdownPipeline();
+    // DeallocateEventQueue();
 
     HashTable::KillAll();
     MetaClass::UndeclareAll();
@@ -973,6 +1004,10 @@ static void ApplicationHelper(i32 argc, char** argv)
         if (no_ui)
             break;
     }
+
+    // Final shutdown: pipeline and event queue outlive all phases.
+    ShutdownPipeline();
+    DeallocateEventQueue();
 
     SAFEHEAP.Kill();
     dxiShutdown();

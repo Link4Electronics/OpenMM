@@ -50,10 +50,16 @@ void mmLoader::Init(aconst char* underlay_name, f32 bar_x, f32 bar_y)
 {
     Current = this;
 
+    if (!myFont)
+        myFont = mmText::CreateFont("Gill Sans MT", 20);
+
     bar_x_ = UI_XPos + std::lround(UI_Width * bar_x);
     bar_y_ = UI_YPos + std::lround(UI_Height * bar_y);
 
     camera_.SetUnderlay(underlay_name);
+
+    bar_inactive_ = Pipe()->GetBitmap("pbar_inact", 1.0f, 1.0f, 0);
+    bar_active_ = Pipe()->GetBitmap("pbar_act", 1.0f, 1.0f, 0);
 
     task_text_.Init(0.25f, 0.85f, 0.5f, 0.0729f, 2, BITMAP_TRANSPARENT);
     task_text_.AddText(myFont, LOC_TEXT(""), MM_TEXT_CENTER, 0.0f, 0.0f);
@@ -61,6 +67,9 @@ void mmLoader::Init(aconst char* underlay_name, f32 bar_x, f32 bar_y)
 
     intro_text_.Init(0.25f, 0.07f, 0.5f, 0.2f, 1, 0);
     intro_text_.AddText(myFont, LOC_TEXT(""), MM_TEXT_PADDING | MM_TEXT_WORDBREAK, 0.0f, 0.0f);
+
+    text_node3_.Init(0.25f, 0.30f, 0.5f, 0.2f, 1, 0);
+    text_node3_.AddText(myFont, LOC_TEXT(""), MM_TEXT_PADDING | MM_TEXT_WORDBREAK, 0.0f, 0.0f);
 
     Update();
 }
@@ -70,15 +79,24 @@ void mmLoader::Cull()
     if (!PARAM_loadingscreen.get_or(true))
         return;
 
-    // Render camera underlay (background image)
-    camera_.DrawBegin();
-    camera_.DrawEnd();
-
-    // Render progress bar if loaded
-    if (bar_active_)
+    // Render progress bar (track + fill clipped by task percent).
+    // The camera draws its underlay via CullMgr's camera pass.
+    if (bar_inactive_)
     {
-        Pipe()->CopyClippedBitmap(bar_x_, bar_y_, bar_active_, 0, 0,
-            bar_active_->GetWidth(), bar_active_->GetHeight());
+        Pipe()->CopyClippedBitmap(bar_x_, bar_y_, bar_inactive_.get(), 0, 0,
+            bar_inactive_->GetWidth(), bar_inactive_->GetHeight());
+    }
+
+    if (bar_active_ && current_task_percent_ > 0.0f)
+    {
+        const i32 width = static_cast<i32>(bar_active_->GetWidth() *
+            std::clamp(current_task_percent_, 0.0f, 1.0f));
+
+        if (width > 0)
+        {
+            Pipe()->CopyClippedBitmap(bar_x_, bar_y_, bar_active_.get(), 0, 0,
+                width, bar_active_->GetHeight());
+        }
     }
 
     // Render task text
@@ -145,6 +163,9 @@ void mmLoader::Update()
 
     camera_.Update();
 
+    // Declare the loader camera so CullMgr pumps frames while the city
+    // loads (without it, num_cameras_ == 0 and nothing renders).
+    CullMgr()->DeclareCamera(&camera_);
     CullMgr()->DeclareCullable2D(this);
 
 #ifndef ARTS_FINAL

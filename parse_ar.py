@@ -5,10 +5,10 @@ import struct
 import os
 
 AR_FILES = [
-    "/home/acer/Downloads/Open1560/game/1560.ar",
-    "/home/acer/Downloads/Open1560/game/ui.ar",
-    "/home/acer/Downloads/Open1560/game/core.ar",
-    "/home/acer/Downloads/Open1560/game/audio.ar",
+    "game/1560.ar",
+    "game/ui.ar",
+    "game/core.ar",
+    "game/audio.ar",
 ]
 
 BUTTON_NAMES = [

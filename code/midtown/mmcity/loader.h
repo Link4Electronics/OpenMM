@@ -70,8 +70,8 @@ private:
     mmTextNode task_text_ {};
     mmTextNode intro_text_ {};
     mmTextNode text_node3_ {};
-    agiBitmap* bar_active_ {};
-    agiBitmap* bar_inactive_ {};
+    Rc<agiBitmap> bar_active_ {};
+    Rc<agiBitmap> bar_inactive_ {};
     i32 field_2b0_ {};
     f32 task_start_percent_ {};
     i32 field_2b8_ {};

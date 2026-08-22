@@ -150,8 +150,10 @@ bool PlayIntroVideo(SDL_Window* window, const char* filepath)
 
                 if (GetSDLFormat(actx->sample_fmt, sdl_fmt, bytes_per_sample))
                 {
-                    // Audio subsystem may not be initialized yet (video plays before main menu)
+                    // TODO: Video audio disabled until game audio is
+                    // implemented (SDL device threads crash on teardown).
                     SDL_InitSubSystem(SDL_INIT_AUDIO);
+                    static constexpr bool kEnableVideoAudio = false;
 
                     SDL_AudioSpec aspec {};
                     aspec.format = sdl_fmt;
@@ -159,7 +161,9 @@ bool PlayIntroVideo(SDL_Window* window, const char* filepath)
                     aspec.freq = actx->sample_rate;
 
                     audio_stream_handle =
-                        SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &aspec, nullptr, nullptr);
+                        (kEnableVideoAudio)
+                            ? SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &aspec, nullptr, nullptr)
+                            : nullptr;
 
                     if (audio_stream_handle)
                         SDL_ResumeAudioStreamDevice(audio_stream_handle);
@@ -322,7 +326,12 @@ bool PlayIntroVideo(SDL_Window* window, const char* filepath)
     avformat_close_input(&fmt_ctx);
 
     if (audio_stream_handle)
-        SDL_CloseAudioDevice(SDL_GetAudioStreamDevice(audio_stream_handle));
+    {
+        // Destroy only the stream; keep the device alive. Closing the device
+        // here races its playback thread (SDLAudioP*) which can still be
+        // spinning up after a quick skip, calling through freed state.
+        SDL_DestroyAudioStream(audio_stream_handle);
+    }
 
     SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);

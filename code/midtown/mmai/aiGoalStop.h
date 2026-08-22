@@ -26,7 +26,7 @@ class aiGoalStop final : public aiGoal
 {
 public:
     // ??0aiGoalStop@@QAE@PAVmmCar@@PAF@Z
-    ARTS_EXPORT aiGoalStop(mmCar* car, b16* is_stopped);
+    aiGoalStop(mmCar* car, i16* is_stopped);
 
     // ??1aiGoalStop@@QAE@XZ
     ARTS_EXPORT ~aiGoalStop() = default;
@@ -47,7 +47,7 @@ public:
     void Update() override;
 
     mmCar* Car;
-    b16* IsStopped;
+    i16* IsStopped;
 };
 
 check_size(aiGoalStop, 0x10);

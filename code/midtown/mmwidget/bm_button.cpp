@@ -322,6 +322,10 @@ void UIBMButton::PlayClickSound()
 
 void UIBMButton::AllocateSounds()
 {
+    // TODO: UI sounds disabled until game audio is implemented; the SDL
+    // playback device thread crashes during phase teardown.
+    return;
+
     if (g_UIBeepStream && g_ClickBeepStream)
         return;
 

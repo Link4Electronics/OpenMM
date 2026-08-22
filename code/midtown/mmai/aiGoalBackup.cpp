@@ -24,7 +24,7 @@ define_dummy_symbol(mmai_aiGoalBackup);
 #include "mmai/aiRailSet.h"
 #include "mmcar/car.h"
 
-aiGoalBackup::aiGoalBackup(aiRailSet* rail, mmCar* car, b16* backing_up)
+aiGoalBackup::aiGoalBackup(aiRailSet* rail, mmCar* car, i16* backing_up)
     : Rail(rail)
     , Car(car)
     , BackingUp(backing_up)

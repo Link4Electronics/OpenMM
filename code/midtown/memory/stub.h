@@ -59,4 +59,20 @@ struct ArWithStaticHeap
     static void* operator new[](std::size_t size) \
     {                                             \
         return arts_calloc(1, size);              \
+    }                                             \
+    static void operator delete(void* ptr)        \
+    {                                             \
+        arts_free(ptr);                           \
+    }                                             \
+    static void operator delete[](void* ptr)      \
+    {                                             \
+        arts_free(ptr);                           \
+    }                                             \
+    static void operator delete(void* ptr, std::size_t sz)   \
+    {                                             \
+        arts_free(ptr);                           \
+    }                                             \
+    static void operator delete[](void* ptr, std::size_t sz) \
+    {                                             \
+        arts_free(ptr);                           \
     }

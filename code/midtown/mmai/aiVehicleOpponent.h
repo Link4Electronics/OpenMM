@@ -104,9 +104,9 @@ public:
     Ptr<aiGoalFollowWayPts> WayPts;
     Ptr<aiGoalBackup> BackupGoal;
     Ptr<aiGoalStop> StopGoal;
-    b16 IsFinished;
-    b16 IsStopped;
-    b16 IsBackup;
+    i16 IsFinished;
+    i16 IsStopped;
+    i16 IsBackup;
     b16 IsSemi;
     i16 AudIndexNumber;
     i16 field_23B6;

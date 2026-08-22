@@ -57,6 +57,9 @@ public:
     // ?Update@mmDropDown@@UAEXXZ
     ARTS_IMPORT void Update() override;
 
+    ARTS_EXPORT void RefreshVisible();
+    ARTS_EXPORT i32 GetVisibleCount() const;
+
     void SetDropEnabled(b32 enabled) { Enabled = enabled; }
     f32 GetDropHeight() const { return DropHeight; }
     i32 GetNumValues() const { return NumValues; }
@@ -72,7 +75,7 @@ private:
     Ptr<mmTextNode[]> ValueNodes;
     Ptr<u32[]> DropIndex;
     i32 Highlighted {-1};
-    i32 field_2C {};
+    i32 ScrollOffset {0};
     i32 Enabled {};
     i32 DisabledMask {};
     asCamera* Camera {};

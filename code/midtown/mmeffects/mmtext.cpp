@@ -59,6 +59,9 @@ void mmTextNode::Init(f32 x, f32 y, f32 width, f32 height, i32 num_lines, i32 fl
 
 void mmTextNode::Cull()
 {
+    if (!text_bitmap_)
+        return;
+
     if (touched_ || text_bitmap_->NeedsReload())
     {
         agiSurfaceDesc* surface = text_bitmap_->GetSurface();
