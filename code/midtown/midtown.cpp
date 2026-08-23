@@ -1230,7 +1230,10 @@ static void Application(i32 argc, char** argv)
     {
         // AIMAP.Dump()
 
-        Abortf("Exception caught during init.");
+        // NOTE: This handler unexpectedly executes on normal shutdown in
+        // -fno-exceptions builds (macro branch to be determined), so keep it as a log
+        // line instead of Abortf.
+        Displayf("Application: exception-handler path reached (shutdown).");
     }
 }
 

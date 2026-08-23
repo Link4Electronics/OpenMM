@@ -158,8 +158,9 @@ void mmVehicleForm::Cull()
     // Build flags with variant encoded
     u32 flags = MESH_DRAW_CLIP | MESH_DRAW_VARIANT(variant);
 
-    // Set render state to normal
-    auto old_cull = agiCurState.SetCullMode(agiCullMode::None);
+    // Cull backfaces. BMS car meshes are wound opposite to city geometry,
+    // so this needs CW where the world renderer uses CCW.
+    auto old_cull = agiCurState.SetCullMode(agiCullMode::CW);
 
     // Draw shadow first with semi-transparency
     RenderIfResident(shadow_mesh_, [&](agiMeshSet* mesh)

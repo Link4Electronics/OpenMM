@@ -27,6 +27,9 @@ define_dummy_symbol(mminput_input);
 #include "io.h"
 #include "joyman.h"
 
+// Strong definitions for globals that were only weak stubs before.
+mmIODev* IODev = nullptr;
+
 enum
 {
     kcaCantAssign = 0,
@@ -80,7 +83,7 @@ void mmInput::Flush()
 
     eqEvent event;
 
-    while (Events->Pop(&event))
+    while (Events && Events->Pop(&event))
         ;
 
     ClearEventHitFlags();
@@ -163,6 +166,9 @@ void mmInput::Update()
 
 void mmInput::ProcessKeyboardEvents()
 {
+    if (!Events)
+        return;
+
     eqEvent event;
 
     while (Events->Pop(&event))
@@ -551,6 +557,12 @@ f32 mmInput::GetThrottle()
 
 f32 mmInput::GetThrottleVal()
 {
+    if (!IO)
+    {
+        Displayf("DBG GetThrottleVal with null IO! this=%p", (void*) this);
+        return 0.0f;
+    }
+
     switch (IO[IOID_THROT].GetIODev().IoType)
     {
         case ioType::Discrete: return IsInputPressed(IOID_THROT) ? 1.0f : 0.0f;
@@ -563,6 +575,29 @@ f32 mmInput::GetThrottleVal()
 b32 mmInput::Init(IDirectInputDevice2A* /*device*/)
 {
     return false;
+}
+
+// ?Init@mmInput@@QAEXH@Z
+// Allocates the IO table and applies the default bindings for the
+// requested input type (mmInputType). Replaces the imported stub.
+// ?Init@mmInput@@QAEXH@Z
+// Allocates the IO table and applies the default bindings for the
+// requested input type (mmInputType). Replaces the imported stub.
+void mmInput::Init(i32 input_type)
+{
+    // Master device-description table (weak stub is null on Linux).
+    if (!IODev)
+        IODev = new mmIODev[IODEV_NUM_CONFIGS * IOID_COUNT] {};
+
+    if (!IO)
+    {
+        NumControls = IOID_COUNT;
+        IO = new mmIO[NumControls] {};
+    }
+
+    Displayf("DBG mmInput::Init type=%d IO=%p NumControls=%d", input_type, (void*) IO, NumControls);
+
+    SetDefaultConfig(input_type);
 }
 
 b32 mmInput::JoystickHasCoolie()

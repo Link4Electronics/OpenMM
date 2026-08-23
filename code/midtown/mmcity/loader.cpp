@@ -53,8 +53,10 @@ void mmLoader::Init(aconst char* underlay_name, f32 bar_x, f32 bar_y)
     if (!myFont)
         myFont = mmText::CreateFont("Gill Sans MT", 20);
 
-    bar_x_ = UI_XPos + std::lround(UI_Width * bar_x);
-    bar_y_ = UI_YPos + std::lround(UI_Height * bar_y);
+    // Bar coordinates arrive in 640x480 UI space; CopyClippedBitmap expects
+    // pixels in the actual framebuffer resolution.
+    bar_x_ = std::lround(Pipe()->GetWidth() * bar_x);
+    bar_y_ = std::lround(Pipe()->GetHeight() * bar_y);
 
     camera_.SetUnderlay(underlay_name);
 
@@ -65,11 +67,8 @@ void mmLoader::Init(aconst char* underlay_name, f32 bar_x, f32 bar_y)
     task_text_.AddText(myFont, LOC_TEXT(""), MM_TEXT_CENTER, 0.0f, 0.0f);
     task_text_.AddText(myFont, LOC_TEXT(""), MM_TEXT_CENTER, 0.0f, 0.075f);
 
-    intro_text_.Init(0.25f, 0.07f, 0.5f, 0.2f, 1, 0);
+    intro_text_.Init(0.25f, 0.07f, 0.5f, 0.2f, 1, BITMAP_TRANSPARENT);
     intro_text_.AddText(myFont, LOC_TEXT(""), MM_TEXT_PADDING | MM_TEXT_WORDBREAK, 0.0f, 0.0f);
-
-    text_node3_.Init(0.25f, 0.30f, 0.5f, 0.2f, 1, 0);
-    text_node3_.AddText(myFont, LOC_TEXT(""), MM_TEXT_PADDING | MM_TEXT_WORDBREAK, 0.0f, 0.0f);
 
     Update();
 }
@@ -79,30 +78,38 @@ void mmLoader::Cull()
     if (!PARAM_loadingscreen.get_or(true))
         return;
 
-    // Render progress bar (track + fill clipped by task percent).
+    // Render progress bar (track + fill animated toward the task target).
     // The camera draws its underlay via CullMgr's camera pass.
+    // Bitmaps are authored for 640x480; scale to the framebuffer.
+    const f32 ui_scale = static_cast<f32>(Pipe()->GetWidth()) / 640.0f;
+
     if (bar_inactive_)
     {
         Pipe()->CopyClippedBitmap(bar_x_, bar_y_, bar_inactive_.get(), 0, 0,
-            bar_inactive_->GetWidth(), bar_inactive_->GetHeight());
+            static_cast<i32>(bar_inactive_->GetWidth() * ui_scale),
+            static_cast<i32>(bar_inactive_->GetHeight() * ui_scale));
     }
 
-    if (bar_active_ && current_task_percent_ > 0.0f)
+    const f32 elapsed = timer_.Time() - task_start_time_;
+    const f32 t = std::clamp(elapsed / 1.0f, 0.0f, 1.0f);
+    const f32 displayed = task_start_percent_ +
+        (current_task_percent_ - task_start_percent_) * t;
+
+    if (bar_active_ && displayed > 0.0f)
     {
-        const i32 width = static_cast<i32>(bar_active_->GetWidth() *
-            std::clamp(current_task_percent_, 0.0f, 1.0f));
+        const i32 width = static_cast<i32>(bar_active_->GetWidth() * ui_scale *
+            std::clamp(displayed, 0.0f, 1.0f));
 
         if (width > 0)
         {
             Pipe()->CopyClippedBitmap(bar_x_, bar_y_, bar_active_.get(), 0, 0,
-                width, bar_active_->GetHeight());
+                width, static_cast<i32>(bar_active_->GetHeight() * ui_scale));
         }
     }
 
     // Render task text
     task_text_.Cull();
     intro_text_.Cull();
-    text_node3_.Cull();
 }
 
 void mmLoader::SetIntroText(LocString* text)
@@ -118,6 +125,7 @@ void mmLoader::BeginTask(LocString* text, f32 percent)
         if (percent > 1.0f)
             percent = 1.0f;
 
+        task_start_percent_ = current_task_percent_;
         current_task_percent_ = percent;
         task_start_time_ = timer_.Time();
     }
@@ -133,6 +141,7 @@ void mmLoader::EndTask(f32 percent)
         if (percent > 1.0f)
             percent = 1.0f;
 
+        task_start_percent_ = current_task_percent_;
         current_task_percent_ = percent;
         task_start_time_ = timer_.Time();
     }
@@ -140,8 +149,6 @@ void mmLoader::EndTask(f32 percent)
     task_text_.SetString(0, LOC_TEXT(""));
     task_text_.SetString(1, LOC_TEXT(""));
     Update();
-
-    task_percent_ = 0;
 }
 
 void mmLoader::Reset()

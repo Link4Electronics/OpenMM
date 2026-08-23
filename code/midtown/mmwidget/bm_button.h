@@ -30,6 +30,10 @@ public:
     // ??0UIBMButton@@QAE@XZ
     ARTS_IMPORT UIBMButton();
 
+    // Hover-only buttons skip bitmap drawing unless hovered/active
+    // (main-menu highlight strips).
+    void SetDirectFrame(bool v) { direct_frame_ = v; }
+
     // ??1UIBMButton@@UAE@XZ
     ARTS_IMPORT ~UIBMButton() override;
 
@@ -119,6 +123,7 @@ public:
     i32 bitmap_width_ {0};
     i32 bitmap_height_ {0};
     i32 frame_height_ {0};
+    bool direct_frame_ {false};
 };
 
 check_size(UIBMButton, 0xF0);

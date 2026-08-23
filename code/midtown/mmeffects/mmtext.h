@@ -92,6 +92,7 @@ class mmTextNode final : public asNode
 {
 public:
     // ??0mmTextNode@@QAE@XZ
+    void SetColor(u32 color) { fg_color_ = color; }
     ARTS_EXPORT mmTextNode();
 
     // ??1mmTextNode@@UAE@XZ

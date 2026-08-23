@@ -472,7 +472,7 @@ void mmInterface::Update()
                             MenuMgr()->Switch(IDM_SHOWCASE);
                             break;
                         case IDC_VEHICLE_AUTO:
-                            // TODO: Toggle transmission
+                            MMSTATE.AutoTransmission = !MMSTATE.AutoTransmission;
                             break;
                         case IDC_VEHICLE_PREV:
                         {

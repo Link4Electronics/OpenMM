@@ -440,6 +440,41 @@ void agiGLRasterizer::InitModern()
     const char* shader_name = "main";
     ConstString vs_src = LoadShader(GL_VERTEX_SHADER, shader_name);
     ConstString fs_src = LoadShader(GL_FRAGMENT_SHADER, shader_name);
+
+    // Perspective-correct texture mapping.
+    //
+    // The engine feeds D3D-style TL vertices (x, y, z, rhw) and the default
+    // transform forces gl_Position.w == 1, which makes GL interpolate UVs
+    // linearly in screen space — the classic "texture swimming".
+    //
+    // Route the reciprocal W (rhw) through a dedicated varying and undo it
+    // per-pixel: lerp(uv * rhw) / lerp(rhw) == perspective-correct uv.
+    {
+        std::string vs(vs_src.get());
+        std::string fs(fs_src.get());
+
+        auto replace_or_warn = [](std::string& text, const std::string& needle, const std::string& repl, const char* what) {
+            if (text.find(needle) == std::string::npos)
+            {
+                Warningf("Shader patch: needle not found for %s", what);
+                return false;
+            }
+            text.replace(text.find(needle), needle.size(), repl);
+            return true;
+        };
+
+        replace_or_warn(vs, "out vec2 frag_UV;", "out vec2 frag_UV;\nout float frag_W;", "vs declaration");
+        replace_or_warn(vs, "frag_UV = in_UV;", "frag_UV = in_UV * in_Position.w;\n    frag_W = in_Position.w;", "vs assignment");
+
+        replace_or_warn(fs, "in vec2 frag_UV;", "in vec2 frag_UV;\nin float frag_W;", "fs declaration");
+        replace_or_warn(
+            fs, "texture2D(u_Texture, frag_UV)",
+            "texture2D(u_Texture, frag_W > 0.00001 ? frag_UV / frag_W : frag_UV)", "fs sample");
+
+        vs_src = ConstString(vs.c_str());
+        fs_src = ConstString(fs.c_str());
+    }
+
     u32 vs = CompileShader(GL_VERTEX_SHADER, glsl_version, vs_src.get());
     u32 fs = CompileShader(GL_FRAGMENT_SHADER, glsl_version, fs_src.get());
 

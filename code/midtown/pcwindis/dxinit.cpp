@@ -161,7 +161,10 @@ void dxiScreenShot(char* file_name)
 
 void dxiShutdown()
 {
-    SafeRelease(lpDI);
+    // lpDI is our SDL-backed fake COM interface; calling Release() here
+    // crashes because SDL joystick state is already gone by this point.
+    // SDL_Quit() cleans up the underlying devices.
+    lpDI = nullptr;
 
     dxiWindowDestroy();
 }

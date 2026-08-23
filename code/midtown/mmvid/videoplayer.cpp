@@ -150,10 +150,8 @@ bool PlayIntroVideo(SDL_Window* window, const char* filepath)
 
                 if (GetSDLFormat(actx->sample_fmt, sdl_fmt, bytes_per_sample))
                 {
-                    // TODO: Video audio disabled until game audio is
-                    // implemented (SDL device threads crash on teardown).
+                    // Audio subsystem may not be initialized yet (video plays before main menu)
                     SDL_InitSubSystem(SDL_INIT_AUDIO);
-                    static constexpr bool kEnableVideoAudio = false;
 
                     SDL_AudioSpec aspec {};
                     aspec.format = sdl_fmt;
@@ -161,9 +159,7 @@ bool PlayIntroVideo(SDL_Window* window, const char* filepath)
                     aspec.freq = actx->sample_rate;
 
                     audio_stream_handle =
-                        (kEnableVideoAudio)
-                            ? SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &aspec, nullptr, nullptr)
-                            : nullptr;
+                        SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &aspec, nullptr, nullptr);
 
                     if (audio_stream_handle)
                         SDL_ResumeAudioStreamDevice(audio_stream_handle);

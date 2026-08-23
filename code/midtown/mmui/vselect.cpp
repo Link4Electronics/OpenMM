@@ -33,6 +33,7 @@ define_dummy_symbol(mmui_vselect);
 #include "eventq7/event.h"
 #include "mmcityinfo/playerdata.h"
 #include "mmcityinfo/state.h"
+#include "agi/bitmap.h"
 #include "mmcityinfo/vehlist.h"
 #include "mmeffects/card2d.h"
 #include "mmeffects/vehform.h"
@@ -133,6 +134,21 @@ void VehicleSelectBase::Update()
 {
     UIMenu::Update();
 
+    FillStats();
+
+    if (stats_text_)
+    {
+        arts_snprintf(stat_buf_[0], sizeof(stat_buf_[0]), "%.0f HP", stat_horsepower_);
+        arts_snprintf(stat_buf_[1], sizeof(stat_buf_[1]), "%.0f MPH", stat_topspeed_);
+        arts_snprintf(stat_buf_[2], sizeof(stat_buf_[2]), "%.0f LBS", stat_mass_);
+        arts_snprintf(stat_buf_[3], sizeof(stat_buf_[3]), "%.0f", stat_durability_);
+
+        stats_text_->SetString(1, LOC_TEXT(stat_buf_[0]));
+        stats_text_->SetString(3, LOC_TEXT(stat_buf_[1]));
+        stats_text_->SetString(5, LOC_TEXT(stat_buf_[2]));
+        stats_text_->SetString(7, LOC_TEXT(stat_buf_[3]));
+    }
+
     mmVehicleForm* forms = GetVehicleFormArray();
     asDofCS* dofcs = GetDofCSArray();
     if (!forms || !dofcs)
@@ -188,9 +204,10 @@ void VehicleSelectBase::Update()
         params.ProjXZ = 0.0f;
         params.ProjYZ = 0.0f;
 
-        // Camera: 4.5 units away, looking at car center (Y ~0.85 for VPBUG)
+        // Camera positioned so the whole car fits the small viewport
         f32 car_center_y = 0.85f;
-        Vector3 eye(0.0f, car_center_y, 4.5f);
+        f32 cam_dist = 7.5f;
+        Vector3 eye(0.0f, car_center_y + 0.4f, cam_dist);
         Vector3 target(0.0f, car_center_y, 0.0f);
         Vector3 fwd = ~(target - eye);
 
@@ -336,6 +353,34 @@ void VehicleSelectBase::InitCarSelection(i32 mode, f32 x, f32 y, f32 w, f32 h)
     AddTextDropdown(-1, LOC_TEXT("VEHICLES"), &picked_id,
         dd_x, dd_y, dd_w, dd_h, std::move(veh_options), 18, 1, 0,
         Callback(static_cast<Callback::Member0>(&VehicleSelectBase::TDPickCB), static_cast<Base*>(this)), nullptr);
+
+    // Load per-vehicle stats (HP / TopSpeed / Mass / Durability) and show
+    // them in a panel right of the car viewport.
+    LoadStats("vehiclestats");
+
+    Ptr<mmTextNode> node = arnew mmTextNode();
+    node->Init(0.58f, 0.22f, 0.38f, 0.32f, 8, BITMAP_TRANSPARENT);
+
+    void* font16 = MenuMgr()->GetFont(16);
+
+    // mmTextData::X/Y are u32 PIXELS inside the node's bitmap — fractional
+    // offsets truncate to zero (all lines stack). Convert to pixels first.
+    const i32 node_w = std::lround(0.38f * Pipe()->GetWidth());
+    const i32 node_h = std::lround(0.32f * Pipe()->GetHeight());
+    const i32 col_x = node_w / 2;
+    const i32 row_h = node_h / 4;
+
+    node->AddText(font16, LOC_TEXT("HORSEPOWER"), MM_TEXT_REQUIRED, 0.0f, 0.0f);
+    node->AddText(font16, LOC_TEXT(""), 0, static_cast<f32>(col_x), 0.0f);
+    node->AddText(font16, LOC_TEXT("TOP SPEED"), MM_TEXT_REQUIRED, 0.0f, static_cast<f32>(row_h));
+    node->AddText(font16, LOC_TEXT(""), 0, static_cast<f32>(col_x), static_cast<f32>(row_h));
+    node->AddText(font16, LOC_TEXT("MASS"), MM_TEXT_REQUIRED, 0.0f, static_cast<f32>(row_h * 2));
+    node->AddText(font16, LOC_TEXT(""), 0, static_cast<f32>(col_x), static_cast<f32>(row_h * 2));
+    node->AddText(font16, LOC_TEXT("DURABILITY"), MM_TEXT_REQUIRED, 0.0f, static_cast<f32>(row_h * 3));
+    node->AddText(font16, LOC_TEXT(""), 0, static_cast<f32>(col_x), static_cast<f32>(row_h * 3));
+
+    stats_text_ = node.get();
+    AdoptChild(Ptr<asNode>(std::move(node)));
 
     SetFocusWidget(-1);
 }
@@ -560,6 +605,12 @@ void VehicleSelectBase::FillStats()
     i32* src = &top_speed_array_[car * 4];
     for (i32 i = 0; i < 4; ++i)
         *reinterpret_cast<i32*>(&dest[i]) = src[i];
+
+    // Array order: Mass, Durability, Horsepower, TopSpeed
+    stat_mass_ = static_cast<f32>(src[0]);
+    stat_durability_ = static_cast<f32>(src[1]);
+    stat_horsepower_ = static_cast<f32>(src[2]);
+    stat_topspeed_ = static_cast<f32>(src[3]);
 }
 
 i32 VehicleSelectBase::LoadStats(char* /*arg1*/)

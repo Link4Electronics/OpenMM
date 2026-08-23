@@ -113,7 +113,10 @@ void UIBMButton::Cull()
         i32 frame = 0;
         if (num_frames > 1)
         {
-            frame = num_frames - 1 - state_;
+            // direct_frame_ buttons stack their state variants in natural
+            // order (frame 0 = normal, 1 = hover, ... last = disabled);
+            // legacy buttons used the reversed layout.
+            frame = direct_frame_ ? state_ : (num_frames - 1 - state_);
             if (frame < 0) frame = 0;
             if (frame >= num_frames) frame = num_frames - 1;
         }
@@ -129,8 +132,8 @@ void UIBMButton::Cull()
     }
     else
     {
-        u32 color = Active ? 0x004488CC : 0x00333333;
-        Pipe()->ClearRect(px, py, pw, ph, color);
+        // No bitmap (empty placeholder DDS): render nothing. The owning
+        // menu draws its own text overlay; this button is a hit area only.
     }
 }
 
@@ -322,10 +325,6 @@ void UIBMButton::PlayClickSound()
 
 void UIBMButton::AllocateSounds()
 {
-    // TODO: UI sounds disabled until game audio is implemented; the SDL
-    // playback device thread crashes during phase teardown.
-    return;
-
     if (g_UIBeepStream && g_ClickBeepStream)
         return;
 

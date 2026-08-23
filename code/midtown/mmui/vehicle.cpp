@@ -25,7 +25,11 @@ define_dummy_symbol(mmui_vehicle);
 Vehicle::Vehicle(i32 arg1)
     : VehicleSelectBase(arg1)
 {
-    AddBMButton(IDC_VEHICLE_DRIVE, "vehi_play"_xconst, 0.55f, 0.88f, 5);
+    // Bottom action row — evenly spaced across veh_back.
+    AddBMButton(IDC_VEHICLE_BACK, "onav_done"_xconst, 0.03f, 0.88f, 5);
+    AddBMButton(IDC_VEHICLE_AUTO, "veh_auto"_xconst, 0.27f, 0.88f, 6);
+    AddBMButton(IDC_VEHICLE_SELECT, "vehi_show"_xconst, 0.49f, 0.88f, 4);
+    AddBMButton(IDC_VEHICLE_DRIVE, "vehi_play"_xconst, 0.71f, 0.88f, 5);
 
     InitCarSelection(1, 34.0f / 640.0f, 175.0f / 480.0f, 290.0f / 640.0f, 216.0f / 480.0f);
 }

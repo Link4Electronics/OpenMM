@@ -19,6 +19,7 @@
 #pragma once
 
 #include "mmwidget/menu.h"
+#include "mmeffects/mmtext.h"
 
 class asDofCS;
 class Card2D;
@@ -94,6 +95,15 @@ protected:
     i32* top_speed_array_ {};
     i32* extra_array_ {};
     i32 unlock_level_ {};
+
+    // Current car's stats (filled by FillStats, original at +130h..+13Ch)
+    f32 stat_horsepower_ {};
+    f32 stat_topspeed_ {};
+    f32 stat_mass_ {};
+    f32 stat_durability_ {};
+
+    mmTextNode* stats_text_ {};
+    char stat_buf_[4][16] {};
 };
 
 check_size(VehicleSelectBase, 0x168);
